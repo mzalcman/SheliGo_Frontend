@@ -1,0 +1,11 @@
+.publication_detail_page {
+  width: 100%;
+
+  min-height: 100vh;
+
+  background-color: white;
+}
+
+.publication_detail_content {
+  padding-bottom: 180px;
+}

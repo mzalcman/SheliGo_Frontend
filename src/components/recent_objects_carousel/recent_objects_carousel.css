@@ -1,0 +1,11 @@
+.recent_objects_carousel {
+  width: 100%;
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.recent_objects_carousel::-webkit-scrollbar {
+  display: none;
+}

@@ -1,0 +1,43 @@
+.home_page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: white;
+}
+
+.home_page_content {
+  padding: 34px 28px 180px;
+}
+
+.home_hero {
+  margin-bottom: 38px;
+}
+
+.home_title {
+  font-size: 58px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 20px;
+}
+
+.home_subtitle {
+  font-size: 18px;
+  color: #717171;
+  line-height: 1.3;
+}
+
+.home_actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 42px;
+}
+
+.recent_section {
+  margin-top: 52px;
+}
+
+.recent_title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}

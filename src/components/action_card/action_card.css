@@ -1,0 +1,38 @@
+.action_card {
+  width: 100%;
+  height: 155px;
+  border: none;
+  border-radius: 32px;
+  position: relative;
+  overflow: hidden;
+  padding: 28px;
+  display: flex;
+  align-items: flex-start;
+  cursor: pointer;
+}
+
+.action_card_content {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  z-index: 2;
+}
+
+.action_card_title {
+  font-size: 22px;
+  font-weight: 700;
+  color: black;
+}
+
+.action_card_subtitle {
+  font-size: 16px;
+  color: black;
+}
+
+.action_card_icon {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  opacity: 0.18;
+  color: black;
+}

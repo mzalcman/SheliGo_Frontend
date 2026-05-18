@@ -33,18 +33,18 @@ const HomePage = () => {
 
         {/* Botones principales */}
         <section className="home_actions">
-
           <ActionCard
             title="Perdí Algo"
             subtitle="Iniciar Búsqueda"
             background_color="#FF6F00"
-            show_icon={true}
+            icon="search"
           />
 
           <ActionCard
             title="Encontré Algo"
             subtitle="Publicar hallazgo"
             background_color="#FFC107"
+            icon="check"
           />
 
         </section>

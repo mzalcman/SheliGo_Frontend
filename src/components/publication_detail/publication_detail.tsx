@@ -23,42 +23,33 @@ const PublicationDetail = ({
 
     <section className="publication_detail">
 
-      {/* Imagen principal */}
-      <img
-        src={publication.imagen_url}
-        alt={publication.nombre}
-        className="publication_image"
-      />
+{/* Contenedor imagen + overlay */}
+<div className="publication_image_container">
+  <img
+    src={publication.imagen_url}
+    alt={publication.nombre}
+    className="publication_image"
+  />
+  {/* Overlay superior */}
+  <div className="publication_header">
 
-      {/* Header interno */}
-      <div className="publication_header">
-
-        <div>
-
-          {/* Nombre */}
-          <h1 className="publication_title">
-            {publication.nombre}
-          </h1>
-
-          {/* Estado */}
-          <div className={badge_class}>
-            {publication.tipo}
-          </div>
-
-        </div>
-
-        {/* Compartir */}
-        {/* Visual solamente */}
-        <button className="publication_share_button">
-
-          <Share2
-            size={28}
-            strokeWidth={2.2}
-          />
-
-        </button>
-
+    <div>
+      {/* Estado */}
+      <div className={badge_class}>
+        {publication.tipo}
       </div>
+
+      <h1 className="publication_title">
+        {publication.nombre}
+      </h1>
+
+    </div>
+
+    <button className="publication_share_button">
+      <Share2 size={26} strokeWidth={2.2} />
+    </button>
+  </div>
+</div>
 
       {/* Descripción */}
       <section className="publication_section">

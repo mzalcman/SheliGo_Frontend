@@ -1,11 +1,10 @@
-.publication_detail_page {
-  width: 100%;
-
-  min-height: 100vh;
-
-  background-color: white;
+.questions_section {
+  padding: 0 22px;
+  margin-top: 12px;
 }
 
-.publication_detail_content {
-  padding-bottom: 180px;
+.questions_title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 18px;
 }

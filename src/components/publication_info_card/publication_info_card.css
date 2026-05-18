@@ -1,0 +1,45 @@
+.publication_info_card {
+  width: 100%;
+  background-color: #F5F5F5;
+  border-radius: 28px;
+  padding: 22px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+.publication_info_icon {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.publication_info_content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.publication_info_title {
+  font-size: 18px;
+  color: #717171;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.publication_info_main {
+  font-size: 22px;
+  color: black;
+  font-weight: 700;
+}
+
+.publication_info_secondary {
+  font-size: 16px;
+  color: #717171;
+}

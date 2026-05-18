@@ -1,0 +1,32 @@
+.question_card {
+  background-color: #F5F5F5;
+  border-radius: 24px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.question_user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.question_user_image {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.question_user_name {
+  font-size: 15px;
+  font-weight: 600;
+  color: black;
+}
+
+.question_content {
+  color: #717171;
+  line-height: 1.5;
+  font-size: 16px;
+}

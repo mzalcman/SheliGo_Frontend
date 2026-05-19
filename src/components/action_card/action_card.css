@@ -14,8 +14,9 @@
 .action_card_content {
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: 70px;
   z-index: 2;
+  padding: 2px;
 }
 
 .action_card_title {

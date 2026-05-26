@@ -5,29 +5,33 @@
   border-radius: 32px;
   position: relative;
   overflow: hidden;
-  padding: 28px;
+  padding: 23px;
   display: flex;
   align-items: flex-start;
   cursor: pointer;
 }
 
 .action_card_content {
-  display: flex;
+ display: flex;
   flex-direction: column;
-  gap: 70px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 10px;
   z-index: 2;
-  padding: 2px;
+  padding: 0;
 }
 
 .action_card_title {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
-  color: black;
+  color: #111111;
 }
 
 .action_card_subtitle {
-  font-size: 16px;
-  color: black;
+  font-size: 15px;
+  color: #1f1f1f;
+  font-family: Arial, sans-serif;
 }
 
 .action_card_icon {

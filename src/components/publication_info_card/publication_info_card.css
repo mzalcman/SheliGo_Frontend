@@ -27,19 +27,23 @@
 }
 
 .publication_info_title {
-  font-size: 18px;
+  font-size: 16px;
   color: #717171;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 400;
+  font-family: "lemonmilk";
 }
 
 .publication_info_main {
-  font-size: 16px;
+  font-size: 18px;
   color: black;
-  font-weight: 700;
+  font-weight: 600;
+  font-family: "poppins";
 }
 
 .publication_info_secondary {
   font-size: 12px;
   color: #717171;
+  font-family: "louis_george";
+  font-weight: 600;
 }

@@ -1,7 +1,25 @@
-.questions_section {
-  padding: 0 22px;
-  margin-top: 12px;
+.publication_detail_page {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: white;
 }
+
+
+.publication_detail_content {
+  width: 100%;
+  flex: 1;
+}
+
+
+.questions_section {
+  padding-left: 22px;
+  padding-right: 22px;
+  margin-top: 12px;
+  margin-bottom: 120px;
+}
+
 
 .questions_title {
   font-size: 28px;

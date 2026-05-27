@@ -1,29 +1,32 @@
 import "./publication_status.css";
 
 interface PublicationStatusProps {
-
   status: string;
-
   small?: boolean;
 }
 
-/*
-small=true
-→ cards home
+/* Si no llega, después le damos un valor por defecto.
+  Lo usamos para reutilizar el mismo componente en distintos lugares:
+  small = true
+  → versión chica (home)
+  small = false
+  → versión grande (detalle) */
 
-small=false
-→ detalle publicación
-*/
-
-const PublicationStatus = ({
-  status,
+const PublicationStatus = ({ status,
+  /* Si NO mandamos small, automáticamente vale false.*/
   small = false,
 }: PublicationStatusProps) => {
 
-  const normalized_status =
-    status.toLowerCase();
+  const normalized_status = status.toLowerCase(); 
+
+  /* Si el estado es:
+  encontrado
+  → amarillo
+  cualquier otro caso
+  → perdido (naranja)*/
 
   const status_class =
+
     normalized_status ===
     "encontrado"
       ? "publication_status_found"
@@ -35,15 +38,14 @@ const PublicationStatus = ({
       : "publication_status_large";
 
   return (
-
     <div
+      /*className los combina para aplicar el css*/
       className={`
         publication_status
         ${status_class}
         ${size_class}
       `}
     >
-
       {status}
 
     </div>

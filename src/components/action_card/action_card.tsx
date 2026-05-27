@@ -1,19 +1,20 @@
 import "./action_card.css";
 
-import { Search } from "lucide-react";
+import { Search, CheckCircle } from "lucide-react";
 
 interface ActionCardProps {
   title: string;
   subtitle: string;
   background_color: string;
-  show_icon?: boolean;
-}
 
+  // Tipo de icono
+  icon: "search" | "check";
+}
 const ActionCard = ({
   title,
   subtitle,
   background_color,
-  show_icon,
+  icon,
 }: ActionCardProps) => {
 
   return (
@@ -33,15 +34,26 @@ const ActionCard = ({
 
       </div>
 
-      {/* Icono watermark */}
-      {show_icon && (
+      {/* 
+        Si icon es "check" mostramos el check Sino mostramos la lupa
+      */}
+      {icon === "check" ? (
+        <CheckCircle
+          className="action_card_icon"
+          size={95}
+          strokeWidth={2}
+        />
+      ) : (
         <Search
           className="action_card_icon"
           size={95}
           strokeWidth={2}
         />
+
       )}
+
     </button>
   );
 };
+
 export default ActionCard;

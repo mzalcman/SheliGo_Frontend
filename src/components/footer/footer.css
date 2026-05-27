@@ -1,6 +1,6 @@
 .footer {
   width: 100%;
-  height: 70px;
+  height: 82px;
   background-color: #EAE8E8;
   display: flex;
   align-items: center;
@@ -8,12 +8,22 @@
   position: fixed;
   bottom: 0;
   left: 0;
-  border-top-left-radius: 50px;
-  border-top-right-radius: 50px;
+  border-top-left-radius: 38px;
+  border-top-right-radius: 38px;
   box-sizing: border-box;
+
+  /* Sombra principal */
+  box-shadow:
+    0 -4px 20px rgba(0, 0, 0, 0.08),
+    0 -1px 3px rgba(0, 0, 0, 0.04);
+  /* Efecto vidrio */
+  backdrop-filter: blur(10px);
+  /* Línea superior sutil */
+  border-top: 1px solid rgba(255, 255, 255, 0.45);
+  z-index: 999;
 }
 
-/* Cada item del footer */
+/* Cada item */
 .footer_item {
   border: none;
   background: none;
@@ -22,12 +32,21 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
   color: #717171;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
-/* Texto debajo del icono */
+/* Efecto táctil mobile */
+.footer_item:active {
+  transform: scale(0.94);
+}
+
+/* Texto */
 .footer_text {
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }

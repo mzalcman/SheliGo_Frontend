@@ -13,7 +13,7 @@ const HomePage = () => {
 
   return (
     <div className="home_page">
-
+      <Header />
 
       <main className="home_page_content">
 
@@ -68,7 +68,7 @@ const HomePage = () => {
         </section>
 
       </main>
-
+    <Footer />
 
     </div>
   );

@@ -1,6 +1,7 @@
 import "./object_card.css";
-
 import { MapPin } from "lucide-react";
+import PublicationStatus
+from "../publication_status/publication_status";
 
 interface ObjectCardProps {
   image: string;
@@ -16,15 +17,6 @@ const ObjectCard = ({
   status,
 }: ObjectCardProps) => {
 
-
-    /*- Si el estado es "encontrado" se agrega la clase "found" 
-    Si no --> se agrega la clase "lost"
- Esto permite cambiar el color desde CSS automáticamente */
-  const statusClass =
-    status.toLowerCase() === "encontrado"
-      ? "found"
-      : "lost";
-
   return (
     <div className="object_card">
 
@@ -36,8 +28,8 @@ const ObjectCard = ({
           className="object_card_image"
         />
 
-        <div className={`object_card_status ${statusClass}`}>
-          {status}
+        <div className="object_card_status">
+            <PublicationStatus status={status}small={true} />
         </div>
 
       </div>

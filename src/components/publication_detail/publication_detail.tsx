@@ -4,6 +4,7 @@ import type { Publication } from "../../types/publication";
 import {format_publication_date, format_publication_time, } from "../../utils/date_formatter";
 import {CalendarDays, MapPin, School, } from "lucide-react";
 import PublicationInfoCard from "../publication_info_card/publication_info_card";
+import PublicationStatus from "../publication_status/publication_status";
 
 interface PublicationDetailProps {
   publication: Publication;
@@ -12,13 +13,6 @@ interface PublicationDetailProps {
 const PublicationDetail = ({
   publication,
 }: PublicationDetailProps) => {
-
-  // Color dinámico según tipo
-  const badge_class =
-    publication.tipo === "perdido"
-      ? "publication_status_lost"
-      : "publication_status_found";
-
   return (
 
     <section className="publication_detail">
@@ -34,10 +28,7 @@ const PublicationDetail = ({
   <div className="publication_header">
 
     <div>
-      {/* Estado */}
-      <div className={badge_class}>
-        {publication.tipo}
-      </div>
+      <PublicationStatus status={publication.tipo}/>
 
       <h1 className="publication_title">
         {publication.nombre}

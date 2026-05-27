@@ -27,7 +27,7 @@
 }
 
 .publication_info_title {
-  font-size: 16px;
+  font-size: 14px;
   color: #717171;
   text-transform: uppercase;
   font-weight: 400;
@@ -35,7 +35,7 @@
 }
 
 .publication_info_main {
-  font-size: 18px;
+  font-size: 16px;
   color: black;
   font-weight: 600;
   font-family: "poppins";

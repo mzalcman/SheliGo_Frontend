@@ -21,7 +21,8 @@
 
 .question_user_name {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
+  font-family: "poppins";
   color: black;
 }
 
@@ -29,4 +30,6 @@
   color: #717171;
   line-height: 1.5;
   font-size: 16px;
+  font-family: "louis_george";
+  font-weight: 600
 }

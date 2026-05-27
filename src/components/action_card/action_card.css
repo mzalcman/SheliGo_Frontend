@@ -24,14 +24,16 @@
 
 .action_card_title {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 600;
+  font-family: "poppins";
   color: #111111;
 }
 
 .action_card_subtitle {
   font-size: 15px;
   color: #1f1f1f;
-  font-family: Arial, sans-serif;
+  font-family: "louis_george";
+  font-weight: 500;
 }
 
 .action_card_icon {

@@ -1,12 +1,11 @@
 .claim_button {
   width: 100%;
-  height: 60px;
+  height: 55px;
   border: none;
   border-radius: 26px;
   background-color: #FF6F00;
-  color: white;
+  color: rgb(0, 0, 0);
   font-size: 18px;
   font-weight: 700;
   cursor: pointer;
-  margin-top: 10px;
 }

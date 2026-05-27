@@ -11,14 +11,11 @@
   border-top-left-radius: 38px;
   border-top-right-radius: 38px;
   box-sizing: border-box;
-
-  /* Sombra principal */
   box-shadow:
     0 -4px 20px rgba(0, 0, 0, 0.08),
     0 -1px 3px rgba(0, 0, 0, 0.04);
   /* Efecto vidrio */
   backdrop-filter: blur(10px);
-  /* Línea superior sutil */
   border-top: 1px solid rgba(255, 255, 255, 0.45);
   z-index: 999;
 }
@@ -47,6 +44,7 @@
 /* Texto */
 .footer_text {
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 400;
+  font-family: "lemonmilk";
   letter-spacing: 0.3px;
 }

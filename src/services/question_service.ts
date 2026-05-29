@@ -1,6 +1,9 @@
 import { api } from "./api";
 
-/*Traer preguntasde una publicación.*/
+/*
+Traer preguntas
+de publicación.
+*/
 
 export const get_questions =
   async (
@@ -17,7 +20,9 @@ export const get_questions =
     return response.data;
   };
 
-/*Crear pregunta.*/
+/*
+Crear pregunta.
+*/
 
 export const create_question =
   async (
@@ -39,6 +44,7 @@ export const create_question =
           usuario_id,
           contenido,
         }
+
       );
 
     return response.data;

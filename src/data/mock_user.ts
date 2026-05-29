@@ -1,8 +1,9 @@
-import type { User, } from "../types/user";
+export const mock_logged_user = {
 
-export const mock_logged_user:
-User = {
-  id: 1,
-  name: "Morena",
-  profile_image: "https://randomuser.me/api/portraits/women/20.jpg",
+  id:
+    "a66c8253-2cae-42a3-a229-aaa7f545029a",
+  name:
+    "Usuario actual",
+  profile_image:
+    "/images/user_placeholder.png",
 };

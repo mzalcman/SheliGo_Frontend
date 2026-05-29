@@ -42,10 +42,10 @@ const PublicationDetailPage =
     >([]);
 
   const [
-    questions,
-    set_questions,
-  ] =
-    useState<Question[]>([]);
+  questions,
+  set_questions,
+] =
+  useState<Question[]>([]);
 
   /*Input pregunta.*/
 

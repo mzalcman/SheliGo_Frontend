@@ -2,7 +2,7 @@ import { api } from "./api";
 
 export const get_publication_by_id =
   async (
-    id: number
+    id: string
   ) => {
 
     const response =

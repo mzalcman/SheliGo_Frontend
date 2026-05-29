@@ -12,10 +12,10 @@ function App() {
     <div className="app">
 
       {/* Home */}
-       <HomePage />
+       {/*<HomePage />*/}
 
       {/* Detalle publicación */}
-      {/*<PublicationDetailPage /> */}
+      <PublicationDetailPage /> 
 
     </div>
 

@@ -1,7 +1,7 @@
 export interface Question {
-  id: number;
-  user_name: string;
-  user_image: string;
-  content: string;
+  id: string;
+  publicacion_id: string;
+  usuario_id: string;
+  contenido: string;
   created_at: string;
 }

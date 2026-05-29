@@ -17,17 +17,17 @@ const QuestionCard = ({
       <div className="question_user">
 
         <img
-          src={question.user_image}
-          alt={question.user_name}
+          src={"/images/user_placeholder.png"}
+          alt={"Usuario"}
           className="question_user_image"/>
 
         <span className="question_user_name">
-          {question.user_name}
+          {"Usuario"}
         </span>
       </div>
 
       <p className="question_content">
-        {question.content}
+        {question.contenido}
       </p>
 
     </div>

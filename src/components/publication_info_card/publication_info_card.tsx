@@ -1,35 +1,61 @@
 import "./publication_info_card.css";
-
-import type { LucideIcon, } from "lucide-react";
+import type {LucideIcon,} from "lucide-react";
 
 interface PublicationInfoCardProps {
   title: string;
   main_text: string;
-  secondary_text: string;
+
+  /*
+  Opcional.
+  Algunas cards tienen: fecha + hora
+  Otras: solo texto principal
+  */
+  secondary_text?: string;
+
   icon: LucideIcon;
+
   icon_background: string;
 }
 
 const PublicationInfoCard = ({
+
   title,
+
   main_text,
+
   secondary_text,
+
   icon: Icon,
+
   icon_background,
+
 }: PublicationInfoCardProps) => {
 
   return (
+
     <div className="publication_info_card">
 
-      {/* Círculo izquierdo */}
+      {/* Ícono circular izquierdo */}
       <div
+
         className="publication_info_icon"
-        style={{ backgroundColor: icon_background }}>
-        <Icon size={28} strokeWidth={2.3}/>
+
+        style={{
+          backgroundColor:
+            icon_background
+        }}
+      >
+
+        <Icon
+          size={28}
+          strokeWidth={2.3}
+        />
+
       </div>
 
       {/* Información */}
       <div className="publication_info_content">
+
         <span className="publication_info_title">
           {title}
         </span>
@@ -38,13 +64,27 @@ const PublicationInfoCard = ({
           {main_text}
         </span>
 
-        <span className="publication_info_secondary">
-          {secondary_text}
-        </span>
+        {/* 
+        Solo renderiza si existe secondary_text*/}
+        {
+          secondary_text && (
+
+            <span
+              className="
+              publication_info_secondary
+            "
+            >
+
+              {secondary_text}
+
+            </span>
+
+          )
+        }
+
       </div>
     </div>
 
   );
 };
-
 export default PublicationInfoCard;

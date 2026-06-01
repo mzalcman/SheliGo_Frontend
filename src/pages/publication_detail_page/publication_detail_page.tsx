@@ -150,30 +150,16 @@ const PublicationDetailPage =
 
       try {
 
-        /*
-        Backend real.
-        */
-
         const created_question =
           await create_question(
-
             publication_id,
-
             mock_logged_user.id,
-
             new_question
           );
 
-        /*
-        Actualizamos UI.
-        */
-
         set_questions([
-
           ...questions,
-
           created_question,
-
         ]);
 
         set_new_question("");
@@ -185,9 +171,6 @@ const PublicationDetailPage =
         );
       }
     };
-
-  /*Loading state.*/
-
   if (loading) {
 
     return (
@@ -196,8 +179,6 @@ const PublicationDetailPage =
       </div>
     );
   }
-
-  /*Error state.*/
 
   if (error) {
 

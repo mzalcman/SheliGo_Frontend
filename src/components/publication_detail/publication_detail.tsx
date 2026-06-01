@@ -49,29 +49,15 @@ const PublicationDetail = ({
       {/* Imagen + overlay */}
       <div className="publication_image_container">
 
-        <img
-
-          /*
-          Temporal.
-
-          Más adelante:
-          backend devolverá
-          URL completa
-          desde Supabase Storage.
-          */
-          src={
-
-            archives[0]?.url
-
-              ? `http://localhost:3000/${archives[0].url}`
-
-              : "/images/object_placeholder.png"
-          }
-
-          alt={publication.nombre}
-
-          className="publication_image"
-        />
+<img
+  src={
+    archives[0]?.url
+      ? `https://evovbsxgvzljkbcheipp.supabase.co/storage/v1/object/public/${archives[0].url}`
+      : "/images/object_placeholder.png"
+  }
+  alt={publication.nombre}
+  className="publication_image"
+/>
 
         {/* Overlay superior */}
         <div className="publication_header">

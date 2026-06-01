@@ -2,11 +2,11 @@ import "./recent_objects_carousel.css";
 import ObjectCard from "../object_card/object_card";
 
 interface ObjectType {
-  id: number;
-  image: string;
-  title: string;
-  location: string;
-  status: string;
+  id: string;
+  nombre: string;
+  lugar_institucion: string;
+  tipo: string;
+  foto_principal_url: string;
 }
 
 interface RecentObjectsCarouselProps {
@@ -24,10 +24,10 @@ const RecentObjectsCarousel = ({
 
         <ObjectCard
           key={object.id}
-          image={object.image}
-          title={object.title}
-          location={object.location}
-          status={object.status}
+          image={object.foto_principal_url}
+          title={object.nombre}
+          location={object.lugar_institucion}
+          status={object.tipo}
         />
 
       ))}

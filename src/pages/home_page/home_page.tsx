@@ -1,4 +1,5 @@
 import "./home_page.css";
+import { useEffect, useState } from "react";
 
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
@@ -6,32 +7,74 @@ import Footer from "../../components/footer/footer";
 import ActionCard from "../../components/action_card/action_card";
 import InstitutionLogos from "../../components/institution_logos/institution_logos";
 import RecentObjectsCarousel from "../../components/recent_objects_carousel/recent_objects_carousel";
-import institutions from "../../data/institutions";
-import recent_objects from "../../data/recent_objects";
+
+import {
+  get_home_publications,
+  get_home_institutions,
+} from "../../services/home_service";
 
 const HomePage = () => {
+  const [publications, set_publications] = useState([]);
+  const [institutions, set_institutions] = useState([]);
+
+  useEffect(() => {
+    const fetch_data = async () => {
+      try {
+        const [
+          publications_data,
+          institutions_data,
+        ] = await Promise.all([
+          get_home_publications(),
+          get_home_institutions(),
+        ]);
+
+        console.log(
+  JSON.stringify(
+    publications_data,
+    null,
+    2
+  )
+);
+
+        console.log(
+          "INSTITUTIONS:",
+          institutions_data
+        );
+
+        set_publications(
+          publications_data.data.publicaciones
+        );
+
+        set_institutions(
+          institutions_data.data.instituciones
+        );
+
+      } catch (error) {
+        console.log(
+          "ERROR HOME:",
+          error
+        );
+      }
+    };
+
+    fetch_data();
+  }, []);
 
   return (
     <div className="home_page">
       <Header />
 
       <main className="home_page_content">
-
-        {/* Saludo */}
         <section className="home_hero">
-
           <h1 className="home_title">
             Hola, Laura!
           </h1>
 
           <p className="home_subtitle">
-            ¿Has perdido algo hoy o
-            encontraste un tesoro ajeno?
+            ¿Has perdido algo hoy o encontraste un tesoro ajeno?
           </p>
-
         </section>
 
-        {/* Botones principales */}
         <section className="home_actions">
           <ActionCard
             title="Perdí Algo"
@@ -46,30 +89,24 @@ const HomePage = () => {
             background_color="#FFC107"
             icon="check"
           />
-
         </section>
 
-        {/* Logos instituciones */}
         <InstitutionLogos
           institutions={institutions}
         />
 
-        {/* Objetos recientes */}
         <section className="recent_section">
-
           <h2 className="recent_title">
             Objetos Recientes
           </h2>
 
           <RecentObjectsCarousel
-            objects={recent_objects}
+            objects={publications}
           />
-
         </section>
-
       </main>
-    <Footer />
 
+      <Footer />
     </div>
   );
 };

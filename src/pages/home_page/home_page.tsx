@@ -9,36 +9,52 @@ import InstitutionLogos from "../../components/institution_logos/institution_log
 import RecentObjectsCarousel from "../../components/recent_objects_carousel/recent_objects_carousel";
 
 import {
+  get_home_user,
   get_home_publications,
   get_home_institutions,
 } from "../../services/home_service";
 
 const HomePage = () => {
+
+  const [user_name, set_user_name] = useState("");
+
   const [publications, set_publications] = useState([]);
+
   const [institutions, set_institutions] = useState([]);
 
   useEffect(() => {
+
     const fetch_data = async () => {
+
       try {
+
         const [
+          user_data,
           publications_data,
           institutions_data,
         ] = await Promise.all([
+          get_home_user(),
           get_home_publications(),
           get_home_institutions(),
         ]);
 
         console.log(
-  JSON.stringify(
-    publications_data,
-    null,
-    2
-  )
-);
+          "USER:",
+          user_data
+        );
+
+        console.log(
+          "PUBLICATIONS:",
+          publications_data
+        );
 
         console.log(
           "INSTITUTIONS:",
           institutions_data
+        );
+
+        set_user_name(
+          user_data.data.usuario.nombre
         );
 
         set_publications(
@@ -50,32 +66,41 @@ const HomePage = () => {
         );
 
       } catch (error) {
+
         console.log(
           "ERROR HOME:",
           error
         );
+
       }
     };
 
     fetch_data();
+
   }, []);
 
   return (
+
     <div className="home_page">
+
       <Header />
 
       <main className="home_page_content">
+
         <section className="home_hero">
+
           <h1 className="home_title">
-            Hola, Laura!
+            Hola, {user_name}!
           </h1>
 
           <p className="home_subtitle">
             ¿Has perdido algo hoy o encontraste un tesoro ajeno?
           </p>
+
         </section>
 
         <section className="home_actions">
+
           <ActionCard
             title="Perdí Algo"
             subtitle="Iniciar Búsqueda"
@@ -89,6 +114,7 @@ const HomePage = () => {
             background_color="#FFC107"
             icon="check"
           />
+
         </section>
 
         <InstitutionLogos
@@ -96,6 +122,7 @@ const HomePage = () => {
         />
 
         <section className="recent_section">
+
           <h2 className="recent_title">
             Objetos Recientes
           </h2>
@@ -103,11 +130,15 @@ const HomePage = () => {
           <RecentObjectsCarousel
             objects={publications}
           />
+
         </section>
+
       </main>
 
       <Footer />
+
     </div>
+
   );
 };
 

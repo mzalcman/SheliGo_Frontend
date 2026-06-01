@@ -2,62 +2,85 @@ import {
   createContext,
   useContext,
   useState,
+  useEffect,
 } from "react";
 
 import type { ReactNode } from "react";
 import type { User } from "../types/user";
 
-// Tipo del contexto.
-// Define qué información global va a existir.
+import { get_home_user } from "../services/home_service";
+
 interface AuthContextType {
   user: User | null;
 }
 
-// Creamos el contexto.
 const AuthContext =
   createContext<AuthContextType | null>(null);
 
-// Props del provider.
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Provider global.
-// Envuelve toda la aplicación.
 export const AuthProvider = ({
   children,
 }: AuthProviderProps) => {
 
-  // Usuario temporal mockeado.
-  // IMPORTANTE:
-  // Más adelante esto va a venir de Supabase Auth.
-  const [user] = useState<User>({
-    id: 1,
+  const [user, setUser] =
+    useState<User | null>(null);
 
-    name: "Morena",
+  useEffect(() => {
 
-    profile_image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-  });
+    const fetchUser = async () => {
+
+      try {
+
+        const response =
+          await get_home_user();
+
+        const usuario =
+          response.data.usuario;
+
+        setUser({
+          id: usuario.id,
+          name: usuario.nombre,
+          profile_image: usuario.foto,
+        });
+
+      } catch (error) {
+
+        console.log(
+          "ERROR USER:",
+          error
+        );
+
+      }
+
+    };
+
+    fetchUser();
+
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user }}>
+    <AuthContext.Provider
+      value={{ user }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Hook interno del contexto.
-// Permite reutilizar lógica fácilmente.
 export const useAuthContext = () => {
-  const context = useContext(AuthContext);
 
-  // Validación importante.
-  // Evita errores si el provider no existe.
+  const context =
+    useContext(AuthContext);
+
   if (!context) {
+
     throw new Error(
       "useAuthContext debe usarse dentro de AuthProvider"
     );
+
   }
 
   return context;

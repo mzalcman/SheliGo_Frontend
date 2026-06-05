@@ -23,7 +23,6 @@ interface PublicationDetailProps {
   publication: Publication;
   archives: PublicationArchive[];
 }
-
 const PublicationDetail = ({
   publication, archives,
 }: PublicationDetailProps) => {
@@ -40,20 +39,14 @@ const PublicationDetail = ({
           <div>
             {/* Badge estado */}
             <PublicationStatus
-              status={publication.tipo}
-            />
-            {/* Nombre objeto */}
+              status={publication.tipo}/>
+
             <h1 className="publication_title">
-
               {publication.nombre}
-
             </h1>
 
           </div>
-
-          <button
-            className="publication_share_button">
-
+          <button className="publication_share_button">
             <Share2
               size={26}
               strokeWidth={2.2}/>
@@ -69,7 +62,6 @@ const PublicationDetail = ({
         <div className="publication_box">
           {publication.descripcion}
         </div>
-
       </section>
 
       <PublicationInfoCard
@@ -105,11 +97,14 @@ const PublicationDetail = ({
         main_text={
           publication.institucion_nombre
         }
+        secondary_text={
+          publication.institucion_direccion
+        }
       />
 <section className="publication_section">
 
   <h2 className="publication_section_title">
-    Ubicación Exacta
+    Ubicación 
   </h2>
 
   <div className="location_card">
@@ -129,11 +124,9 @@ const PublicationDetail = ({
       dragging={true}
       className="location_map"
     >
-
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-
       <Marker
         position={[
           publication.latitud,
@@ -141,9 +134,7 @@ const PublicationDetail = ({
         ]}
       />
     </MapContainer>
-
   </div>
-
 </section>
 
 <section className="publication_section">
@@ -152,27 +143,21 @@ const PublicationDetail = ({
   </h2>
 
   <div className="publisher_card">
-
     <img
       src={
         publication.usuario_foto ||
         "/images/user_placeholder.png"
       }
       alt={`${publication.usuario_nombre} ${publication.usuario_apellido}`}
-      className="publisher_image"
-    />
+      className="publisher_image"/>
 
     <div className="publisher_info">
-
       <h3 className="publisher_name">
         {publication.usuario_nombre}{" "}
         {publication.usuario_apellido}
       </h3>
-
     </div>
-
   </div>
-
 </section>
 
 </section>

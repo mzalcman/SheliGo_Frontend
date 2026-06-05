@@ -13,7 +13,6 @@ interface PublicationStatusProps {
   → versión grande (detalle) */
 
 const PublicationStatus = ({ status,
-  /* Si NO mandamos small, automáticamente vale false.*/
   small = false,
 }: PublicationStatusProps) => {
 
@@ -26,7 +25,6 @@ const PublicationStatus = ({ status,
   → perdido (naranja)*/
 
   const status_class =
-
     normalized_status ===
     "encontrado"
       ? "publication_status_found"
@@ -39,15 +37,12 @@ const PublicationStatus = ({ status,
 
   return (
     <div
-      /*className los combina para aplicar el css*/
       className={`
         publication_status
         ${status_class}
-        ${size_class}
-      `}
+        ${size_class}`}
     >
       {status}
-
     </div>
 
   );

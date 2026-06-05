@@ -20,4 +20,5 @@ export interface Publication {
 
   categoria_nombre: string;
   institucion_nombre: string;
+  institucion_direccion:string;
 }

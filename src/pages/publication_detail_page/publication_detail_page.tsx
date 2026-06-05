@@ -63,19 +63,18 @@ const PublicationDetailPage =
         return;
       }
 
-      try {
-        const created_question =
-          await create_question(
-            publication_id,
-            mock_logged_user.id,
-            new_question
-          );
-        set_questions([
-          ...questions,
-          created_question,
-        ]);
-        set_new_question("");
-      } catch (error) {
+      try {          
+        await create_question(
+          publication_id,
+          mock_logged_user.id,
+          new_question);
+          
+          const updated_questions = await get_questions( publication_id );
+          
+          set_questions(updated_questions);
+          
+          set_new_question("");
+        } catch (error) {
         console.log(
           "Error creando pregunta"
         );

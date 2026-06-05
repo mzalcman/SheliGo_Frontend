@@ -13,8 +13,11 @@ export interface Publication {
   institucion_id: string;
   categoria_id: string;
   lugar_institucion: string;
+
   usuario_nombre: string;
   usuario_apellido: string;
+  usuario_foto: string;
+
   categoria_nombre: string;
   institucion_nombre: string;
 }

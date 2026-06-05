@@ -140,13 +140,42 @@ const PublicationDetail = ({
           publication.longitud,
         ]}
       />
-
     </MapContainer>
 
   </div>
 
 </section>
-    </section>
+
+<section className="publication_section">
+  <h2 className="publication_section_title">
+    Publicado por
+  </h2>
+
+  <div className="publisher_card">
+
+    <img
+      src={
+        publication.usuario_foto ||
+        "/images/user_placeholder.png"
+      }
+      alt={`${publication.usuario_nombre} ${publication.usuario_apellido}`}
+      className="publisher_image"
+    />
+
+    <div className="publisher_info">
+
+      <h3 className="publisher_name">
+        {publication.usuario_nombre}{" "}
+        {publication.usuario_apellido}
+      </h3>
+
+    </div>
+
+  </div>
+
+</section>
+
+</section>
   );
 };
 export default PublicationDetail;

@@ -5,19 +5,6 @@ import type {PublicationArchive,} from "../../types/publication_archive";
 import {format_publication_date,format_publication_time,} from "../../utils/date_formatter";
 import PublicationInfoCard from "../publication_info_card/publication_info_card";
 import PublicationStatus from "../publication_status/publication_status";
-import {MapContainer, TileLayer, Marker,  Popup,} from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-});
 
 interface PublicationDetailProps {
   publication: Publication;
@@ -101,41 +88,23 @@ const PublicationDetail = ({
           publication.institucion_direccion
         }
       />
-<section className="publication_section">
 
-  <h2 className="publication_section_title">
-    Ubicación 
-  </h2>
+{publication.latitud != null &&
+ publication.longitud != null && (
+  <section className="publication_section">
+    <h2 className="publication_section_title">
+      Ubicación
+    </h2>
+    <div className="location_card">
 
-  <div className="location_card">
-
-    <div className="location_badge">
-      UBICACIÓN EXACTA
+      <iframe
+        title="Ubicación"
+        src={`https://maps.google.com/maps?q=${publication.latitud},${publication.longitud}&z=17&output=embed`}
+        className="location_map"
+        loading="lazy"/>
     </div>
-
-    <MapContainer
-      center={[
-        publication.latitud,
-        publication.longitud,
-      ]}
-      zoom={17}
-      scrollWheelZoom={false}
-      zoomControl={false}
-      dragging={true}
-      className="location_map"
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <Marker
-        position={[
-          publication.latitud,
-          publication.longitud,
-        ]}
-      />
-    </MapContainer>
-  </div>
-</section>
+  </section>
+)}
 
 <section className="publication_section">
   <h2 className="publication_section_title">

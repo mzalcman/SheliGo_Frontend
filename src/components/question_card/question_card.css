@@ -33,3 +33,24 @@
   font-family: "louis_george";
   font-weight: 600
 }
+
+.question_answer {
+  margin-top: 12px;
+  border-radius: 12px;
+  background: #f5f5f5;
+}
+
+.question_answer_title {
+  display: block;
+  margin-bottom: 6px;
+  color: black;
+  font-family: "poppins";
+  font-weight: 500;
+}
+
+.question_answer_content {
+  margin: 0;
+  color: #717171;
+  font-family: "louis_george";
+  font-weight: 600;
+}

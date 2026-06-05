@@ -1,33 +1,21 @@
 import "./home_page.css";
 import { useEffect, useState } from "react";
-
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
-
 import ActionCard from "../../components/action_card/action_card";
 import InstitutionLogos from "../../components/institution_logos/institution_logos";
 import RecentObjectsCarousel from "../../components/recent_objects_carousel/recent_objects_carousel";
-
-import {
-  get_home_user,
-  get_home_publications,
-  get_home_institutions,
-} from "../../services/home_service";
+import {get_home_user,get_home_publications,get_home_institutions,} from "../../services/home_service";
 
 const HomePage = () => {
 
   const [user_name, set_user_name] = useState("");
-
   const [publications, set_publications] = useState([]);
-
   const [institutions, set_institutions] = useState([]);
 
   useEffect(() => {
-
     const fetch_data = async () => {
-
       try {
-
         const [
           user_data,
           publications_data,
@@ -38,43 +26,18 @@ const HomePage = () => {
           get_home_institutions(),
         ]);
 
-        console.log(
-          "USER:",
-          user_data
-        );
-
-        console.log(
-          "PUBLICATIONS:",
-          publications_data
-        );
-
-        console.log(
-          "INSTITUTIONS:",
-          institutions_data
-        );
-
         set_user_name(
-          user_data.data.usuario.nombre
-        );
+          user_data.data.usuario.nombre);
 
         set_publications(
-          publications_data.data.publicaciones
-        );
+          publications_data.data.publicaciones);
 
         set_institutions(
-          institutions_data.data.instituciones
-        );
+          institutions_data.data.instituciones);
 
       } catch (error) {
-
-        console.log(
-          "ERROR HOME:",
-          error
-        );
-
       }
     };
-
     fetch_data();
 
   }, []);
@@ -82,61 +45,44 @@ const HomePage = () => {
   return (
 
     <div className="home_page">
-
       <Header />
-
       <main className="home_page_content">
-
         <section className="home_hero">
-
           <h1 className="home_title">
             Hola, {user_name}!
           </h1>
-
           <p className="home_subtitle">
             ¿Has perdido algo hoy o encontraste un tesoro ajeno?
           </p>
-
         </section>
-
         <section className="home_actions">
 
           <ActionCard
             title="Perdí Algo"
             subtitle="Iniciar Búsqueda"
             background_color="#FF6F00"
-            icon="search"
-          />
+            icon="search" />
 
           <ActionCard
             title="Encontré Algo"
             subtitle="Publicar hallazgo"
             background_color="#FFC107"
-            icon="check"
-          />
+            icon="check" />
 
         </section>
 
-        <InstitutionLogos
-          institutions={institutions}
-        />
+        <InstitutionLogos institutions={institutions}/>
 
         <section className="recent_section">
-
           <h2 className="recent_title">
             Objetos Recientes
           </h2>
 
           <RecentObjectsCarousel
-            objects={publications}
-          />
-
+            objects={publications}/>
         </section>
-
       </main>
-
       <Footer />
-
     </div>
 
   );

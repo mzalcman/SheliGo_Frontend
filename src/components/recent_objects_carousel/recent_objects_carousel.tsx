@@ -24,6 +24,7 @@ const RecentObjectsCarousel = ({
 
         <ObjectCard
           key={object.id}
+          id={object.id}
           image={object.foto_principal_url}
           title={object.nombre}
           location={object.lugar_institucion}

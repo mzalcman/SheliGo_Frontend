@@ -6,7 +6,6 @@
 
 .menu_container {
   min-height: calc(100vh - 12px);
-
   background: #f7f7f7;
 
   border-top-right-radius: 50px;
@@ -26,12 +25,16 @@
   cursor: pointer;
 
   width: fit-content;
-
   margin-bottom: 24px;
 
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* Texto "Menu" de arriba más marcado */
+  font-family: "louis_george", sans-serif;
+  font-weight: 600;
+  color: #8a8a8a;
 
   transition: transform 0.2s ease;
 }
@@ -67,26 +70,37 @@
   border: 3px solid white;
 }
 
+/* NOMBRE: Grande, imponente y bien gruesito */
 .menu_name {
-  margin-top: 14px;
-  margin-bottom: 4px;
+  margin-top: 18px;
+  margin-bottom: 2px;
 
-  font-size: 2rem;
-  color: #666;
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 30px;
+  color: #4a4a4a;
+  letter-spacing: -0.5px;
 }
 
+/* ROL: "Exploradora Urbana" más legible */
 .menu_role {
+  font-family: "louis_george", sans-serif;
+  font-weight: 500; /* Un toque más de grosor para que no se pierda */
+  font-size: 1.05rem;
   color: #8a8a8a;
 }
 
+/* VER PERFIL: Enlace naranja más marcado */
 .menu_view_profile {
   margin-top: 8px;
 
   border: none;
   background: none;
 
+  font-family: "louis_george", sans-serif;
+  font-weight: 600; /* Bien marcado como el nombre */
+  font-size: 1.05rem;
   color: #ff6f00;
-  font-weight: 600;
 
   cursor: pointer;
 }
@@ -100,6 +114,7 @@
   gap: 18px;
 }
 
+/* OPCIONES DEL MENÚ: Más gruesas y con el color de la foto */
 .menu_option {
   border: none;
   background: transparent;
@@ -113,8 +128,10 @@
 
   border-radius: 999px;
 
-  color: #777;
-  font-size: 1rem;
+  font-family: "louis_george", sans-serif;
+  font-weight: 600; /* Todo el texto de las opciones ahora es más robusto */
+  color: #8a8a8a; /* Gris medio como se ve en "Mis publicaciones" */
+  font-size: 1.1rem;
 
   cursor: pointer;
 
@@ -125,17 +142,23 @@
   background: #f1f1f1;
 }
 
+/* OPCIÓN ACTIVA: Resalta en naranja con fondo amarillo suave */
 .menu_option_active {
   background: #f5d36d;
-  color: #ff6f00;
+  color: #ff6f00; /* Texto naranja fuerte */
+  font-weight: 600;
 }
 
+/* CERRAR SESIÓN: Al fondo, bien legible y con presencia */
 .menu_logout {
   margin-top: auto;
 
   border: none;
   background: transparent;
 
+  font-family: "louis_george", sans-serif;
+  font-weight: 600; /* Gruesito */
+  font-size: 1.1rem;
   color: #ff4d4d;
 
   display: flex;
@@ -153,15 +176,12 @@
 }
 
 @keyframes menuSlideIn {
-
   from {
     opacity: 0;
     transform: translateX(-40px);
   }
-
   to {
     opacity: 1;
     transform: translateX(0);
   }
-
 }

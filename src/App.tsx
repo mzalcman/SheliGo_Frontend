@@ -20,7 +20,7 @@ function App() {
 
         <Route
           path="/home"
-          element={<HomePage />}
+          element={<LandingPage />}
         />
 
         <Route

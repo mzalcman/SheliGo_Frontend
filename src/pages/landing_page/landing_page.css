@@ -1,0 +1,79 @@
+.landing_page {
+  min-height: 100vh;
+  background: #f5f3f3;
+  display: flex;
+  flex-direction: column;
+}
+
+.landing_image_container {
+  width: 100%;
+  height: 52vh;
+
+  background-image: url("/images/fondoprc.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.landing_content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.landing_logo {
+  color: #ff6f00;
+  font-size: 4rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.landing_title {
+  margin-top: 12px;
+  font-size: 3rem;
+  font-weight: 500;
+  line-height: 1.15;
+  color: #111;
+}
+
+.landing_title span {
+  color: #ff6f00;
+}
+
+.landing_subtitle {
+  margin-top: 18px;
+  color: #9b9b9b;
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+
+.landing_buttons {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 24px;
+}
+
+.landing_register_button {
+  height: 58px;
+  border: none;
+  border-radius: 999px;
+  background: #ff6f00;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.landing_login_button {
+  height: 58px;
+  border: none;
+  border-radius: 999px;
+  background: #d8d8d8;
+  color: #111;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+}

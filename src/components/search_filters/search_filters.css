@@ -1,0 +1,60 @@
+.search_filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.search_filter {
+  border: none;
+  background: #e7e7e7;
+  border-radius: 999px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #717171;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "louis_george";
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.search_filter:hover {
+  background: #dddddd;
+}
+
+.search_filter.active {
+  background: #ff6f00;
+  color: white;
+}
+.filter_chips_container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+.date_input {
+  border: none;
+  background: #e4e4e4;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-family: "Poppins";
+}
+.date_input {
+  border: none;
+  background: #e4e4e4;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-family: "louis_george";
+  font-weight: 600;
+  color: #717171;
+  outline: none;
+}
+
+.date_input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}

@@ -5,8 +5,9 @@
   border-radius: 999px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
-  color: #666;
+  font-weight: 600;
+  font-family: "louis_george";
+  color: #717171;
 }
 
 .filter_chip.active {

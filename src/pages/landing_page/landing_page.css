@@ -1,79 +1,101 @@
 .landing_page {
+  position: relative;
   min-height: 100vh;
-  background: #f5f3f3;
+  background-color: #ffffff; /* Fondo blanco puro como el final de la foto extendida */
   display: flex;
   flex-direction: column;
+  justify-content: flex-end; /* Empuja el contenido hacia abajo */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow-x: hidden;
 }
 
+/* Contenedor de la imagen que cubre todo el fondo superior */
 .landing_image_container {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 52vh;
-
+  height: 70vh; /* Ocupa gran parte de la pantalla */
   background-image: url("/fondoprc.png");
   background-size: cover;
-  background-position: center;
+  background-position: center top;
   background-repeat: no-repeat;
+  z-index: 1;
+  
+  /* Máscara para que la imagen se fusione suavemente con el fondo blanco hacia abajo */
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 65%, rgba(0,0,0,0) 100%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 65%, rgba(0,0,0,0) 100%);
 }
 
+/* Contenedor de los textos y botones */
 .landing_content {
-  padding: 24px;
+  position: relative;
+  z-index: 2; /* Por encima de la imagen */
+  padding: 32px 28px;
   display: flex;
   flex-direction: column;
-  flex: 1;
+  margin-top: 45vh; /* Deja espacio para que se luzcan los objetos de arriba */
 }
 
 .landing_logo {
   color: #ff6f00;
-  font-size: 4rem;
-  font-weight: 800;
+  font-size: 3.2rem; /* Ajustado para pantallas móviles */
+  font-weight: 700;
   margin: 0;
+  letter-spacing: -0.5px;
 }
 
 .landing_title {
-  margin-top: 12px;
-  font-size: 3rem;
-  font-weight: 500;
-  line-height: 1.15;
-  color: #111;
+  margin-top: 16px;
+  font-size: 2.5rem; /* Ajustado para que quepa bien en celular */
+  font-weight: 400;  /* Más ligero, como en la imagen */
+  line-height: 1.2;
+  color: #000000;
 }
 
 .landing_title span {
   color: #ff6f00;
+  display: block; /* Asegura que baje de línea */
+  margin-top: 4px;
 }
 
 .landing_subtitle {
-  margin-top: 18px;
-  color: #9b9b9b;
-  font-size: 1.2rem;
+  margin-top: 20px;
+  color: #a0a0a0;
+  font-size: 1rem;
   line-height: 1.4;
+  max-width: 85%; /* Evita que ocupe todo el ancho horizontal */
 }
 
+/* Contenedor de botones fijados abajo */
 .landing_buttons {
-  margin-top: auto;
+  margin-top: 40px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding-bottom: 24px;
+  gap: 14px;
+  width: 100%;
 }
 
 .landing_register_button {
-  height: 58px;
+  height: 54px;
   border: none;
-  border-radius: 999px;
+  border-radius: 27px;
   background: #ff6f00;
   color: white;
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: background 0.2s ease;
 }
 
 .landing_login_button {
-  height: 58px;
+  height: 54px;
   border: none;
-  border-radius: 999px;
-  background: #d8d8d8;
-  color: #111;
-  font-size: 1.1rem;
-  font-weight: 600;
+  border-radius: 27px;
+  background: #dbdbdb;
+  color: #000000;
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: background 0.2s ease;
 }

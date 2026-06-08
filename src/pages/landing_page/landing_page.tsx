@@ -15,13 +15,8 @@ const LandingPage = () => {
         </h1>
 
         <h2 className="landing_title">
-          Lo que
-          <br />
-          perdiste
-          <br />
-          <span>
-            puede volver.
-          </span>
+          Lo que perdiste
+          <span>puede volver.</span>
         </h2>
 
         <p className="landing_subtitle">

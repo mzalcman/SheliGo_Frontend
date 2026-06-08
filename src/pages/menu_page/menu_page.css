@@ -31,7 +31,6 @@
   align-items: center;
   justify-content: center;
 
-  /* Texto "Menu" de arriba más marcado */
   font-family: "louis_george", sans-serif;
   font-weight: 600;
   color: #8a8a8a;
@@ -43,9 +42,19 @@
   transform: translateX(-4px);
 }
 
+/* Sección del Perfil del Usuario */
+.menu_profile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
 .menu_profile_image_container {
   position: relative;
-  width: fit-content;
+  width: 76px;
+  height: 76px;
+  margin-bottom: 12px;
 }
 
 .menu_profile_image {
@@ -53,88 +62,75 @@
   height: 76px;
   border-radius: 50%;
   object-fit: cover;
+  display: block;
 }
 
 .menu_online_dot {
   width: 18px;
   height: 18px;
   background: #ff6f00;
-
   border-radius: 50%;
-
   position: absolute;
-
-  right: 0;
-  bottom: 5px;
-
+  right: -2px;
+  bottom: 2px;
   border: 3px solid white;
 }
 
-/* NOMBRE: Grande, imponente y bien gruesito */
+/* NOMBRE TRAÍDO DE LA BASE DE DATOS: Grande, Poppins y grueso */
 .menu_name {
-  margin-top: 18px;
-  margin-bottom: 2px;
-
+  margin: 4px 0;
   font-family: "Poppins", sans-serif;
   font-weight: 600;
-  font-size: 30px;
+  font-size: 2.2rem;
   color: #4a4a4a;
   letter-spacing: -0.5px;
+  line-height: 1.2;
 }
 
-/* ROL: "Exploradora Urbana" más legible */
+/* ROL O TEXTO SECUNDARIO */
 .menu_role {
+  margin: 0;
   font-family: "louis_george", sans-serif;
-  font-weight: 500; /* Un toque más de grosor para que no se pierda */
-  font-size: 1.05rem;
+  font-weight: 500;
+  font-size: 1.1rem;
   color: #8a8a8a;
 }
 
-/* VER PERFIL: Enlace naranja más marcado */
+/* BOTÓN VER PERFIL */
 .menu_view_profile {
-  margin-top: 8px;
-
+  margin-top: 6px;
+  padding: 0;
   border: none;
   background: none;
-
   font-family: "louis_george", sans-serif;
-  font-weight: 600; /* Bien marcado como el nombre */
-  font-size: 1.05rem;
+  font-weight: 600;
+  font-size: 1.1rem;
   color: #ff6f00;
-
   cursor: pointer;
+  text-align: left;
 }
 
+/* Listado de Opciones del Menú */
 .menu_options {
   margin-top: 42px;
-
   display: flex;
   flex-direction: column;
-
   gap: 18px;
 }
 
-/* OPCIONES DEL MENÚ: Más gruesas y con el color de la foto */
 .menu_option {
   border: none;
   background: transparent;
-
   display: flex;
   align-items: center;
-
   gap: 14px;
-
   padding: 14px 18px;
-
   border-radius: 999px;
-
   font-family: "louis_george", sans-serif;
-  font-weight: 600; /* Todo el texto de las opciones ahora es más robusto */
-  color: #8a8a8a; /* Gris medio como se ve en "Mis publicaciones" */
+  font-weight: 600;
+  color: #8a8a8a;
   font-size: 1.1rem;
-
   cursor: pointer;
-
   transition: all 0.2s ease;
 }
 
@@ -142,32 +138,25 @@
   background: #f1f1f1;
 }
 
-/* OPCIÓN ACTIVA: Resalta en naranja con fondo amarillo suave */
 .menu_option_active {
   background: #f5d36d;
-  color: #ff6f00; /* Texto naranja fuerte */
+  color: #ff6f00;
   font-weight: 600;
 }
 
-/* CERRAR SESIÓN: Al fondo, bien legible y con presencia */
+/* Botón Cerrar Sesión al final */
 .menu_logout {
   margin-top: auto;
-
   border: none;
   background: transparent;
-
   font-family: "louis_george", sans-serif;
-  font-weight: 600; /* Gruesito */
+  font-weight: 600;
   font-size: 1.1rem;
   color: #ff4d4d;
-
   display: flex;
   align-items: center;
-
   gap: 14px;
-
   cursor: pointer;
-
   transition: opacity 0.2s ease;
 }
 
@@ -175,6 +164,7 @@
   opacity: 0.7;
 }
 
+/* Animación de entrada suave */
 @keyframes menuSlideIn {
   from {
     opacity: 0;

@@ -1,0 +1,15 @@
+.filter_chip {
+  border: none;
+  background: #e5e5e5;
+  padding: 10px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+}
+
+.filter_chip.active {
+  background: #ff6f00;
+  color: white;
+}

@@ -19,7 +19,7 @@ const navigate = useNavigate();
       </button>
 
 
-      <button className="footer_item">
+      <button className="footer_item" onClick={() => navigate("/buscar")}>
         <Search
           size={30}
           strokeWidth={2.2}

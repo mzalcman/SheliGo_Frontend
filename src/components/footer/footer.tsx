@@ -30,7 +30,9 @@ const navigate = useNavigate();
 
       </button>
 
-      <button className="footer_item">
+      <button
+        className="footer_item"
+        onClick={() => navigate("/publicar")}>
         <CirclePlus
           size={30}
           strokeWidth={2.2}
@@ -38,7 +40,6 @@ const navigate = useNavigate();
         <span className="footer_text">
           PUBLICAR
         </span>
-
       </button>
 
       <button className="footer_item">

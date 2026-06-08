@@ -1,0 +1,61 @@
+.image_uploader {
+  width: 100%;
+}
+
+.image_upload_box {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #e9e9e9;
+  border: 2px dashed #d7d7d7;
+  border-radius: 24px;
+  padding: 36px 20px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.upload_icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #ff6f00;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  font-size: 30px;
+  color:black;
+}
+
+.image_upload_box h3 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  font-family: "Poppins";
+}
+
+.image_upload_box p {
+  margin-top: 10px;
+  color: #717171;
+  font-size: 14px;
+  max-width: 240px;
+  line-height: 1.4;
+}
+
+.image_preview_container {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  margin-top: 16px;
+}
+
+.image_preview {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 12px;
+  flex-shrink: 0;
+}

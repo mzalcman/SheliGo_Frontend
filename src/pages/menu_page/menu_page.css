@@ -1,0 +1,167 @@
+.menu_page {
+  min-height: 100vh;
+  background: #ece8e8;
+  padding: 6px;
+}
+
+.menu_container {
+  min-height: calc(100vh - 12px);
+
+  background: #f7f7f7;
+
+  border-top-right-radius: 50px;
+  border-bottom-right-radius: 50px;
+
+  padding: 28px;
+
+  display: flex;
+  flex-direction: column;
+
+  animation: menuSlideIn 0.25s ease-out;
+}
+
+.menu_back_button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+
+  width: fit-content;
+
+  margin-bottom: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: transform 0.2s ease;
+}
+
+.menu_back_button:hover {
+  transform: translateX(-4px);
+}
+
+.menu_profile_image_container {
+  position: relative;
+  width: fit-content;
+}
+
+.menu_profile_image {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.menu_online_dot {
+  width: 18px;
+  height: 18px;
+  background: #ff6f00;
+
+  border-radius: 50%;
+
+  position: absolute;
+
+  right: 0;
+  bottom: 5px;
+
+  border: 3px solid white;
+}
+
+.menu_name {
+  margin-top: 14px;
+  margin-bottom: 4px;
+
+  font-size: 2rem;
+  color: #666;
+}
+
+.menu_role {
+  color: #8a8a8a;
+}
+
+.menu_view_profile {
+  margin-top: 8px;
+
+  border: none;
+  background: none;
+
+  color: #ff6f00;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.menu_options {
+  margin-top: 42px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 18px;
+}
+
+.menu_option {
+  border: none;
+  background: transparent;
+
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 14px 18px;
+
+  border-radius: 999px;
+
+  color: #777;
+  font-size: 1rem;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.menu_option:hover {
+  background: #f1f1f1;
+}
+
+.menu_option_active {
+  background: #f5d36d;
+  color: #ff6f00;
+}
+
+.menu_logout {
+  margin-top: auto;
+
+  border: none;
+  background: transparent;
+
+  color: #ff4d4d;
+
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  cursor: pointer;
+
+  transition: opacity 0.2s ease;
+}
+
+.menu_logout:hover {
+  opacity: 0.7;
+}
+
+@keyframes menuSlideIn {
+
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+}

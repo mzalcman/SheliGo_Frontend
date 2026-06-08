@@ -1,14 +1,20 @@
 import "./header.css";
 import { Bell, MessageCircle } from "lucide-react";
 import { useAuth } from "../../hooks/use_auth";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <header className="header">
 
-      <button className="header_profile_button">
+      <button
+        className="header_profile_button"
+        onClick={() => navigate("/menu")}
+      >
 
         <img
           src={user?.profile_image || "/default-user.png"}
@@ -21,11 +27,17 @@ const Header = () => {
       <div className="header_icons">
 
         <button className="header_icon_button">
-          <MessageCircle size={34} strokeWidth={2.2} />
+          <MessageCircle
+            size={34}
+            strokeWidth={2.2}
+          />
         </button>
 
         <button className="header_icon_button">
-          <Bell size={34} strokeWidth={2.2} />
+          <Bell
+            size={34}
+            strokeWidth={2.2}
+          />
         </button>
 
       </div>

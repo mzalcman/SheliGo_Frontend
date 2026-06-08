@@ -3,6 +3,7 @@ import HomePage from "./pages/home_page/home_page";
 import PublicationDetailPage from "./pages/publication_detail_page/publication_detail_page";
 import LandingPage from "./pages/landing_page/landing_page";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import MenuPage from "./pages/menu_page/menu_page";
 
 function App() {
 
@@ -14,7 +15,7 @@ function App() {
 
         <Route
           path="/"
-          element={<LandingPage />}
+          element={<HomePage />}
         />
 
         <Route
@@ -26,7 +27,10 @@ function App() {
           path="/publicacion/:id"
           element={<PublicationDetailPage />}
         />
-
+        <Route
+          path="/menu"
+          element={<MenuPage />}
+        />
       </Routes>
 
     </BrowserRouter>

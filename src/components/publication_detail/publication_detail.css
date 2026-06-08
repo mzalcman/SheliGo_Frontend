@@ -120,3 +120,46 @@
   font-size: 14px;
   color: #777;
 }
+.carousel_button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.carousel_left {
+  left: 12px;
+}
+
+.carousel_right {
+  right: 12px;
+}
+
+.carousel_indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.carousel_dot {
+  width: 10px;
+  height: 10px;
+  border: none;
+  border-radius: 50%;
+  background: #d0d0d0;
+  cursor: pointer;
+}
+
+.carousel_dot.active {
+  background: #ff6f00;
+}

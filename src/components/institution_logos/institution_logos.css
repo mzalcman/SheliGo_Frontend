@@ -1,23 +1,49 @@
 .institution_logos {
   width: 100%;
   display: flex;
-  justify-content: space-between;
   gap: 14px;
+  overflow-x: auto;
+  padding: 4px 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.institution_logos::-webkit-scrollbar {
+  display: none;
 }
 
 .institution_logo_container {
   width: 62px;
   height: 62px;
+  min-width: 62px;
   border-radius: 50%;
-  background-color: #D9D9D9;
+  background-color: #F5F5F5;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .institution_logo {
   width: 48px;
   height: 48px;
   object-fit: contain;
+}
+
+.institution_item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  font-family: "louis_george";
+  font-weight: 500;
+}
+
+.institution_name {
+  font-size: 12px;
+  text-align: center;
+  max-width: 70px;
+  color: #333;
 }

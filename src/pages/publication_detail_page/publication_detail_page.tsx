@@ -14,6 +14,7 @@ import {get_questions,create_question,} from "../../services/question_service";
 import {get_publication_archives,} from "../../services/publication_archives_service";
 import {mock_logged_user,} from "../../data/mock_user";
 import { useParams } from "react-router-dom";
+import Loader from "../../components/loader/loader";
 
 const PublicationDetailPage =
 () => {
@@ -82,11 +83,7 @@ const PublicationDetailPage =
     };
   if (loading) {
 
-    return (
-      <div>
-        Cargando...
-      </div>
-    );
+    return <Loader />;
   }
 
   if (error) {

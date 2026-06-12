@@ -22,9 +22,14 @@ const InstitutionLogos = ({
         >
           <div className="institution_logo_container">
             <img
-              src={institution.foto}
+              src={institution.foto || "/obj_predeterminada.png"}
               alt={institution.nombre}
               className="institution_logo"
+              onError={(event) => {
+                event.currentTarget.onerror = null;
+                event.currentTarget.src =
+                  "/obj_predeterminada.png";
+              }}
             />
           </div>
 

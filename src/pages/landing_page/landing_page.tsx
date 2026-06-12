@@ -1,6 +1,7 @@
 import "./landing_page.css";
-
+import { useNavigate } from "react-router-dom";
 const LandingPage = () => {
+const navigate = useNavigate();
 
   return (
 
@@ -29,7 +30,10 @@ const LandingPage = () => {
             Registrarse
           </button>
 
-          <button className="landing_login_button">
+          <button
+            className="landing_login_button"
+            onClick={() => navigate("/login")}
+          >
             Iniciar Sesión
           </button>
 

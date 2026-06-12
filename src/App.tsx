@@ -5,6 +5,7 @@ import SearchPage from "./pages/search_page/search_page";
 import PublishPage from "./pages/publish_page/publish_page";
 import LandingPage from "./pages/landing_page/landing_page";
 import MenuPage from "./pages/menu_page/menu_page";
+import LoginPage from "./pages/login_page/login_page";
 import {
   BrowserRouter,
   Routes,
@@ -18,12 +19,17 @@ function App() {
 
         <Route
           path="/"
-          element={<HomePage />}
+          element={<LandingPage />}
+        />
+
+        <Route
+          path="/login"
+          element={<LoginPage />}
         />
 
         <Route
           path="/home"
-          element={<LandingPage />}
+          element={<HomePage />}
         />
 
         <Route

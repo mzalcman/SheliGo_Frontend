@@ -51,10 +51,15 @@ const PublicationDetail = ({
         <img
           src={
             ordered_archives[current_image]?.url ||
-            "/images/object_placeholder.png"
+            "/obj_predeterminada.png"
           }
           alt={publication.nombre}
           className="publication_image"
+          onError={(event) => {
+            event.currentTarget.onerror = null;
+            event.currentTarget.src =
+              "/obj_predeterminada.png";
+          }}
         />
         {ordered_archives.length > 1 && (
 

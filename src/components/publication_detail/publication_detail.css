@@ -31,12 +31,13 @@
 }
 
 .publication_title {
-  font-size: 35px;
-  font-weight: 700;
-  color: white;
-  margin-top: 14px;
-  font-family: "poppins";
+  font-size: 25px;
   font-weight: 600;
+  color: black;
+  margin-top: 14px;
+  font-family: "lemonmilk";
+  font-weight: 600;
+  margin-bottom: 20px;
 }
 
 .publication_share_button {

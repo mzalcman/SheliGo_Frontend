@@ -12,3 +12,17 @@ export const get_publication_by_id =
 
     return response.data;
   };
+
+export const create_publication =
+  async (
+    formData: FormData
+  ) => {
+
+    const response =
+      await api.post(
+        "/publicaciones",
+        formData
+      );
+
+    return response.data;
+  };

@@ -5,6 +5,7 @@ import Footer from "../../components/footer/footer";
 import ImageUploader from "../../components/image_uploader/image_uploader";
 import { Send } from "lucide-react";
 import InstitutionAutocomplete from "../../components/institution_autocomplete/institution_autocomplete";
+import {create_publication,} from "../../services/publication_service";
 
 const PublishPage = () => {
   const [images, setImages] =
@@ -56,51 +57,127 @@ const PublishPage = () => {
     },
   ];
   
-  const handlePublish = () => {
+const handlePublish = async () => {
 
-    if (
-      !nombre ||
-      !tipo ||
-      !categoriaId ||
-      !fechaEvento ||
-      !lugarInstitucion ||
-      !descripcion ||
-      !institucion
-    ) {
+  if (
+    !nombre ||
+    !tipo ||
+    !categoriaId ||
+    !fechaEvento ||
+    !lugarInstitucion ||
+    !descripcion ||
+    !institucion
+  ) {
 
-      alert(
-        "Completa todos los campos obligatorios."
+    alert(
+      "Completa todos los campos obligatorios."
+    );
+
+    return;
+  }
+
+  const institucionValida =
+    instituciones.some(
+      (item) =>
+        item.nombre === institucion
+    );
+
+  if (!institucionValida) {
+
+    alert(
+      "Debes seleccionar una institución válida."
+    );
+
+    return;
+  }
+
+  const formData =
+    new FormData();
+
+  formData.append(
+    "nombre",
+    nombre
+  );
+
+  formData.append(
+    "tipo",
+    tipo
+  );
+
+  formData.append(
+    "categoria_id",
+    categoriaId
+  );
+
+  formData.append(
+    "fecha_evento",
+    fechaEvento
+  );
+
+  formData.append(
+    "lugar_institucion",
+    lugarInstitucion
+  );
+
+  formData.append(
+    "descripcion",
+    descripcion
+  );
+
+  formData.append(
+    "institucion_id",
+    institucion
+  );
+
+  images.forEach(
+    (image) => {
+
+      formData.append(
+        "imagenes",
+        image
       );
 
-      return;
     }
+  );
 
-    const institucionValida =
-      instituciones.some(
-        (item) =>
-          item.nombre === institucion
-      );
+  console.log(
+    "FORM DATA:"
+  );
 
-    if (!institucionValida) {
+  for (
+    const [key, value]
+    of formData.entries()
+  ) {
 
-      alert(
-        "Debes seleccionar una institución válida."
-      );
+    console.log(
+      key,
+      value
+    );
 
-      return;
-    }
+  }
 
-    console.log({
-      images,
-      nombre,
-      tipo,
-      categoriaId,
-      fechaEvento,
-      lugarInstitucion,
-      descripcion,
-      institucion,
-    });
-  };
+  /*
+  Cuando exista el endpoint:
+
+  try {
+
+    await create_publication(
+      formData
+    );
+
+    alert(
+      "Publicación creada"
+    );
+
+  } catch (error) {
+
+    alert(
+      "Error al publicar"
+    );
+
+  }
+  */
+};
 
   return (
     <div className="publish_page">
@@ -120,8 +197,7 @@ const PublishPage = () => {
 
         <ImageUploader
           images={images}
-          setImages={setImages}
-        />
+          setImages={setImages}/>
 
         <section className="publish_form">
 

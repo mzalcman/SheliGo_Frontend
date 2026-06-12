@@ -81,11 +81,7 @@ const PublicationDetail = ({
             {/* Badge estado */}
             <PublicationStatus
               status={publication.tipo} />
-
-            <h1 className="publication_title">
-              {publication.nombre}
-            </h1>
-
+        
           </div>
           <button className="publication_share_button">
             <Share2
@@ -119,6 +115,11 @@ const PublicationDetail = ({
 
 )}
       <section className="publication_section">
+
+      <h1 className="publication_title">
+          {publication.nombre}
+      </h1>
+
         <h2 className="publication_section_title">
           Descripción
         </h2>

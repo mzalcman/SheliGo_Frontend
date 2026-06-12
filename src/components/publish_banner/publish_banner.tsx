@@ -12,8 +12,7 @@ const PublishBanner = () => {
     </h2>
 
     <button
-      className="publish_button"
-    >
+      className="banner_publish_button">
       Publicar Hallazgo
     </button>
 

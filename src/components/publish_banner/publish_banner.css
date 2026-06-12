@@ -23,13 +23,14 @@
   max-width: 250px;
 }
 
-.publish_button {
+.banner_publish_button {
   background: #ffc107;
   border: none;
   border-radius: 24px;
   padding: 12px 24px;
-  font-weight: 500;
+  font-weight: 600;
   font-family: "poppins";
+  font-size: 20px;
   cursor: pointer;
   color:#6F5301;
   font-size: 20px;

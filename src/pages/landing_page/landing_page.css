@@ -1,0 +1,112 @@
+.landing_page {
+  position: relative;
+  min-height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  /* Font base por si acaso */
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Contenedor de la imagen que cubre todo el fondo superior */
+.landing_image_container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70vh;
+  background-image: url("/fondoprc.png");
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  z-index: 1;
+  
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 65%, rgba(0,0,0,0) 100%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 65%, rgba(0,0,0,0) 100%);
+}
+
+/* Contenedor de los textos y botones */
+.landing_content {
+  position: relative;
+  z-index: 2;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 45vh;
+}
+
+/* 🏷️ SheliGo en Poppins 600 */
+.landing_logo {
+  font-family: 'Poppins', sans-serif;
+  color: #ff6f00;
+  font-size: 3.2rem;
+  font-weight: 600; /* Asignado */
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+/* 🏷️ Título principal en Poppins 500 */
+.landing_title {
+  font-family: 'Poppins', sans-serif;
+  margin-top: 16px;
+  font-size: 2.5rem;
+  font-weight: 500; /* Asignado */
+  line-height: 1.2;
+  color: #000000;
+}
+
+.landing_title span {
+  color: #ff6f00;
+  display: block;
+  margin-top: 4px;
+}
+
+/* 🏷️ Subtítulo descriptivo en Poppins 400 */
+.landing_subtitle {
+  font-family: 'Poppins', sans-serif;
+  margin-top: 20px;
+  color: #a0a0a0;
+  font-size: 1rem;
+  font-weight: 400; /* Asignado */
+  line-height: 1.4;
+  max-width: 85%;
+}
+
+/* Contenedor de botones */
+.landing_buttons {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+/* 🏷️ Botón Registrarse en louis_george 500 */
+.landing_register_button {
+  font-family: "louis_george", sans-serif; 
+  height: 54px;
+  border: none;
+  border-radius: 27px;
+  background: #ff6f00;
+  color: white;
+  font-size: 1.1rem; 
+  font-weight: 600; 
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+/* 🏷️ Botón Iniciar Sesión en louis_george 500 */
+.landing_login_button {
+  font-family: "louis_george", sans-serif; 
+  height: 54px;
+  border: none;
+  border-radius: 27px;
+  background: #dbdbdb;
+  color: #000000;
+  font-size: 1.1rem;
+  font-weight: 600; 
+  cursor: pointer;
+  transition: background 0.2s ease;
+}

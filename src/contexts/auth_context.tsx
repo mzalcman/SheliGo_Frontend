@@ -30,37 +30,43 @@ export const AuthProvider = ({
 
   useEffect(() => {
 
-    const fetchUser = async () => {
+  const token =
+    localStorage.getItem("token");
 
-      try {
+  if (!token) {
+    return;
+  }
 
-        const response =
-          await get_home_user();
+  const fetchUser = async () => {
 
-        const usuario =
-          response.data.usuario;
+    try {
 
-        setUser({
-          id: usuario.id,
-          name: usuario.nombre,
-          profile_image: usuario.foto,
-        });
+      const response =
+        await get_home_user();
 
-      } catch (error) {
+      const usuario =
+        response.data.usuario;
 
-        console.log(
-          "ERROR USER:",
-          error
-        );
+      setUser({
+        id: usuario.id,
+        name: usuario.nombre,
+        profile_image: usuario.foto,
+      });
 
-      }
+    } catch (error) {
 
-    };
+      console.log(
+        "ERROR USER:",
+        error
+      );
 
-    fetchUser();
+    }
 
-  }, []);
+  };
 
+  fetchUser();
+
+}, []);
   return (
     <AuthContext.Provider
       value={{ user }}

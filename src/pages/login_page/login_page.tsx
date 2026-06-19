@@ -32,11 +32,20 @@ const LoginPage = () => {
         return;
       }
       try {
-        await login(
-          email,
-          password
+
+        const response =
+          await login(
+            email,
+            password
+          );
+
+        localStorage.setItem(
+          "token",
+          response.token
         );
-        navigate("/");
+
+        navigate("/home");
+
       } catch {
         setError(
           "Correo o contraseña incorrectos."
@@ -106,9 +115,9 @@ const LoginPage = () => {
               }
             >
               {showPassword ? (
-                <Eye size={20}/>
+                <Eye size={20} />
               ) : (
-                <EyeOff size={20}  />
+                <EyeOff size={20} />
               )}
             </button>
           </div>

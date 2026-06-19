@@ -1,19 +1,31 @@
 import axios from "axios";
 
 export const api = axios.create({
-  // 💡 Le agregamos un "Plan B": si la variable .env falla, usa el puerto 5000 de tu backend
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
+  baseURL:
+    import.meta.env.VITE_API_URL ||
+    "http://localhost:3000",
   headers: {
-    "Content-Type": "application/json",
+    "Content-Type":
+      "application/json",
   },
 });
 
-/*api.interceptors.request.use(
+api.interceptors.request.use(
   (config) => {
+
     const token = localStorage.getItem("token");
+
+    console.log("TOKEN:", token);
+
     if (token) {
+
       config.headers.Authorization = `Bearer ${token}`;
+
     }
+
+    console.log("HEADERS:", config.headers);
+
     return config;
+
   }
-);*/
+);

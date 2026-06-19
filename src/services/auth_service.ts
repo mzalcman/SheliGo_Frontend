@@ -1,8 +1,5 @@
 import { api } from "./api";
-console.log(
-  "BASE URL:",
-  api.defaults.baseURL
-);
+
 export const login =
   async (
     email: string,
@@ -11,7 +8,7 @@ export const login =
 
     const response =
       await api.post(
-        "/auth/login",
+        "/login/login",
         {
           email,
           password,
@@ -19,4 +16,26 @@ export const login =
       );
 
     return response.data;
+
+  };
+
+export const register =
+  async (
+    formData: FormData
+  ) => {
+
+    const response =
+      await api.post(
+        "/register/register",
+        formData,
+        {
+          headers: {
+            "Content-Type":
+              "multipart/form-data",
+          },
+        }
+      );
+
+    return response.data;
+
   };

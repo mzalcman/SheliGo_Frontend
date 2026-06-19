@@ -6,6 +6,7 @@ import PublishPage from "./pages/publish_page/publish_page";
 import LandingPage from "./pages/landing_page/landing_page";
 import MenuPage from "./pages/menu_page/menu_page";
 import LoginPage from "./pages/login_page/login_page";
+import RegisterPage from "./pages/register_page/register_page";
 import {
   BrowserRouter,
   Routes,
@@ -22,11 +23,15 @@ function App() {
           element={<LandingPage />}
         />
 
+
         <Route
           path="/login"
           element={<LoginPage />}
         />
-
+        <Route
+          path="/register"
+          element={<RegisterPage />}
+        />
         <Route
           path="/home"
           element={<HomePage />}

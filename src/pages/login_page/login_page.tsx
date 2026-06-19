@@ -2,37 +2,37 @@ import "./login_page.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../services/auth_service";
+import Loader from "../../components/loader/loader";
+import { Link } from "react-router-dom";
 import {
-  Eye, EyeOff,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 const LoginPage = () => {
-
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const is_valid_email =
     (value: string) => {
-
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         .test(value);
     };
+
   const handle_login =
     async () => {
-
       setError("");
-      if (
-        !is_valid_email(email)
-      ) {
+      if (!is_valid_email(email)) {
         setError(
           "Ingresa un correo válido."
         );
         return;
       }
       try {
-
         const response =
           await login(
             email,
@@ -43,15 +43,26 @@ const LoginPage = () => {
           "token",
           response.token
         );
-
+        // Solo acá mostramos el loader
+        setLoading(true);
         navigate("/home");
 
       } catch {
+
         setError(
           "Correo o contraseña incorrectos."
         );
+
       }
+
     };
+
+  if (loading) {
+
+    return <Loader />;
+
+  }
+
   return (
     <main className="login_page">
       <div className="login_top" />
@@ -91,6 +102,7 @@ const LoginPage = () => {
           </label>
 
           <div className="password_input_container">
+
             <input
               type={
                 showPassword
@@ -105,6 +117,7 @@ const LoginPage = () => {
                 )
               }
             />
+
             <button
               type="button"
               className="password_toggle"
@@ -120,6 +133,7 @@ const LoginPage = () => {
                 <EyeOff size={20} />
               )}
             </button>
+
           </div>
 
           {error && (
@@ -132,7 +146,8 @@ const LoginPage = () => {
 
           <button
             className="login_button"
-            onClick={handle_login}>
+            onClick={handle_login}
+          >
             Entrar
           </button>
 
@@ -143,12 +158,17 @@ const LoginPage = () => {
         </div>
 
         <div className="register_container">
+
           <span>
             ¿No tienes una cuenta?
           </span>
 
           <button
-            className="register_link">
+            className="register_link"
+            onClick={() =>
+              navigate("/register")
+            }
+          >
             Regístrate gratis
           </button>
         </div>

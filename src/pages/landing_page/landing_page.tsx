@@ -26,10 +26,12 @@ const navigate = useNavigate();
 
         <div className="landing_buttons">
 
-          <button className="landing_register_button">
+          <button className="landing_register_button" 
+          onClick={() =>
+              navigate("/register")
+            }>
             Registrarse
-          </button>
-
+          </button> 
           <button
             className="landing_login_button"
             onClick={() => navigate("/login")}

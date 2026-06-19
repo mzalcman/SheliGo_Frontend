@@ -6,7 +6,7 @@ const Footer = () => {
 const navigate = useNavigate();
   return (
     <footer className="footer">
-      <button className="footer_item" onClick={() => navigate("/")}>
+      <button className="footer_item" onClick={() => navigate("/home")}>
         <House
           size={30}
           strokeWidth={2.2}

@@ -76,9 +76,6 @@ const PublicationDetailPage =
           
           set_new_question("");
         } catch (error) {
-        console.log(
-          "Error creando pregunta"
-        );
       }
     };
   if (loading) {

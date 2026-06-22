@@ -140,20 +140,10 @@ const handlePublish = async () => {
     }
   );
 
-  console.log(
-    "FORM DATA:"
-  );
-
   for (
     const [key, value]
     of formData.entries()
   ) {
-
-    console.log(
-      key,
-      value
-    );
-
   }
 
   /*

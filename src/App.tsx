@@ -15,7 +15,6 @@ import {
 
 function App() {
   return (
-    <BrowserRouter>
       <Routes>
 
         <Route
@@ -58,7 +57,6 @@ function App() {
         />
 
       </Routes>
-    </BrowserRouter>
   );
 }
 

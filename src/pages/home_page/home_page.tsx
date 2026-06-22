@@ -6,7 +6,6 @@ import ActionCard from "../../components/action_card/action_card";
 import InstitutionLogos from "../../components/institution_logos/institution_logos";
 import RecentObjectsCarousel from "../../components/recent_objects_carousel/recent_objects_carousel";
 import {
-  get_home_user,
   get_home_publications,
   get_home_institutions,
 } from "../../services/home_service";

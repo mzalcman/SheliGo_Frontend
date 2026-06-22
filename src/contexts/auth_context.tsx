@@ -4,12 +4,8 @@ import {
   useState,
   useEffect,
 } from "react";
-
 import type { ReactNode } from "react";
 import type { User } from "../types/user";
-
-import { get_home_user } from "../services/home_service";
-
 interface AuthContextType {
   user: User | null;
 }
@@ -25,48 +21,29 @@ export const AuthProvider = ({
   children,
 }: AuthProviderProps) => {
 
-  const [user, setUser] =
-    useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
 
-  const token =
-    localStorage.getItem("token");
+useEffect(() => {
 
-  if (!token) {
+  const storedUser = localStorage.getItem("user");
+
+
+  if (!storedUser) {
     return;
   }
 
-  const fetchUser = async () => {
+  const usuario = JSON.parse(storedUser);
 
-    try {
 
-      const response =
-        await get_home_user();
-
-      const usuario =
-        response.data.usuario;
-
-      setUser({
-        id: usuario.id,
-        name: usuario.nombre,
-        profile_image: usuario.foto,
-      });
-
-    } catch (error) {
-
-      console.log(
-        "ERROR USER:",
-        error
-      );
-
-    }
-
-  };
-
-  fetchUser();
+  setUser({
+    id: usuario.id,
+    name: usuario.nombre,
+    profile_image: usuario.foto,
+  });
 
 }, []);
+
   return (
     <AuthContext.Provider
       value={{ user }}

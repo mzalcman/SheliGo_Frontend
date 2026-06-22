@@ -2,12 +2,12 @@ import "./header.css";
 import { Bell, MessageCircle } from "lucide-react";
 import { useAuth } from "../../hooks/use_auth";
 import { useNavigate } from "react-router-dom";
+import { getImageUrl, } from "../../utils/get_image_url";
 
 const Header = () => {
 
   const { user } = useAuth();
   const navigate = useNavigate();
-
   return (
     <header className="header">
 
@@ -17,9 +17,17 @@ const Header = () => {
       >
 
         <img
-          src={user?.profile_image || "/default-user.png"}
+          src={
+            user?.profile_image
+              ? getImageUrl(user.profile_image)
+              : "/default-user.png"
+          }
           alt="user profile"
           className="header_profile_image"
+          onError={(event) => {
+            event.currentTarget.src =
+              "/user_predeterminada.png";
+          }}
         />
 
       </button>

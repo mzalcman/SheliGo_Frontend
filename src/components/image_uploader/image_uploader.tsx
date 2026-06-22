@@ -18,9 +18,6 @@ const ImageUploader = ({
   ) => {
 
     if (!event.target.files) return;
-    console.log(
-    Array.from(event.target.files)
-  );
 
     setImages([
       ...images,

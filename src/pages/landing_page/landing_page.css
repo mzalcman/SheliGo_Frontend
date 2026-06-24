@@ -6,7 +6,7 @@
   flex-direction: column;
   justify-content: flex-end;
   /* Font base por si acaso */
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins";
   overflow-x: hidden;
 }
 
@@ -39,7 +39,7 @@
 
 /* 🏷️ SheliGo en Poppins 600 */
 .landing_logo {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins";
   color: #ff6f00;
   font-size: 3.2rem;
   font-weight: 600; /* Asignado */
@@ -49,7 +49,7 @@
 
 /* 🏷️ Título principal en Poppins 500 */
 .landing_title {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins";
   margin-top: 16px;
   font-size: 2.5rem;
   font-weight: 500; /* Asignado */
@@ -65,7 +65,7 @@
 
 /* 🏷️ Subtítulo descriptivo en Poppins 400 */
 .landing_subtitle {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins";
   margin-top: 20px;
   color: #a0a0a0;
   font-size: 1rem;
@@ -85,7 +85,7 @@
 
 /* 🏷️ Botón Registrarse en louis_george 500 */
 .landing_register_button {
-  font-family: "louis_george", sans-serif; 
+  font-family: "louis_george";
   height: 54px;
   border: none;
   border-radius: 27px;
@@ -99,7 +99,7 @@
 
 /* 🏷️ Botón Iniciar Sesión en louis_george 500 */
 .landing_login_button {
-  font-family: "louis_george", sans-serif; 
+  font-family: "louis_george"; 
   height: 54px;
   border: none;
   border-radius: 27px;

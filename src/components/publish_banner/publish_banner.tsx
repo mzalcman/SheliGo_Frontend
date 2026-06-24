@@ -1,7 +1,8 @@
 import "./publish_banner.css";
+import { useNavigate } from "react-router-dom";
 
 const PublishBanner = () => {
-
+const navigate = useNavigate();
   return (
     <section className="publish_banner">
 
@@ -12,7 +13,9 @@ const PublishBanner = () => {
     </h2>
 
     <button
-      className="banner_publish_button">
+      className="banner_publish_button"
+      onClick={() => navigate("/publicar")}
+      >
       Publicar Hallazgo
     </button>
 

@@ -5,7 +5,7 @@ export const get_home_publications =
 
     const response =
       await api.get(
-        "/home/publicaciones"
+        "/publicaciones/recientes"
       );
 
     return response.data;
@@ -16,7 +16,7 @@ export const get_home_institutions =
 
     const response =
       await api.get(
-        "/home/instituciones"
+        "/instituciones/recientes"
       );
 
     return response.data;

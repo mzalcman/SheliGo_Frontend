@@ -5,10 +5,8 @@ import Footer from "../../components/footer/footer";
 import ActionCard from "../../components/action_card/action_card";
 import InstitutionLogos from "../../components/institution_logos/institution_logos";
 import RecentObjectsCarousel from "../../components/recent_objects_carousel/recent_objects_carousel";
-import {
-  get_home_publications,
-  get_home_institutions,
-} from "../../services/home_service";
+import { useNavigate } from "react-router-dom";
+import { get_home_publications, get_home_institutions, } from "../../services/home_service";
 import Loader from "../../components/loader/loader";
 import { useAuth } from "../../hooks/use_auth";
 
@@ -16,6 +14,7 @@ const HomePage = () => {
   const [publications, set_publications] = useState([]);
   const [institutions, set_institutions] = useState([]);
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [loading, set_loading] = useState(true);
   useEffect(() => {
     const fetch_data = async () => {
@@ -75,6 +74,7 @@ const HomePage = () => {
             subtitle="Iniciar Búsqueda"
             background_color="#FF6F00"
             icon="search"
+            onClick={() => navigate("/buscar")}
           />
 
           <ActionCard
@@ -82,6 +82,7 @@ const HomePage = () => {
             subtitle="Publicar hallazgo"
             background_color="#FFC107"
             icon="check"
+            onClick={() => navigate("/publicar")}
           />
 
         </section>

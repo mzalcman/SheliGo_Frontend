@@ -5,22 +5,24 @@ interface ActionCardProps {
   title: string;
   subtitle: string;
   background_color: string;
-
-  icon: "search" | "check";
+  icon: string;
+  onClick?: () => void;
 }
 const ActionCard = ({
   title,
   subtitle,
   background_color,
   icon,
+  onClick,
 }: ActionCardProps) => {
 
   return (
-    <button
+    <button 
       className="action_card"
       style={{
         backgroundColor: background_color,
       }}
+      onClick={onClick}
     >
       <div className="action_card_content">
         <h2 className="action_card_title">

@@ -34,158 +34,162 @@ const LoginPage = () => {
       }
       try {
 
-  const response = await login(
-    email,
-    password
-  );
+        const response = await login(
+          email,
+          password
+        );
 
 
-  localStorage.setItem(
-    "token",
-    response.token
-  );
+        if (!response?.token || !response?.usuario) {
+          throw new Error("Respuesta inválida del servidor");
+        }
 
-  localStorage.setItem(
-    "user",
-    JSON.stringify(response.usuario)
-  );
+        localStorage.setItem(
+          "token",
+          response.token
+        );
 
-
-
-  setLoading(true);
-
-  navigate("/home");
-
-} catch (error) {
+        localStorage.setItem(
+          "user",
+          JSON.stringify(response.usuario)
+        );
 
 
-  setError(
-    "Correo o contraseña incorrectos."
-  );
 
-}
+        setLoading(true);
+
+        navigate("/home");
+
+      } catch (error) {
+
+
+        setError(
+          "Correo o contraseña incorrectos."
+        );
+
+      }
 
     };
 
-if (loading) {
+  if (loading) {
 
-  return <Loader />;
+    return <Loader />;
 
-}
+  }
 
-return (
-  <main className="login_page">
-    <div className="login_top" />
-    <div className="login_content">
-      <h1 className="login_logo">
-        SheliGo
-      </h1>
+  return (
+    <main className="login_page">
+      <div className="login_top" />
+      <div className="login_content">
+        <h1 className="login_logo">
+          SheliGo
+        </h1>
 
-      <p className="login_subtitle">
-        Encuentra lo que perdiste,
-        devuelve lo que encontraste.
-      </p>
+        <p className="login_subtitle">
+          Encuentra lo que perdiste,
+          devuelve lo que encontraste.
+        </p>
 
-      <div className="login_card">
+        <div className="login_card">
 
-        <h2>
-          Iniciar Sesión
-        </h2>
+          <h2>
+            Iniciar Sesión
+          </h2>
 
-        <label>
-          Correo electrónico
-        </label>
-
-        <input
-          type="email"
-          placeholder="nombre@ejemplo.com"
-          value={email}
-          onChange={(event) =>
-            setEmail(
-              event.target.value
-            )
-          }
-        />
-
-        <label>
-          Contraseña
-        </label>
-
-        <div className="password_input_container">
+          <label>
+            Correo electrónico
+          </label>
 
           <input
-            type={
-              showPassword
-                ? "text"
-                : "password"
-            }
-            placeholder="••••••••"
-            value={password}
+            type="email"
+            placeholder="nombre@ejemplo.com"
+            value={email}
             onChange={(event) =>
-              setPassword(
+              setEmail(
                 event.target.value
               )
             }
           />
 
+          <label>
+            Contraseña
+          </label>
+
+          <div className="password_input_container">
+
+            <input
+              type={
+                showPassword
+                  ? "text"
+                  : "password"
+              }
+              placeholder="••••••••"
+              value={password}
+              onChange={(event) =>
+                setPassword(
+                  event.target.value
+                )
+              }
+            />
+
+            <button
+              type="button"
+              className="password_toggle"
+              onClick={() =>
+                setShowPassword(
+                  !showPassword
+                )
+              }
+            >
+              {showPassword ? (
+                <Eye size={20} />
+              ) : (
+                <EyeOff size={20} />
+              )}
+            </button>
+
+          </div>
+
+          {error && (
+
+            <p className="login_error">
+              {error}
+            </p>
+
+          )}
+
           <button
-            type="button"
-            className="password_toggle"
-            onClick={() =>
-              setShowPassword(
-                !showPassword
-              )
-            }
+            className="login_button"
+            onClick={handle_login}
           >
-            {showPassword ? (
-              <Eye size={20} />
-            ) : (
-              <EyeOff size={20} />
-            )}
+            Entrar
           </button>
 
+          <div className="login_google">
+            Google
+          </div>
+
         </div>
 
-        {error && (
+        <div className="register_container">
 
-          <p className="login_error">
-            {error}
-          </p>
+          <span>
+            ¿No tienes una cuenta?
+          </span>
 
-        )}
-
-        <button
-          className="login_button"
-          onClick={handle_login}
-        >
-          Entrar
-        </button>
-
-        <div className="login_google">
-          Google
+          <button
+            className="register_link"
+            onClick={() =>
+              navigate("/register")
+            }
+          >
+            Regístrate gratis
+          </button>
         </div>
-
       </div>
+    </main>
 
-      <div className="register_container">
-
-        <span>
-          ¿No tienes una cuenta?
-        </span>
-
-        <button
-          className="register_link"
-          onClick={() =>
-            navigate("/register")
-          }
-        >
-          Regístrate gratis
-        </button>
-      </div>
-    </div>
-  </main>
-
-);
+  );
 
 };
 

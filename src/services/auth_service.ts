@@ -8,14 +8,14 @@ export const login =
 
     const response =
       await api.post(
-        "/login/login",
+        "/auth/login",
         {
           email,
           password,
         }
       );
 
-    return response.data;
+    return response.data.data;
 
   };
 
@@ -26,7 +26,7 @@ export const register =
 
     const response =
       await api.post(
-        "/register/register",
+        "/auth/register",
         formData,
         {
           headers: {
@@ -36,6 +36,13 @@ export const register =
         }
       );
 
-    return response.data;
+    return response.data.data;
 
   };
+export const logout = async () => {
+  const response = await api.post(
+    "/auth/logout"
+  );
+
+  return response.data;
+};

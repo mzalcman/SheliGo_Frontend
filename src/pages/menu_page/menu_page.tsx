@@ -11,9 +11,26 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/use_auth";
 
 const MenuPage = () => {
-  // useAuth() es el encargado de conectarse a tu base de datos y darte la info del usuario
-  const { user } = useAuth();
+  const { user: typedUser, logout } = useAuth();
   const navigate = useNavigate();
+
+  // Quitamos el freno de mano de TypeScript para leer las propiedades dinámicas
+  const user = typedUser as any;
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", {
+      replace: true,
+    });
+  };
+
+  // Armamos la URL de la foto de Yanina apuntando al backend local (igual que en el Header)
+  const userPhotoUrl = user?.profile_image 
+    ? `http://localhost:3000/${user.profile_image}` 
+    : "/default-user.png";
+
+  // Tomamos el nombre real del usuario logueado
+  const userFullName = user?.name || "Usuario";
 
   return (
     <main className="menu_page">
@@ -26,18 +43,18 @@ const MenuPage = () => {
 
         <div className="menu_profile">
           <div className="menu_profile_image_container">
-            {/* Trae de forma dinámica la URL de la foto guardada en tu BD */}
+            {/* Renderiza la foto real de Yanina */}
             <img
-              src={user?.profile_image || "/default-user.png"} 
-              alt={user?.name || "Usuario"}
+              src={userPhotoUrl} 
+              alt={userFullName}
               className="menu_profile_image"
             />
             <div className="menu_online_dot" />
           </div>
 
-          {/* Trae de forma dinámica el nombre de usuario guardado en tu BD */}
+          {/* Renderiza el nombre real de Yanina */}
           <h2 className="menu_name">
-            {user?.name || "Laura Cohen"}
+            {userFullName}
           </h2>
 
           <button className="menu_view_profile">
@@ -67,7 +84,7 @@ const MenuPage = () => {
           </button>
         </div>
 
-        <button className="menu_logout">
+        <button className="menu_logout" onClick={handleLogout}>
           <LogOut size={20} />
           <span>Cerrar sesión</span>
         </button>

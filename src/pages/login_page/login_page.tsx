@@ -4,219 +4,119 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../../services/auth_service";
 import Loader from "../../components/loader/loader";
 import { useAuth } from "../../hooks/use_auth";
-import {
-  Eye,
-  EyeOff,
-} from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 const LoginPage = () => {
-
   const navigate = useNavigate();
   const { login: loginContext } = useAuth();
 
-  const [email, setEmail] =
-    useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [password, setPassword] =
-    useState("");
+  const is_valid_email = (value: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  };
 
-  const [error, setError] =
-    useState("");
+  const handle_login = async () => {
+    setError("");
 
-  const [showPassword, setShowPassword] =
-    useState(false);
+    if (!is_valid_email(email)) {
+      setError("Ingresa un correo válido.");
+      return;
+    }
 
-  const [loading, setLoading] =
-    useState(false);
+    try {
+      const response = await login(email, password);
 
-  const is_valid_email =
-    (value: string) => {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        .test(value);
-    };
+      // 🔍 ESTE LOG NOS MOSTRARÁ LA FOTO Y LOS DATOS EN LA CONSOLA (F12)
+      console.log("RESPUESTA COMPLETA DEL BACKEND:", response);
 
-  const handle_login =
-    async () => {
-
-      setError("");
-
-      if (!is_valid_email(email)) {
-
-        setError(
-          "Ingresa un correo válido."
-        );
-
-        return;
-
+      if (!response?.token || !response?.usuario) {
+        throw new Error("Respuesta inválida del servidor");
       }
 
-      try {
+      localStorage.setItem("token", response.token);
 
-        const response =
-          await login(
-            email,
-            password
-          );
+      loginContext(response.usuario);
 
-        if (
-          !response?.token ||
-          !response?.usuario
-        ) {
-          throw new Error(
-            "Respuesta inválida del servidor"
-          );
-        }
+      setLoading(true);
+      navigate("/home");
 
-        localStorage.setItem(
-          "token",
-          response.token
-        );
+    } catch (error) {
+      // 🔍 SI SE VA POR EL CATCH, ACÁ VEREMOS EL ERROR REAL
+      console.error("Error en el catch del login:", error);
 
-        loginContext(
-          response.usuario
-        );
-
-        setLoading(true);
-
-        navigate("/home");
-
-      } catch (error) {
-
-        setError(
-          "Correo o contraseña incorrectos."
-        );
-
-      }
-
-    };
+      setError("Correo o contraseña incorrectos.");
+    }
+  };
 
   if (loading) {
-
     return <Loader />;
-
   }
 
   return (
-
     <main className="login_page">
-
       <div className="login_top" />
-
       <div className="login_content">
-
-        <h1 className="login_logo">
-          SheliGo
-        </h1>
+        <h1 className="login_logo">SheliGo</h1>
 
         <p className="login_subtitle">
-          Encuentra lo que perdiste,
-          devuelve lo que encontraste.
+          Encuentra lo que perdiste, devuelve lo que encontraste.
         </p>
 
         <div className="login_card">
+          <h2>Iniciar Sesión</h2>
 
-          <h2>
-            Iniciar Sesión
-          </h2>
-
-          <label>
-            Correo electrónico
-          </label>
-
+          <label>Correo electrónico</label>
           <input
             type="email"
             placeholder="nombre@ejemplo.com"
             value={email}
-            onChange={(event) =>
-              setEmail(
-                event.target.value
-              )
-            }
+            onChange={(event) => setEmail(event.target.value)}
           />
 
-          <label>
-            Contraseña
-          </label>
-
+          <label>Contraseña</label>
           <div className="password_input_container">
-
             <input
-              type={
-                showPassword
-                  ? "text"
-                  : "password"
-              }
+              type={showPassword ? "text" : "password"}
               placeholder="••••••••"
               value={password}
-              onChange={(event) =>
-                setPassword(
-                  event.target.value
-                )
-              }
+              onChange={(event) => setPassword(event.target.value)}
             />
 
             <button
               type="button"
               className="password_toggle"
-              onClick={() =>
-                setShowPassword(
-                  !showPassword
-                )
-              }
+              onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? (
-                <Eye size={20} />
-              ) : (
-                <EyeOff size={20} />
-              )}
+              {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
             </button>
-
           </div>
 
-          {error && (
+          {error && <p className="login_error">{error}</p>}
 
-            <p className="login_error">
-              {error}
-            </p>
-
-          )}
-
-          <button
-            className="login_button"
-            onClick={handle_login}
-          >
+          <button className="login_button" onClick={handle_login}>
             Entrar
           </button>
 
-          <div className="login_google">
-            Google
-          </div>
-
+          <div className="login_google">Google</div>
         </div>
 
         <div className="register_container">
-
-          <span>
-            ¿No tienes una cuenta?
-          </span>
-
+          <span>¿No tienes una cuenta?</span>
           <button
             className="register_link"
-            onClick={() =>
-              navigate("/register")
-            }
+            onClick={() => navigate("/register")}
           >
             Regístrate gratis
           </button>
-
         </div>
-
       </div>
-
     </main>
-
   );
-
 };
 
 export default LoginPage;

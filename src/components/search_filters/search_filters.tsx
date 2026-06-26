@@ -1,83 +1,70 @@
 import "./search_filters.css";
-import {
-  Shapes,
-  Building2,
-  MapPin,
-  CalendarDays,
-  Lock,
-  ScanSearch,
-  ChevronDown,
-  X,
-} from "lucide-react";
+import { Shapes, Building2, CalendarDays, Lock, ScanSearch, ChevronDown, } from "lucide-react";
 import { useEffect, useState } from "react";
-import FilterChip from "../filter_chip/filter_chip";
-import {
-  getCategories,
-  getInstitutions,
-} from "../../services/filters_service";
+import BottomFilterModal from "../bottom_filter_modal/bottom_filter_modal";
+import { getCategories, getInstitutions, } from "../../services/filters_service";
 
 interface SearchFiltersProps {
   openFilter: string;
   setOpenFilter: (value: string) => void;
 
-  categoria: string;
-  setCategoria: (value: string) => void;
+  categorias: string[];
+  setCategorias: (value: string[]) => void;
 
-  institucion: string;
-  setInstitucion: (value: string) => void;
+  instituciones: string[];
+  setInstituciones: (value: string[]) => void;
 
-  lugar: string;
-  setLugar: (value: string) => void;
+  fechaDesde: string;
+  setFechaDesde: (value: string) => void;
 
-  fecha: string;
-  setFecha: (value: string) => void;
+  fechaHasta: string;
+  setFechaHasta: (value: string) => void;
 
   tipo: string;
   setTipo: (value: string) => void;
+
+  clearFilters: () => void;
 }
 
 const SearchFilters = ({
-  openFilter,
-  setOpenFilter,
-
-  categoria,
-  setCategoria,
-
-  institucion,
-  setInstitucion,
-
-  lugar,
-  setLugar,
-
-  fecha,
-  setFecha,
-
-  tipo,
-  setTipo,
+  openFilter, setOpenFilter,
+  categorias, setCategorias,
+  instituciones, setInstituciones,
+  fechaDesde, setFechaDesde,
+  fechaHasta, setFechaHasta,
+  tipo, setTipo, clearFilters,
 }: SearchFiltersProps) => {
 
-  const [categorias, setCategorias] =
+  const [categoriasData, setCategoriasData] =
     useState<any[]>([]);
 
-  const [instituciones, setInstituciones] =
+  const [institucionesData, setInstitucionesData] =
     useState<any[]>([]);
 
   useEffect(() => {
 
-    const fetchFilters = async () => {
+    const fetchData = async () => {
 
       try {
 
         const [
-          categoriasData,
-          institucionesData,
+          categoriasResponse,
+          institucionesResponse,
         ] = await Promise.all([
+
           getCategories(),
           getInstitutions(),
+
         ]);
 
-        setCategorias(categoriasData);
-        setInstituciones(institucionesData);
+        setCategoriasData(categoriasResponse);
+
+        setInstitucionesData(
+          institucionesResponse.sort(
+            (a: any, b: any) =>
+              a.nombre.localeCompare(b.nombre)
+          )
+        );
 
       } catch (error) {
 
@@ -87,7 +74,7 @@ const SearchFilters = ({
 
     };
 
-    fetchFilters();
+    fetchData();
 
   }, []);
 
@@ -95,28 +82,64 @@ const SearchFilters = ({
     filter: string
   ) => {
 
-    setOpenFilter(
-      openFilter === filter
-        ? ""
-        : filter
-    );
+    if (openFilter === filter) {
+
+      setOpenFilter("");
+
+      return;
+
+    }
+
+    setOpenFilter(filter);
+
+  };
+  const categoriasSeleccionadasTexto = () => {
+
+    const nombres = categoriasData
+      .filter((c: any) =>
+        categorias.includes(c.id)
+      )
+      .map((c: any) => c.nombre);
+
+    if (nombres.length === 0)
+      return "Categorías";
+
+    if (nombres.length <= 2)
+      return `Categorías: ${nombres.join(", ")}`;
+
+    return `Categorías: ${nombres[0]}, ${nombres[1]} +${nombres.length - 2}`;
+
+  };
+
+  const institucionesSeleccionadasTexto = () => {
+
+    const nombres = institucionesData
+      .filter((i: any) =>
+        instituciones.includes(i.id)
+      )
+      .map((i: any) => i.nombre);
+
+    if (nombres.length === 0)
+      return "Instituciones";
+
+    if (nombres.length <= 2)
+      return `Instituciones: ${nombres.join(", ")}`;
+
+    return `Instituciones: ${nombres[0]}, ${nombres[1]} +${nombres.length - 2}`;
 
   };
 
   return (
 
-    <div>
+    <>
 
       <div className="search_filters">
 
-        {/* CATEGORIA */}
-
         <button
-          className={`search_filter ${
-            openFilter === "categoria"
-              ? "active"
-              : ""
-          }`}
+          className={`search_filter ${openFilter === "categoria"
+            ? "active"
+            : ""
+            }`}
           onClick={() =>
             toggleFilter("categoria")
           }
@@ -125,23 +148,18 @@ const SearchFilters = ({
           <Shapes size={18} />
 
           <span>
-            Categoría
+            {categoriasSeleccionadasTexto()}
           </span>
 
-          {openFilter === "categoria"
-            ? <X size={16} />
-            : <ChevronDown size={16} />}
+          <ChevronDown size={16} />
 
         </button>
 
-        {/* INSTITUCION */}
-
         <button
-          className={`search_filter ${
-            openFilter === "institucion"
-              ? "active"
-              : ""
-          }`}
+          className={`search_filter ${openFilter === "institucion"
+            ? "active"
+            : ""
+            }`}
           onClick={() =>
             toggleFilter("institucion")
           }
@@ -150,48 +168,18 @@ const SearchFilters = ({
           <Building2 size={18} />
 
           <span>
-            Institución
+            {institucionesSeleccionadasTexto()}
           </span>
 
-          {openFilter === "institucion"
-            ? <X size={16} />
-            : <ChevronDown size={16} />}
+          <ChevronDown size={16} />
 
         </button>
 
-        {/* LUGAR */}
-
         <button
-          className={`search_filter ${
-            openFilter === "lugar"
-              ? "active"
-              : ""
-          }`}
-          onClick={() =>
-            toggleFilter("lugar")
-          }
-        >
-
-          <MapPin size={18} />
-
-          <span>
-            Lugar
-          </span>
-
-          {openFilter === "lugar"
-            ? <X size={16} />
-            : <ChevronDown size={16} />}
-
-        </button>
-
-        {/* FECHA */}
-
-        <button
-          className={`search_filter ${
-            openFilter === "fecha"
-              ? "active"
-              : ""
-          }`}
+          className={`search_filter ${openFilter === "fecha"
+            ? "active"
+            : ""
+            }`}
           onClick={() =>
             toggleFilter("fecha")
           }
@@ -200,23 +188,24 @@ const SearchFilters = ({
           <CalendarDays size={18} />
 
           <span>
-            Fecha
+
+            {
+              fechaDesde || fechaHasta
+                ? "Fecha"
+                : "Fecha"
+            }
+
           </span>
 
-          {openFilter === "fecha"
-            ? <X size={16} />
-            : <ChevronDown size={16} />}
+          <ChevronDown size={16} />
 
         </button>
 
-        {/* PERDIDO */}
-
         <button
-          className={`search_filter ${
-            tipo === "perdido"
-              ? "active"
-              : ""
-          }`}
+          className={`search_filter ${tipo === "perdido"
+            ? "active"
+            : ""
+            }`}
           onClick={() =>
             setTipo(
               tipo === "perdido"
@@ -234,14 +223,11 @@ const SearchFilters = ({
 
         </button>
 
-        {/* ENCONTRADO */}
-
         <button
-          className={`search_filter ${
-            tipo === "encontrado"
-              ? "active"
-              : ""
-          }`}
+          className={`search_filter ${tipo === "encontrado"
+            ? "active"
+            : ""
+            }`}
           onClick={() =>
             setTipo(
               tipo === "encontrado"
@@ -259,110 +245,81 @@ const SearchFilters = ({
 
         </button>
 
+        <button
+          className="clear_filters_button"
+          onClick={clearFilters}
+        >
+
+          Borrar
+
+        </button>
+
       </div>
 
-      {/* CATEGORIAS */}
+      <BottomFilterModal
+        open={openFilter === "categoria"}
+        title="Categorías"
+        items={categoriasData}
+        selected={categorias}
+        onChange={setCategorias}
+        onClose={() => setOpenFilter("")}
+      />
 
-      {openFilter === "categoria" && (
 
-        <div className="filter_chips_container">
-
-          {categorias.map((item: any) => (
-
-            <FilterChip
-              key={item.id}
-              label={item.nombre}
-              active={
-                categoria === item.id
-              }
-              onClick={() =>
-                setCategoria(
-                  categoria === item.id
-                    ? ""
-                    : item.id
-                )
-              }
-            />
-
-          ))}
-
-        </div>
-
-      )}
-
-      {/* INSTITUCIONES */}
-
-      {openFilter === "institucion" && (
-
-        <div className="filter_chips_container">
-
-          {instituciones.map((item: any) => (
-
-            <FilterChip
-              key={item.id}
-              label={item.nombre}
-              active={
-                institucion === item.id
-              }
-              onClick={() =>
-                setInstitucion(
-                  institucion === item.id
-                    ? ""
-                    : item.id
-                )
-              }
-            />
-
-          ))}
-
-        </div>
-
-      )}
-
-      {/* LUGAR */}
-
-      {openFilter === "lugar" && (
-
-        <div className="filter_chips_container">
-
-          <input
-            type="text"
-            className="date_input"
-            placeholder="Ej. Comedor"
-            value={lugar}
-            onChange={(e) =>
-              setLugar(
-                e.target.value
-              )
-            }
-          />
-
-        </div>
-
-      )}
-
-      {/* FECHA */}
+      <BottomFilterModal
+        open={openFilter === "institucion"}
+        title="Instituciones"
+        items={institucionesData}
+        selected={instituciones}
+        onChange={setInstituciones}
+        onClose={() => setOpenFilter("")}
+      />
 
       {openFilter === "fecha" && (
+        <div className="bottom_filter_modal">
+          <div className="bottom_filter_handle" />
 
-        <div className="filter_chips_container">
+          <div className="bottom_filter_header">
+            <h2>Seleccionar fechas</h2>
 
-          <input
-            type="date"
-            className="date_input"
-            value={fecha}
-            onChange={(e) =>
-              setFecha(
-                e.target.value
-              )
-            }
-          />
+            <button
+              className="bottom_filter_close"
+              onClick={() => setOpenFilter("")}
+            >
+              ✕
+            </button>
+          </div>
 
+          <div className="date_range_container">
+
+            <div className="date_field">
+              <label>Desde</label>
+
+              <input
+                type="date"
+                value={fechaDesde}
+                onChange={(e) => setFechaDesde(e.target.value)}
+              />
+            </div>
+
+            <div className="date_field">
+              <label>Hasta</label>
+
+              <input
+                type="date"
+                value={fechaHasta}
+                onChange={(e) => setFechaHasta(e.target.value)}
+              />
+            </div>
+
+          </div>
         </div>
-
       )}
 
-    </div>
+    </>
+
   );
+
 };
+
 export default SearchFilters;

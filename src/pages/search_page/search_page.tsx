@@ -11,33 +11,58 @@ import { searchPublications } from "../../services/search_service";
 const SearchPage = () => {
 
   const [objects, setObjects] = useState<any[]>([]);
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] =  useState("");
   const [openFilter, setOpenFilter] = useState("");
-  const [categoria, setCategoria] =  useState("");
-  const [institucion, setInstitucion] =  useState("");
-  const [lugar, setLugar] =  useState("");
-  const [fecha, setFecha] =  useState("");
+  const [categorias, setCategorias] =  useState<string[]>([]);
+  const [instituciones, setInstituciones] =  useState<string[]>([]);
+  const [fechaDesde, setFechaDesde] =  useState("");
+  const [fechaHasta, setFechaHasta] =   useState("");
   const [tipo, setTipo] =  useState("");
-  
+  const clearFilters = () => {
+    setSearchText("");
+    setCategorias([]);
+    setInstituciones([]);
+    setFechaDesde("");
+    setFechaHasta("");
+    setTipo("");
+    setOpenFilter("");
+
+  };
+
   useEffect(() => {
     const buscar = async () => {
-
       try {
 
         const publicaciones =
           await searchPublications({
+
             busqueda:
               searchText || undefined,
+
             categoria_id:
-              categoria || undefined,
+              categorias.length
+                ? categorias.join(",")
+                : undefined,
+
             institucion_id:
-              institucion || undefined,
-            lugar_institucion:
-              lugar || undefined,
-            fecha:
-              fecha || undefined,
+              instituciones.length
+                ? instituciones.join(",")
+                : undefined,
+
             tipo:
               tipo || undefined,
+
+            /*
+            El backend después solamente
+            va a descomentar esto
+
+            fecha_desde:
+              fechaDesde || undefined,
+
+            fecha_hasta:
+              fechaHasta || undefined,
+            */
+
           });
 
         setObjects(publicaciones);
@@ -49,32 +74,25 @@ const SearchPage = () => {
       }
 
     };
-
     buscar();
-
   }, [
+
     searchText,
-    categoria,
-    institucion,
-    lugar,
-    fecha,
+    categorias,
+    instituciones,
+    fechaDesde,
+    fechaHasta,
     tipo,
   ]);
-
   return (
-
     <div className="search_page">
-
       <Header />
-
       <main className="search_page_content">
         <section className="search_hero">
-
           <h1 className="search_title">
             Encuentra lo que
             <span> perdiste.</span>
           </h1>
-
           <div className="search_bar">
 
             <Search size={22} />
@@ -90,27 +108,28 @@ const SearchPage = () => {
                 )
               }
             />
-
           </div>
-
           <SearchFilters
+
             openFilter={openFilter}
             setOpenFilter={setOpenFilter}
 
-            categoria={categoria}
-            setCategoria={setCategoria}
+            categorias={categorias}
+            setCategorias={setCategorias}
 
-            institucion={institucion}
-            setInstitucion={setInstitucion}
+            instituciones={instituciones}
+            setInstituciones={setInstituciones}
 
-            lugar={lugar}
-            setLugar={setLugar}
+            fechaDesde={fechaDesde}
+            setFechaDesde={setFechaDesde}
 
-            fecha={fecha}
-            setFecha={setFecha}
+            fechaHasta={fechaHasta}
+            setFechaHasta={setFechaHasta}
 
             tipo={tipo}
             setTipo={setTipo}
+
+            clearFilters={clearFilters}
           />
 
         </section>
@@ -135,9 +154,6 @@ const SearchPage = () => {
       </main>
       <Footer />
     </div>
-
   );
-
 };
-
 export default SearchPage;

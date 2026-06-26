@@ -30,10 +30,6 @@ const LoginPage = () => {
 
     try {
       const response = await login(email, password);
-
-      // 🔍 ESTE LOG NOS MOSTRARÁ LA FOTO Y LOS DATOS EN LA CONSOLA (F12)
-      console.log("RESPUESTA COMPLETA DEL BACKEND:", response);
-
       if (!response?.token || !response?.usuario) {
         throw new Error("Respuesta inválida del servidor");
       }

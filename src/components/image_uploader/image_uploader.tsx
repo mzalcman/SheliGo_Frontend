@@ -44,7 +44,8 @@ const ImageUploader = ({
 
         <p>
           Toma una foto clara del objeto
-          o buscalo en tu galería.
+          o buscalo en tu galería. 
+          Hasta 5 fotos
         </p>
       </label>
 

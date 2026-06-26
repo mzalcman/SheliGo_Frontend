@@ -1,11 +1,10 @@
 import "./publish_page.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import ImageUploader from "../../components/image_uploader/image_uploader";
-import { Send } from "lucide-react";
-import InstitutionAutocomplete from "../../components/institution_autocomplete/institution_autocomplete";
+import { Send, Check } from "lucide-react";
 import { create_publication, getCategories, getInstitutions } from "../../services/publication_service";
 
 interface BackendItem {
@@ -16,11 +15,9 @@ interface BackendItem {
 const PublishPage = () => {
   const navigate = useNavigate();
 
-  // Estados de carga de datos dinámicos desde el Backend
   const [categorias, setCategorias] = useState<BackendItem[]>([]);
   const [instituciones, setInstituciones] = useState<BackendItem[]>([]);
-
-  // Estados nativos del formulario
+  const [showModal, setShowModal] = useState(false);
   const [images, setImages] = useState<File[]>([]);
   const [nombre, setNombre] = useState("");
   const [tipo, setTipo] = useState("");
@@ -28,9 +25,11 @@ const PublishPage = () => {
   const [fechaEvento, setFechaEvento] = useState("");
   const [lugarInstitucion, setLugarInstitucion] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const [institucion, setInstitucion] = useState(""); // Captura el texto del input autocomplete
+  const [institucion, setInstitucion] = useState("");
+  const [filteredInstituciones, setFilteredInstituciones] = useState<BackendItem[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const autocompleteRef = useRef<HTMLDivElement>(null);
 
-  // Carga e inspección de datos del Backend de manera segura
   useEffect(() => {
     const fetchBackendData = async () => {
       try {
@@ -38,14 +37,12 @@ const PublishPage = () => {
           getCategories(),
           getInstitutions()
         ]);
-        
-        // Extracción segura para categorías (Prueba todas las variantes comunes de Axios)
+
         let listaCategorias: BackendItem[] = [];
         if (categoriasRes?.data?.categorias) listaCategorias = categoriasRes.data.categorias;
         else if (categoriasRes?.data) listaCategorias = Array.isArray(categoriasRes.data) ? categoriasRes.data : (categoriasRes.data.data || []);
         else if (Array.isArray(categoriasRes)) listaCategorias = categoriasRes;
-        
-        // Extracción segura para instituciones (Prueba todas las variantes comunes de Axios)
+
         let listaInstituciones: BackendItem[] = [];
         if (institucionesRes?.data?.instituciones) listaInstituciones = institucionesRes.data.instituciones;
         else if (institucionesRes?.data) listaInstituciones = Array.isArray(institucionesRes.data) ? institucionesRes.data : (institucionesRes.data.data || []);
@@ -53,13 +50,37 @@ const PublishPage = () => {
 
         setCategorias(listaCategorias);
         setInstituciones(listaInstituciones);
-        
+
       } catch (error) {
         console.error("Error al cargar los parámetros del formulario:", error);
       }
     };
 
     fetchBackendData();
+  }, []);
+
+  useEffect(() => {
+    if (institucion.trim() === "") {
+      setFilteredInstituciones([]);
+    } else {
+      const filtradas = instituciones.filter((inst) =>
+        inst.nombre.toLowerCase().includes(institucion.toLowerCase())
+      );
+      setFilteredInstituciones(filtradas);
+    }
+  }, [institucion, instituciones]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (autocompleteRef.current && !autocompleteRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const handlePublish = async () => {
@@ -76,7 +97,6 @@ const PublishPage = () => {
       return;
     }
 
-    // Buscamos el objeto de la institución para extraer su UUID correspondiente
     const institucionEncontrada = instituciones.find(
       (item) => item.nombre.toLowerCase() === institucion.trim().toLowerCase()
     );
@@ -93,21 +113,24 @@ const PublishPage = () => {
     formData.append("fecha_evento", fechaEvento);
     formData.append("lugar_institucion", lugarInstitucion);
     formData.append("descripcion", descripcion);
-    formData.append("institucion_id", institucionEncontrada.id); // UUID resuelto
+    formData.append("institucion_id", institucionEncontrada.id);
 
-    // Adjuntar los binarios multimedia
     images.forEach((image) => {
       formData.append("imagenes", image);
     });
 
     try {
       await create_publication(formData);
-      alert("¡Objeto publicado con éxito!");
-      navigate("/"); // Redirección directa al Feed principal
+      setShowModal(true);
     } catch (error) {
       console.error("Error al publicar:", error);
       alert("Error al publicar el objeto. Revisa los datos e intenta nuevamente.");
     }
+  };
+
+  const handleModalAccept = () => {
+    setShowModal(false);
+    navigate("/home");
   };
 
   return (
@@ -128,12 +151,13 @@ const PublishPage = () => {
           <input
             className="publish_input"
             value={nombre}
+            placeholder="Ej: buzo azul"
             onChange={(e) => setNombre(e.target.value)}
           />
 
           <label>Estado del objeto</label>
           <select
-            className="publish_input"
+            className={`publish_input ${!tipo ? "select_placeholder" : ""}`}
             value={tipo}
             onChange={(e) => setTipo(e.target.value)}
           >
@@ -144,7 +168,7 @@ const PublishPage = () => {
 
           <label>Categoría</label>
           <select
-            className="publish_input"
+            className={`publish_input ${!categoriaId ? "select_placeholder" : ""}`}
             value={categoriaId}
             onChange={(e) => setCategoriaId(e.target.value)}
           >
@@ -159,7 +183,7 @@ const PublishPage = () => {
           <label>Fecha del evento</label>
           <input
             type="date"
-            className="publish_input"
+            className={`publish_input ${!fechaEvento ? "date_placeholder" : ""}`}
             value={fechaEvento}
             onChange={(e) => setFechaEvento(e.target.value)}
           />
@@ -176,15 +200,39 @@ const PublishPage = () => {
           <textarea
             className="publish_textarea"
             value={descripcion}
+            placeholder="Escribe aquí..."
             onChange={(e) => setDescripcion(e.target.value)}
           />
 
           <label>Institución</label>
-          <InstitutionAutocomplete
-            value={institucion}
-            onChange={setInstitucion}
-            institutions={instituciones}
-          />
+          <div ref={autocompleteRef} className="autocomplete_container">
+            <input
+              className="publish_input"
+              placeholder="Selecciona una institución..."
+              value={institucion}
+              onFocus={() => setShowDropdown(true)}
+              onChange={(e) => {
+                setInstitucion(e.target.value);
+                setShowDropdown(true);
+              }}
+            />
+
+            {showDropdown && filteredInstituciones.length > 0 && (
+              <ul className="autocomplete_dropdown">
+                {filteredInstituciones.map((inst) => (
+                  <li
+                    key={inst.id}
+                    onClick={() => {
+                      setInstitucion(inst.nombre);
+                      setShowDropdown(false);
+                    }}
+                  >
+                    {inst.nombre}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </section>
 
         <button className="publish_button" onClick={handlePublish}>
@@ -194,6 +242,23 @@ const PublishPage = () => {
       </main>
 
       <Footer />
+
+      {showModal && (
+        <div className="modal_overlay">
+          <div className="modal_container">
+            <div className="modal_icon_circle">
+              <Check size={32} strokeWidth={3} className="modal_icon_check" />
+            </div>
+            <h2 className="modal_title">¡Publicación exitosa!</h2>
+            <p className="modal_text">
+              Tu objeto ya se encuentra visible para toda la comunidad de SheliGo.
+            </p>
+            <button className="modal_accept_button" onClick={handleModalAccept}>
+              Aceptar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

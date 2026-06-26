@@ -15,13 +15,12 @@ export const get_publication_by_id =
 
 export const getCategories = async () => {
   const response = await api.get("/categorias");
-  return response.data.data.publicaciones;
+  return response.data;
 };
 
-// Obtener instituciones desde el backend
 export const getInstitutions = async () => {
   const response = await api.get("/instituciones");
-  return response.data.data.publicaciones;
+  return response.data;
 };
 
 export const create_publication = async (formData: FormData) => {

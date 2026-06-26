@@ -52,16 +52,12 @@ const SearchPage = () => {
             tipo:
               tipo || undefined,
 
-            /*
-            El backend después solamente
-            va a descomentar esto
-
             fecha_desde:
               fechaDesde || undefined,
 
             fecha_hasta:
               fechaHasta || undefined,
-            */
+            
 
           });
 

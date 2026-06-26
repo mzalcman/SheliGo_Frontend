@@ -40,18 +40,17 @@
 }
 
 .clear_filters_button {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-family: "louis_george";
-  font-size: 15px;
-  font-weight: 700;
   color: #ff6f00;
-  transition: .2s;
+  border-color: #ff6f00; 
+}
+
+.clear_filters_button svg {
+  color: #ff6f00; 
 }
 
 .clear_filters_button:hover {
-  opacity: .7;
+  background-color: rgba(255, 111, 0, 0.05);
+  opacity: 1; 
 }
 
 .bottom_sheet_overlay {
@@ -97,7 +96,7 @@
   font-size: 24px;
   font-weight: 700;
   font-family: "poppins";
-  color: #233f77;
+  color: #ff6f00;
 }
 
 .bottom_sheet_close {
@@ -177,7 +176,7 @@
 .date_field label {
   font-family: "louis_george";
   font-weight: 700;
-  color: #233f77;
+  color: #ff6f00;
 }
 
 .date_field input {

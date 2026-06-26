@@ -5,7 +5,8 @@ export const searchPublications = async (filters: {
   categoria_id?: string;
   institucion_id?: string;
   lugar_institucion?: string;
-  fecha?: string;
+  fecha_desde?: string;
+  fecha_hasta?: string;
   tipo?: string;
 }) => {
 

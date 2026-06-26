@@ -1,5 +1,5 @@
 import "./search_filters.css";
-import { Shapes, Building2, CalendarDays, Lock, ScanSearch, ChevronDown, } from "lucide-react";
+import { Shapes, Building2, CalendarDays, Lock, ScanSearch, ChevronDown, Trash2, } from "lucide-react";
 import { useEffect, useState } from "react";
 import BottomFilterModal from "../bottom_filter_modal/bottom_filter_modal";
 import { getCategories, getInstitutions, } from "../../services/filters_service";
@@ -246,12 +246,11 @@ const SearchFilters = ({
         </button>
 
         <button
-          className="clear_filters_button"
+          className="search_filter clear_filters_button"
           onClick={clearFilters}
         >
-
-          Borrar
-
+          <Trash2 size={18} />
+          <span>Borrar</span>
         </button>
 
       </div>
@@ -275,46 +274,36 @@ const SearchFilters = ({
         onClose={() => setOpenFilter("")}
       />
 
-      {openFilter === "fecha" && (
-        <div className="bottom_filter_modal">
-          <div className="bottom_filter_handle" />
-
-          <div className="bottom_filter_header">
-            <h2>Seleccionar fechas</h2>
-
-            <button
-              className="bottom_filter_close"
-              onClick={() => setOpenFilter("")}
-            >
-              ✕
-            </button>
+      <BottomFilterModal
+        open={openFilter === "fecha"}
+        title="Seleccionar fechas"
+        onClose={() => setOpenFilter("")}
+        onApply={() => setOpenFilter("")}
+        onClear={() => {
+          setFechaDesde("");
+          setFechaHasta("");
+        }}
+      >
+        <div className="date_range_container">
+          <div className="date_field">
+            <label>Desde</label>
+            <input
+              type="date"
+              value={fechaDesde}
+              onChange={(e) => setFechaDesde(e.target.value)}
+            />
           </div>
 
-          <div className="date_range_container">
-
-            <div className="date_field">
-              <label>Desde</label>
-
-              <input
-                type="date"
-                value={fechaDesde}
-                onChange={(e) => setFechaDesde(e.target.value)}
-              />
-            </div>
-
-            <div className="date_field">
-              <label>Hasta</label>
-
-              <input
-                type="date"
-                value={fechaHasta}
-                onChange={(e) => setFechaHasta(e.target.value)}
-              />
-            </div>
-
+          <div className="date_field">
+            <label>Hasta</label>
+            <input
+              type="date"
+              value={fechaHasta}
+              onChange={(e) => setFechaHasta(e.target.value)}
+            />
           </div>
         </div>
-      )}
+      </BottomFilterModal>
 
     </>
 

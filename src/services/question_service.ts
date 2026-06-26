@@ -9,7 +9,7 @@ export const get_questions =
         `/publicaciones/${publication_id}/preguntas`
 
       );
-    return response.data;
+    return response.data.data.preguntas;
   };
 
 export const create_question =
@@ -30,5 +30,5 @@ export const create_question =
 
       );
 
-    return response.data;
+    return response.data.data.preguntas;
   };

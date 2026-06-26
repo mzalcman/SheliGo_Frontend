@@ -10,7 +10,7 @@ export const get_publication_by_id =
         `/publicaciones/${id}`
       );
 
-    return response.data;
+    return response.data.data.publicacion;
   };
 
 export const create_publication =
@@ -24,5 +24,5 @@ export const create_publication =
         formData
       );
 
-    return response.data;
+    return response.data.data.publicacion;
   };

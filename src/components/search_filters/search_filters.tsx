@@ -1,5 +1,4 @@
 import "./search_filters.css";
-
 import {
   Shapes,
   Building2,
@@ -10,8 +9,12 @@ import {
   ChevronDown,
   X,
 } from "lucide-react";
-
+import { useEffect, useState } from "react";
 import FilterChip from "../filter_chip/filter_chip";
+import {
+  getCategories,
+  getInstitutions,
+} from "../../services/filters_service";
 
 interface SearchFiltersProps {
   openFilter: string;
@@ -53,39 +56,55 @@ const SearchFilters = ({
   setTipo,
 }: SearchFiltersProps) => {
 
-  // TEMPORAL
-  // Después vendrá del backend
+  const [categorias, setCategorias] =
+    useState<any[]>([]);
 
-  const categorias = [
-    "Mochilas",
-    "Llaves",
-    "Botellas",
-    "Ropa",
-  ];
+  const [instituciones, setInstituciones] =
+    useState<any[]>([]);
 
-  const instituciones = [
-    "Club SheliGo",
-    "ORT",
-    "Macabi",
-  ];
+  useEffect(() => {
 
-  const lugares = [
-    "Baño sede",
-    "Cancha principal",
-    "Comedor",
-  ];
+    const fetchFilters = async () => {
+
+      try {
+
+        const [
+          categoriasData,
+          institucionesData,
+        ] = await Promise.all([
+          getCategories(),
+          getInstitutions(),
+        ]);
+
+        setCategorias(categoriasData);
+        setInstituciones(institucionesData);
+
+      } catch (error) {
+
+        console.error(error);
+
+      }
+
+    };
+
+    fetchFilters();
+
+  }, []);
 
   const toggleFilter = (
     filter: string
   ) => {
+
     setOpenFilter(
       openFilter === filter
         ? ""
         : filter
     );
+
   };
 
   return (
+
     <div>
 
       <div className="search_filters">
@@ -102,17 +121,17 @@ const SearchFilters = ({
             toggleFilter("categoria")
           }
         >
+
           <Shapes size={18} />
 
           <span>
-            {categoria
-              ? `Categoría: ${categoria}`
-              : "Categoría"}
+            Categoría
           </span>
 
           {openFilter === "categoria"
             ? <X size={16} />
             : <ChevronDown size={16} />}
+
         </button>
 
         {/* INSTITUCION */}
@@ -127,17 +146,17 @@ const SearchFilters = ({
             toggleFilter("institucion")
           }
         >
+
           <Building2 size={18} />
 
           <span>
-            {institucion
-              ? `Institución: ${institucion}`
-              : "Institución"}
+            Institución
           </span>
 
           {openFilter === "institucion"
             ? <X size={16} />
             : <ChevronDown size={16} />}
+
         </button>
 
         {/* LUGAR */}
@@ -152,17 +171,17 @@ const SearchFilters = ({
             toggleFilter("lugar")
           }
         >
+
           <MapPin size={18} />
 
           <span>
-            {lugar
-              ? `Lugar: ${lugar}`
-              : "Lugar"}
+            Lugar
           </span>
 
           {openFilter === "lugar"
             ? <X size={16} />
             : <ChevronDown size={16} />}
+
         </button>
 
         {/* FECHA */}
@@ -177,17 +196,17 @@ const SearchFilters = ({
             toggleFilter("fecha")
           }
         >
+
           <CalendarDays size={18} />
 
           <span>
-            {fecha
-              ? `Fecha: ${fecha}`
-              : "Fecha"}
+            Fecha
           </span>
 
           {openFilter === "fecha"
             ? <X size={16} />
             : <ChevronDown size={16} />}
+
         </button>
 
         {/* PERDIDO */}
@@ -206,8 +225,13 @@ const SearchFilters = ({
             )
           }
         >
+
           <Lock size={18} />
-          <span>Perdido</span>
+
+          <span>
+            Perdido
+          </span>
+
         </button>
 
         {/* ENCONTRADO */}
@@ -226,8 +250,13 @@ const SearchFilters = ({
             )
           }
         >
+
           <ScanSearch size={18} />
-          <span>Encontrado</span>
+
+          <span>
+            Encontrado
+          </span>
+
         </button>
 
       </div>
@@ -238,25 +267,27 @@ const SearchFilters = ({
 
         <div className="filter_chips_container">
 
-          {categorias.map(
-            (item) => (
+          {categorias.map((item: any) => (
 
-              <FilterChip
-                key={item}
-                label={item}
-                active={categoria === item}
-                onClick={() =>
-                  setCategoria(
-                    categoria === item
-                      ? ""
-                      : item
-                  )
-                }
-              />
-            )
-          )}
+            <FilterChip
+              key={item.id}
+              label={item.nombre}
+              active={
+                categoria === item.id
+              }
+              onClick={() =>
+                setCategoria(
+                  categoria === item.id
+                    ? ""
+                    : item.id
+                )
+              }
+            />
+
+          ))}
 
         </div>
+
       )}
 
       {/* INSTITUCIONES */}
@@ -265,56 +296,49 @@ const SearchFilters = ({
 
         <div className="filter_chips_container">
 
-          {instituciones.map(
-            (item) => (
+          {instituciones.map((item: any) => (
 
-              <FilterChip
-                key={item}
-                label={item}
-                active={
-                  institucion === item
-                }
-                onClick={() =>
-                  setInstitucion(
-                    institucion === item
-                      ? ""
-                      : item
-                  )
-                }
-              />
-            )
-          )}
+            <FilterChip
+              key={item.id}
+              label={item.nombre}
+              active={
+                institucion === item.id
+              }
+              onClick={() =>
+                setInstitucion(
+                  institucion === item.id
+                    ? ""
+                    : item.id
+                )
+              }
+            />
+
+          ))}
 
         </div>
+
       )}
 
-      {/* LUGARES */}
+      {/* LUGAR */}
 
       {openFilter === "lugar" && (
 
         <div className="filter_chips_container">
 
-          {lugares.map(
-            (item) => (
-
-              <FilterChip
-                key={item}
-                label={item}
-                active={
-                  lugar === item
-                }
-                onClick={() =>
-                  setLugar(
-                    lugar === item
-                      ? ""
-                      : item
-                  )
-                }
-              />
-            )
-          )}
+          <input
+            type="text"
+            className="date_input"
+            placeholder="Ej. Comedor"
+            value={lugar}
+            onChange={(e) =>
+              setLugar(
+                e.target.value
+              )
+            }
+          />
 
         </div>
+
       )}
 
       {/* FECHA */}
@@ -335,10 +359,10 @@ const SearchFilters = ({
           />
 
         </div>
+
       )}
 
     </div>
   );
 };
-
 export default SearchFilters;

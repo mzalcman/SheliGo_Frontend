@@ -1,124 +1,73 @@
 import "./search_page.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import PublishBanner from "../../components/publish_banner/publish_banner";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import ObjectCard from "../../components/object_card/object_card";
 import SearchFilters from "../../components/search_filters/search_filters";
+import { searchPublications } from "../../services/search_service";
 
 const SearchPage = () => {
 
-  const [searchText, setSearchText] =
-    useState("");
+  const [objects, setObjects] = useState<any[]>([]);
+  const [searchText, setSearchText] = useState("");
+  const [openFilter, setOpenFilter] = useState("");
+  const [categoria, setCategoria] =  useState("");
+  const [institucion, setInstitucion] =  useState("");
+  const [lugar, setLugar] =  useState("");
+  const [fecha, setFecha] =  useState("");
+  const [tipo, setTipo] =  useState("");
+  
+  useEffect(() => {
+    const buscar = async () => {
 
-  const [openFilter, setOpenFilter] =
-    useState("");
+      try {
 
-  const [categoria, setCategoria] =
-    useState("");
+        const publicaciones =
+          await searchPublications({
+            busqueda:
+              searchText || undefined,
+            categoria_id:
+              categoria || undefined,
+            institucion_id:
+              institucion || undefined,
+            lugar_institucion:
+              lugar || undefined,
+            fecha:
+              fecha || undefined,
+            tipo:
+              tipo || undefined,
+          });
 
-  const [institucion, setInstitucion] =
-    useState("");
+        setObjects(publicaciones);
 
-  const [lugar, setLugar] =
-    useState("");
+      } catch (error) {
 
-  const [fecha, setFecha] =
-    useState("");
+        console.error(error);
 
-  const [tipo, setTipo] =
-    useState("");
+      }
 
-  // TEMPORAL
-  // Después vendrá del backend
+    };
 
-  const objects = [
-    {
-      id: "1",
-      nombre: "Bolso de Cuero",
-      categoria: "Mochilas",
-      institucion: "Club SheliGo",
-      lugar: "Cafetería central",
-      fecha: "2026",
-      tipo: "encontrado",
-      foto:
-        "https://images.unsplash.com/photo-1548036328-c9fa89d128fa",
-    },
+    buscar();
 
-    {
-      id: "2",
-      nombre: "Cargador Apple",
-      categoria: "Electrónica",
-      institucion: "ORT",
-      lugar: "Comedor",
-      fecha: "2025",
-      tipo: "perdido",
-      foto:
-        "https://images.unsplash.com/photo-1583863788434-e58a36330cf0",
-    },
-
-    {
-      id: "3",
-      nombre: "Mochila Adidas",
-      categoria: "Mochilas",
-      institucion: "Club SheliGo",
-      lugar: "Baño sede",
-      fecha: "2026",
-      tipo: "perdido",
-      foto:
-        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62",
-    },
-  ];
-
-  const filteredObjects =
-    objects.filter((object) => {
-
-      const matchesText =
-        object.nombre
-          .toLowerCase()
-          .includes(
-            searchText.toLowerCase()
-          );
-
-      const matchesCategoria =
-        !categoria ||
-        object.categoria === categoria;
-
-      const matchesInstitucion =
-        !institucion ||
-        object.institucion === institucion;
-
-      const matchesLugar =
-        !lugar ||
-        object.lugar === lugar;
-
-      const matchesFecha =
-        !fecha ||
-        object.fecha === fecha;
-
-      const matchesTipo =
-        !tipo ||
-        object.tipo === tipo;
-
-      return (
-        matchesText &&
-        matchesCategoria &&
-        matchesInstitucion &&
-        matchesLugar &&
-        matchesFecha &&
-        matchesTipo
-      );
-    });
-
+  }, [
+    searchText,
+    categoria,
+    institucion,
+    lugar,
+    fecha,
+    tipo,
+  ]);
 
   return (
+
     <div className="search_page">
 
       <Header />
 
       <main className="search_page_content">
-
         <section className="search_hero">
 
           <h1 className="search_title">
@@ -168,29 +117,27 @@ const SearchPage = () => {
 
         <section className="search_results">
 
-          {filteredObjects.map(
-            (object) => (
-              <ObjectCard
-                key={object.id}
-                id={object.id}
-                image={object.foto}
-                title={object.nombre}
-                location={object.lugar}
-                status={object.tipo}
-              />
-            )
-          )}
+          {objects.map((object: any) => (
+
+            <ObjectCard
+              key={object.id}
+              id={object.id}
+              image={object.foto_principal_url}
+              title={object.nombre}
+              location={object.lugar_institucion}
+              status={object.tipo}
+            />
+
+          ))}
 
         </section>
-
         <PublishBanner />
-
       </main>
-
       <Footer />
-
     </div>
+
   );
+
 };
 
 export default SearchPage;

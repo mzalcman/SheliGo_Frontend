@@ -12,7 +12,16 @@ import { useAuth } from "../../hooks/use_auth";
 
 const MenuPage = () => {
   // useAuth() es el encargado de conectarse a tu base de datos y darte la info del usuario
-  const { user } = useAuth();
+ const { user, logout } = useAuth();
+ const handleLogout = () => {
+
+  logout();
+
+  navigate("/login", {
+    replace: true,
+  });
+
+};
   const navigate = useNavigate();
 
   return (
@@ -67,7 +76,10 @@ const MenuPage = () => {
           </button>
         </div>
 
-        <button className="menu_logout">
+        <button
+  className="menu_logout"
+  onClick={handleLogout}
+>
           <LogOut size={20} />
           <span>Cerrar sesión</span>
         </button>

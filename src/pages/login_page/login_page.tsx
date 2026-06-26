@@ -3,19 +3,31 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../services/auth_service";
 import Loader from "../../components/loader/loader";
-import { Link } from "react-router-dom";
+import { useAuth } from "../../hooks/use_auth";
 import {
   Eye,
   EyeOff,
 } from "lucide-react";
 
 const LoginPage = () => {
+
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { login: loginContext } = useAuth();
+
+  const [email, setEmail] =
+    useState("");
+
+  const [password, setPassword] =
+    useState("");
+
+  const [error, setError] =
+    useState("");
+
+  const [showPassword, setShowPassword] =
+    useState(false);
+
+  const [loading, setLoading] =
+    useState(false);
 
   const is_valid_email =
     (value: string) => {
@@ -25,23 +37,34 @@ const LoginPage = () => {
 
   const handle_login =
     async () => {
+
       setError("");
+
       if (!is_valid_email(email)) {
+
         setError(
           "Ingresa un correo válido."
         );
+
         return;
+
       }
+
       try {
 
-        const response = await login(
-          email,
-          password
-        );
+        const response =
+          await login(
+            email,
+            password
+          );
 
-
-        if (!response?.token || !response?.usuario) {
-          throw new Error("Respuesta inválida del servidor");
+        if (
+          !response?.token ||
+          !response?.usuario
+        ) {
+          throw new Error(
+            "Respuesta inválida del servidor"
+          );
         }
 
         localStorage.setItem(
@@ -49,19 +72,15 @@ const LoginPage = () => {
           response.token
         );
 
-        localStorage.setItem(
-          "user",
-          JSON.stringify(response.usuario)
+        loginContext(
+          response.usuario
         );
-
-
 
         setLoading(true);
 
         navigate("/home");
 
       } catch (error) {
-
 
         setError(
           "Correo o contraseña incorrectos."
@@ -78,9 +97,13 @@ const LoginPage = () => {
   }
 
   return (
+
     <main className="login_page">
+
       <div className="login_top" />
+
       <div className="login_content">
+
         <h1 className="login_logo">
           SheliGo
         </h1>
@@ -185,8 +208,11 @@ const LoginPage = () => {
           >
             Regístrate gratis
           </button>
+
         </div>
+
       </div>
+
     </main>
 
   );

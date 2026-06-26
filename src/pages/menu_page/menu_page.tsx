@@ -9,12 +9,12 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/use_auth";
+import { getImageUrl } from "../../utils/get_image_url";
 
 const MenuPage = () => {
   const { user: typedUser, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Quitamos el freno de mano de TypeScript para leer las propiedades dinámicas
   const user = typedUser as any;
 
   const handleLogout = () => {
@@ -24,18 +24,12 @@ const MenuPage = () => {
     });
   };
 
-  // Armamos la URL de la foto de Yanina apuntando al backend local (igual que en el Header)
-  const userPhotoUrl = user?.profile_image 
-    ? `http://localhost:3000/${user.profile_image}` 
-    : "/default-user.png";
-
-  // Tomamos el nombre real del usuario logueado
   const userFullName = user?.name || "Usuario";
 
   return (
     <main className="menu_page">
       <div className="menu_container">
-        
+
         <button className="menu_back_button" onClick={() => navigate(-1)}>
           <ArrowLeft size={24} />
           <span style={{ marginLeft: "8px" }}>Menu</span>
@@ -45,7 +39,11 @@ const MenuPage = () => {
           <div className="menu_profile_image_container">
             {/* Renderiza la foto real de Yanina */}
             <img
-              src={userPhotoUrl} 
+              src={
+                user?.profile_image
+                  ? getImageUrl(user.profile_image)
+                  : "/default-user.png"
+              }
               alt={userFullName}
               className="menu_profile_image"
             />

@@ -13,16 +13,22 @@ export const get_publication_by_id =
     return response.data.data.publicacion;
   };
 
-export const create_publication =
-  async (
-    formData: FormData
-  ) => {
+export const getCategories = async () => {
+  const response = await api.get("/categorias");
+  return response.data.data.publicaciones;
+};
 
-    const response =
-      await api.post(
-        "/publicaciones",
-        formData
-      );
+// Obtener instituciones desde el backend
+export const getInstitutions = async () => {
+  const response = await api.get("/instituciones");
+  return response.data.data.publicaciones;
+};
 
-    return response.data.data.publicacion;
-  };
+export const create_publication = async (formData: FormData) => {
+  const response = await api.post("/publicaciones", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data.data.publicacion;
+};

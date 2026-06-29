@@ -31,3 +31,8 @@ export const create_publication = async (formData: FormData) => {
   });
   return response.data.data.publicacion;
 };
+
+export const delete_publication = async (id: string) => {
+  const response = await api.delete(`/publicaciones/${id}`);
+  return response.data;
+};

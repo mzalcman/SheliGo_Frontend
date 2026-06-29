@@ -10,12 +10,12 @@ import ClaimButton from "../../components/claim_button/claim_button";
 import type { Publication } from "../../types/publication";
 import type { Question } from "../../types/question";
 import type { PublicationArchive } from "../../types/publication_archive";
-import { get_publication_by_id } from "../../services/publication_service";
+import { get_publication_by_id, delete_publication } from "../../services/publication_service"; 
 import { get_questions, create_question } from "../../services/question_service";
 import { get_publication_archives } from "../../services/publication_archives_service";
 import { useAuthContext } from "../../contexts/auth_context"; 
 import Loader from "../../components/loader/loader";
-import { Pencil } from "lucide-react"; 
+import { Pencil, Trash2 } from "lucide-react"; 
 
 const PublicationDetailPage = () => {
   const { id } = useParams();
@@ -30,6 +30,9 @@ const PublicationDetailPage = () => {
   const [new_question, set_new_question] = useState("");
   const [loading, set_loading] = useState(true);
   const [error, set_error] = useState("");
+  
+  const [show_delete_modal, set_show_delete_modal] = useState(false);
+  const [is_deleting, set_is_deleting] = useState(false);
 
   const refresh_questions = async () => {
     try {
@@ -62,6 +65,21 @@ const PublicationDetailPage = () => {
     fetch_data();
   }, [publication_id]);
 
+  const handle_delete_publication = async () => {
+    try {
+      set_is_deleting(true);
+     
+      await delete_publication(publication_id); 
+      set_show_delete_modal(false);
+      navigate("/home"); 
+    } catch (err) {
+      console.error("Error al eliminar la publicación:", err);
+      alert("No se pudo eliminar la publicación. Inténtalo de nuevo.");
+    } finally {
+      set_is_deleting(false);
+    }
+  };
+
   const add_question = async () => {
     if (!new_question.trim() || !user?.id) return; 
 
@@ -74,7 +92,7 @@ const PublicationDetailPage = () => {
     }
   };
 
-  if (loading) return <Loader />;
+  if (loading || is_deleting) return <Loader />;
   if (error) return <div>{error}</div>;
   if (!publication) return <div>Publicación no encontrada</div>;
 
@@ -87,15 +105,22 @@ const PublicationDetailPage = () => {
       <main className="publication_detail_content">
         <PublicationDetail publication={publication} archives={archives} />
 
-        {/* BOTÓN EDITAR */}
         {is_owner && (
-          <div className="edit_button_container">
+          <div className="owner_actions_container">
             <button 
-              className="publication_edit_button"
+              className="publication_edit_pill_button"
               onClick={() => navigate(`/publicaciones/editar/${publication_id}`)} 
             >
               <Pencil size={18} strokeWidth={2.5} />
               <span>Editar publicación</span>
+            </button>
+
+            <button 
+              className="publication_delete_pill_button"
+              onClick={() => set_show_delete_modal(true)} 
+            >
+              <Trash2 size={18} strokeWidth={2.5} />
+              <span>Borrar publicación</span>
             </button>
           </div>
         )}
@@ -121,9 +146,7 @@ const PublicationDetailPage = () => {
             ))}
           </div>
 
-          {/* LÓGICA DE INTERACCIÓN DINÁMICA */}
           {user ? (
-            /* SI ESTÁ LOGUEADO Y NO ES EL DUEÑO */
             !is_owner && (
               <>
                 <QuestionInput
@@ -150,6 +173,24 @@ const PublicationDetailPage = () => {
         </section>
       </main>
       <Footer />
+
+      {show_delete_modal && (
+  <div className="delete_modal_overlay">
+    <div className="delete_modal_card">
+      <div className="delete_modal_icon_container">
+        <Trash2 size={24} color="#D32F2F" strokeWidth={2.5} />
+      </div>
+      <h2>¿Deseas borrar esta publicación?</h2>
+      <p>No volverá a aparecer y se borrará permanentemente</p>
+      <button className="modal_confirm_button" onClick={handle_delete_publication}>
+        Confirmar
+      </button>
+      <button className="modal_cancel_button" onClick={() => set_show_delete_modal(false)}>
+        Cancelar
+      </button>
+    </div>
+  </div>
+)}
     </div>
   );
 };

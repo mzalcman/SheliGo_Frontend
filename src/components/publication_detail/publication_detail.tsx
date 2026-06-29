@@ -12,9 +12,12 @@ interface PublicationDetailProps {
   publication: Publication;
   archives: PublicationArchive[];
 }
+
 const PublicationDetail = ({
   publication, archives,
 }: PublicationDetailProps) => {
+  const [copied, set_copied] = useState(false); // 🔥 Estado para el mensaje flotante
+
   const ordered_archives = useMemo(
     () =>
       [...archives].sort(
@@ -25,8 +28,7 @@ const PublicationDetail = ({
     [archives]
   );
 
-  const [current_image, set_current_image] =
-    useState(0);
+  const [current_image, set_current_image] = useState(0);
 
   const next_image = () => {
     set_current_image(
@@ -44,8 +46,20 @@ const PublicationDetail = ({
           : prev - 1
     );
   };
-  return (
 
+  // 🔥 Función nativa para copiar la URL actual del navegador
+  const handle_share = async () => {
+    try {
+      const current_url = window.location.href;
+      await navigator.clipboard.writeText(current_url);
+      set_copied(true);
+      setTimeout(() => set_copied(false), 2000); // Se oculta a los 2 segundos
+    } catch (err) {
+      console.error("Error al copiar el link: ", err);
+    }
+  };
+
+  return (
     <section className="publication_detail">
       <div className="publication_image_container">
         <img
@@ -62,7 +76,6 @@ const PublicationDetail = ({
           }}
         />
         {ordered_archives.length > 1 && (
-
           <>
             <button
               className="carousel_button carousel_left"
@@ -78,57 +91,58 @@ const PublicationDetail = ({
               <ChevronRight size={24} />
             </button>
           </>
-
         )}
 
         <div className="publication_header">
           <div>
             {/* Badge estado */}
-            <PublicationStatus
-              status={publication.tipo} />
-        
+            <PublicationStatus status={publication.tipo} />
           </div>
-          <button className="publication_share_button">
-            <Share2
-              size={26}
-              strokeWidth={2.2} />
-          </button>
+
+          {/* 🔥 Agregamos posición relativa para controlar el cartel emergente */}
+          <div style={{ position: "relative" }}>
+            <button
+              className="publication_share_button"
+              onClick={handle_share} // 🔥 Conectamos la acción
+            >
+              <Share2
+                size={26}
+                strokeWidth={2.2}
+              />
+            </button>
+
+            {/* 🔥 Cartel que se muestra de forma condicional */}
+            {copied && <span className="share_copied_toast">¡Link copiado!</span>}
+          </div>
         </div>
       </div>
-{ordered_archives.length > 1 && (
 
-  <div className="carousel_indicators">
+      {ordered_archives.length > 1 && (
+        <div className="carousel_indicators">
+          {ordered_archives.map((_, index) => (
+            <button
+              key={index}
+              type="button"
+              className={
+                index === current_image
+                  ? "carousel_dot active"
+                  : "carousel_dot"
+              }
+              onClick={() =>
+                set_current_image(index)
+              }
+            />
+          ))}
+        </div>
+      )}
 
-    {ordered_archives.map((_, index) => (
-
-      <button
-        key={index}
-        type="button"
-        className={
-          index === current_image
-            ? "carousel_dot active"
-            : "carousel_dot"
-        }
-        onClick={() =>
-          set_current_image(index)
-        }
-      />
-
-    ))}
-
-  </div>
-
-)}
       <section className="publication_section">
-
-      <h1 className="publication_title">
+        <h1 className="publication_title">
           {publication.nombre}
-      </h1>
-
+        </h1>
         <h2 className="publication_section_title">
           Descripción
         </h2>
-
         <div className="publication_box">
           {publication.descripcion}
         </div>
@@ -143,7 +157,6 @@ const PublicationDetail = ({
             publication.fecha_evento
           )
         }
-
         secondary_text={
           format_publication_time(
             publication.created_at
@@ -179,12 +192,12 @@ const PublicationDetail = ({
               Ubicación
             </h2>
             <div className="location_card">
-
               <iframe
                 title="Ubicación"
                 src={`https://maps.google.com/maps?q=${publication.latitud},${publication.longitud}&z=17&output=embed`}
                 className="location_map"
-                loading="lazy" />
+                loading="lazy"
+              />
             </div>
           </section>
         )}
@@ -193,7 +206,6 @@ const PublicationDetail = ({
         <h2 className="publication_section_title">
           Publicado por
         </h2>
-
         <div className="publisher_card">
           <img
             src={
@@ -201,8 +213,8 @@ const PublicationDetail = ({
               "/images/user_placeholder.png"
             }
             alt={`${publication.usuario_nombre} ${publication.usuario_apellido}`}
-            className="publisher_image" />
-
+            className="publisher_image"
+          />
           <div className="publisher_info">
             <h3 className="publisher_name">
               {publication.usuario_nombre}{" "}
@@ -211,8 +223,8 @@ const PublicationDetail = ({
           </div>
         </div>
       </section>
-
     </section>
   );
 };
+
 export default PublicationDetail;

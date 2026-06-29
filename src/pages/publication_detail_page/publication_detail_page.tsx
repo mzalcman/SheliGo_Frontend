@@ -1,6 +1,6 @@
 import "./publication_detail_page.css";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom"; // 🔥 Importamos useNavigate para el futuro ruteo
+import { useParams, useNavigate } from "react-router-dom"; 
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import PublicationDetail from "../../components/publication_detail/publication_detail";
@@ -15,11 +15,11 @@ import { get_questions, create_question } from "../../services/question_service"
 import { get_publication_archives } from "../../services/publication_archives_service";
 import { useAuthContext } from "../../contexts/auth_context"; 
 import Loader from "../../components/loader/loader";
-import { Pencil } from "lucide-react"; // 🔥 Importamos el icono del lápiz
+import { Pencil } from "lucide-react"; 
 
 const PublicationDetailPage = () => {
   const { id } = useParams();
-  const navigate = useNavigate(); // 🔥 Inicializamos el navegador para cuando le des funcionalidad
+  const navigate = useNavigate(); 
   const publication_id = id || "";
   
   const { user } = useAuthContext(); 
@@ -87,12 +87,12 @@ const PublicationDetailPage = () => {
       <main className="publication_detail_content">
         <PublicationDetail publication={publication} archives={archives} />
 
-        {/* BOTÓN EDITAR*/}
+        {/* BOTÓN EDITAR */}
         {is_owner && (
           <div className="edit_button_container">
             <button 
               className="publication_edit_button"
-              onClick={() => navigate(`/publicaciones/editar/${publication_id}`)} //revisar ruta cuando se haga
+              onClick={() => navigate(`/publicaciones/editar/${publication_id}`)} 
             >
               <Pencil size={18} strokeWidth={2.5} />
               <span>Editar publicación</span>
@@ -121,15 +121,32 @@ const PublicationDetailPage = () => {
             ))}
           </div>
 
-          {!is_owner && (
-            <QuestionInput
-              value={new_question}
-              on_change={set_new_question}
-              on_submit={add_question}
-            />
+          {/* LÓGICA DE INTERACCIÓN DINÁMICA */}
+          {user ? (
+            /* SI ESTÁ LOGUEADO Y NO ES EL DUEÑO */
+            !is_owner && (
+              <>
+                <QuestionInput
+                  value={new_question}
+                  on_change={set_new_question}
+                  on_submit={add_question}
+                />
+                <ClaimButton />
+              </>
+            )
+          ) : (
+            <div className="login_required_container">
+              <p className="login_required_text">
+                ¿Reconoces este objeto o tienes alguna duda?
+              </p>
+              <button 
+                className="login_redirect_button"
+                onClick={() => navigate("/login")}
+              >
+                Iniciar sesión para preguntar
+              </button>
+            </div>
           )}
-          
-          {!is_owner && <ClaimButton />}
         </section>
       </main>
       <Footer />

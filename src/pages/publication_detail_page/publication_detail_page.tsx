@@ -1,6 +1,6 @@
 import "./publication_detail_page.css";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"; // 🔥 Importamos useNavigate para el futuro ruteo
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import PublicationDetail from "../../components/publication_detail/publication_detail";
@@ -13,11 +13,13 @@ import type { PublicationArchive } from "../../types/publication_archive";
 import { get_publication_by_id } from "../../services/publication_service";
 import { get_questions, create_question } from "../../services/question_service";
 import { get_publication_archives } from "../../services/publication_archives_service";
-import { useAuthContext } from "../../contexts/auth_context"; // 
+import { useAuthContext } from "../../contexts/auth_context"; 
 import Loader from "../../components/loader/loader";
+import { Pencil } from "lucide-react"; // 🔥 Importamos el icono del lápiz
 
 const PublicationDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate(); // 🔥 Inicializamos el navegador para cuando le des funcionalidad
   const publication_id = id || "";
   
   const { user } = useAuthContext(); 
@@ -84,6 +86,19 @@ const PublicationDetailPage = () => {
       <Header />
       <main className="publication_detail_content">
         <PublicationDetail publication={publication} archives={archives} />
+
+        {/* BOTÓN EDITAR*/}
+        {is_owner && (
+          <div className="edit_button_container">
+            <button 
+              className="publication_edit_button"
+              onClick={() => navigate(`/publicaciones/editar/${publication_id}`)} //revisar ruta cuando se haga
+            >
+              <Pencil size={18} strokeWidth={2.5} />
+              <span>Editar publicación</span>
+            </button>
+          </div>
+        )}
 
         <section className="questions_section">
           <div className="questions_header_container">

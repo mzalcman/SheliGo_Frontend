@@ -12,7 +12,7 @@ const QuestionInput = ({value,on_change,on_submit,}: QuestionInputProps) => {
 
       <textarea
         value={value}
-        placeholder="Hacer una pregunta..."
+        placeholder="Escribe aquí..."
         className="question_input"
         onChange={(event) =>on_change(event.target.value)} />
 

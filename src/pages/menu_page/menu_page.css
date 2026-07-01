@@ -7,15 +7,11 @@
 .menu_container {
   min-height: calc(100vh - 12px);
   background: #f7f7f7;
-
   border-top-right-radius: 50px;
   border-bottom-right-radius: 50px;
-
   padding: 28px;
-
   display: flex;
   flex-direction: column;
-
   animation: menuSlideIn 0.25s ease-out;
 }
 
@@ -23,18 +19,14 @@
   border: none;
   background: transparent;
   cursor: pointer;
-
   width: fit-content;
   margin-bottom: 24px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   font-family: "louis_george";
   font-weight: 600;
   color: #8a8a8a;
-
   transition: transform 0.2s ease;
 }
 
@@ -42,7 +34,6 @@
   transform: translateX(-4px);
 }
 
-/* Sección del Perfil del Usuario */
 .menu_profile {
   display: flex;
   flex-direction: column;
@@ -76,7 +67,6 @@
   border: 3px solid white;
 }
 
-/* NOMBRE TRAÍDO DE LA BASE DE DATOS: Grande, Poppins y grueso */
 .menu_name {
   margin: 4px 0;
   font-family: "Poppins";
@@ -87,7 +77,6 @@
   line-height: 1.2;
 }
 
-/* ROL O TEXTO SECUNDARIO */
 .menu_role {
   margin: 0;
   font-family: "louis_george";
@@ -96,7 +85,6 @@
   color: #8a8a8a;
 }
 
-/* BOTÓN VER PERFIL */
 .menu_view_profile {
   margin-top: 6px;
   padding: 0;
@@ -110,7 +98,6 @@
   text-align: left;
 }
 
-/* Listado de Opciones del Menú */
 .menu_options {
   margin-top: 42px;
   display: flex;
@@ -144,7 +131,6 @@
   font-weight: 600;
 }
 
-/* Botón Cerrar Sesión al final */
 .menu_logout {
   margin-top: auto;
   border: none;
@@ -164,7 +150,6 @@
   opacity: 0.7;
 }
 
-/* Animación de entrada suave */
 @keyframes menuSlideIn {
   from {
     opacity: 0;
@@ -174,4 +159,90 @@
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+.delete_modal_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999; 
+}
+
+.delete_modal_card {
+  background-color: white;
+  width: 85%;
+  max-width: 340px;
+  border-radius: 32px;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.logout_modal_icon_container {
+  background-color: #FDF5E6;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.delete_modal_card h2 {
+  font-family: "Poppins";
+  font-size: 20px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0 0 10px 0;
+}
+
+.delete_modal_card p {
+  font-family: "louis_george";
+  font-size: 14px;
+  color: #757575;
+  margin: 0 0 24px 0;
+  line-height: 1.4;
+}
+
+.modal_confirm_button {
+  background-color: #ff6f00;
+  color: white;
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 25px;
+  font-family: "Poppins";
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: transform 0.1s ease;
+}
+
+.modal_cancel_button {
+  background: none;
+  color: #616161;
+  width: 100%;
+  height: 40px;
+  border: none;
+  font-family: "Poppins";
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal_confirm_button:active,
+.modal_cancel_button:active {
+  transform: scale(0.98);
 }

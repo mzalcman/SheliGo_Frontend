@@ -2,7 +2,8 @@ import "./question_card.css";
 import { useState } from "react";
 import type { Question } from "../../types/question";
 import QuestionInput from "../question_input/question_input";
-import { create_answer } from "../../services/question_service"; 
+import { create_answer } from "../../services/question_service";
+import { getImageUrl, } from "../../utils/get_image_url";
 
 interface QuestionCardProps {
   question: Question;
@@ -17,16 +18,16 @@ const QuestionCard = ({
 }: QuestionCardProps) => {
   const [is_replying, set_is_replying] = useState(false);
   const [reply_text, set_reply_text] = useState("");
-
+  const DEFAULT_USER_IMAGE = "/user_predeterminada.png";
   const handle_submit_reply = async () => {
     if (!reply_text.trim()) return;
     try {
-      await create_answer(question.id, reply_text); 
-      
+      await create_answer(question.id, reply_text);
+
       set_is_replying(false);
       set_reply_text("");
-      
-      if (on_answer_submitted) on_answer_submitted(); 
+
+      if (on_answer_submitted) on_answer_submitted();
     } catch (error) {
       console.error("Error al responder la pregunta:", error);
       alert("No se pudo enviar la respuesta. Inténtalo de nuevo.");
@@ -52,7 +53,7 @@ const QuestionCard = ({
         <p className="question_content">"{question.contenido}"</p>
 
         {is_owner && !question.respuesta && !is_replying && (
-          <button 
+          <button
             className="question_reply_trigger"
             onClick={() => set_is_replying(true)}
           >
@@ -68,8 +69,8 @@ const QuestionCard = ({
             on_change={set_reply_text}
             on_submit={handle_submit_reply}
           />
-          <button 
-            className="question_reply_cancel" 
+          <button
+            className="question_reply_cancel"
             onClick={() => set_is_replying(false)}
           >
             Cancelar
@@ -80,10 +81,17 @@ const QuestionCard = ({
       {question.respuesta && (
         <div className="question_answer_container">
           <div className="question_answer_orange_line"></div>
-          <img 
-            src="/images/user_placeholder.png" 
-            alt="Dueño" 
+          <img
+            src={
+              question.respuesta?.foto && question.respuesta.foto.trim() !== ""
+                ? getImageUrl(question.respuesta.foto)
+                : DEFAULT_USER_IMAGE
+            }
+            alt="Dueño"
             className="question_answer_user_image"
+            onError={(e) => {
+              e.currentTarget.src = DEFAULT_USER_IMAGE;
+            }}
           />
           <p className="question_answer_content">
             {question.respuesta.contenido}

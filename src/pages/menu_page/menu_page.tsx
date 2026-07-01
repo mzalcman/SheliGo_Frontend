@@ -1,12 +1,6 @@
 import "./menu_page.css";
-import {
-  User,
-  Package,
-  Wallet,
-  Headphones,
-  LogOut,
-  ArrowLeft,
-} from "lucide-react";
+import { User, Package, Wallet, Headphones, LogOut, ArrowLeft } from "lucide-react";
+import { useState } from "react"; // 👈 Importamos useState
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/use_auth";
 import { getImageUrl } from "../../utils/get_image_url";
@@ -16,8 +10,12 @@ const MenuPage = () => {
   const navigate = useNavigate();
 
   const user = typedUser as any;
+  
+  // 🔥 Estado para controlar el modal de cerrar sesión
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const handleLogout = () => {
+  // Esta función ahora solo se ejecuta si el usuario confirma en el modal
+  const handleLogoutConfirm = () => {
     logout();
     navigate("/login", {
       replace: true,
@@ -37,7 +35,6 @@ const MenuPage = () => {
 
         <div className="menu_profile">
           <div className="menu_profile_image_container">
-            {/* Renderiza la foto real de Yanina */}
             <img
               src={
                 user?.profile_image
@@ -50,7 +47,6 @@ const MenuPage = () => {
             <div className="menu_online_dot" />
           </div>
 
-          {/* Renderiza el nombre real de Yanina */}
           <h2 className="menu_name">
             {userFullName}
           </h2>
@@ -82,12 +78,34 @@ const MenuPage = () => {
           </button>
         </div>
 
-        <button className="menu_logout" onClick={handleLogout}>
+        {/* 🔥 Al hacer click acá, solo abrimos el modal */}
+        <button className="menu_logout" onClick={() => setShowLogoutModal(true)}>
           <LogOut size={20} />
           <span>Cerrar sesión</span>
         </button>
 
       </div>
+
+      {/* 🔥 MODAL DE CERRAR SESIÓN (MISMA LÓGICA QUE EL DE BORRAR) */}
+      {showLogoutModal && (
+        <div className="delete_modal_overlay">
+          <div className="delete_modal_card">
+            <div className="logout_modal_icon_container">
+              <LogOut size={24} color="#8D4F2A" strokeWidth={2.5} />
+            </div>
+            
+            <h2>¿Deseas cerrar sesión?</h2>
+            <p>Tendrás que volver a ingresar tus credenciales para acceder a SheliGo.</p>
+
+            <button className="modal_confirm_button" onClick={handleLogoutConfirm}>
+              Confirmar
+            </button>
+            <button className="modal_cancel_button" onClick={() => setShowLogoutModal(false)}>
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

@@ -112,7 +112,7 @@ const PublicationDetailPage = () => {
               onClick={() => navigate(`/publicaciones/editar/${publication_id}`)} 
             >
               <Pencil size={18} strokeWidth={2.5} />
-              <span>Editar publicación</span>
+              <span>Editar</span>
             </button>
 
             <button 
@@ -120,7 +120,7 @@ const PublicationDetailPage = () => {
               onClick={() => set_show_delete_modal(true)} 
             >
               <Trash2 size={18} strokeWidth={2.5} />
-              <span>Borrar publicación</span>
+              <span>Borrar</span>
             </button>
           </div>
         )}

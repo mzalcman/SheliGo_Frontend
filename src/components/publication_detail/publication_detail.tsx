@@ -16,7 +16,7 @@ interface PublicationDetailProps {
 const PublicationDetail = ({
   publication, archives,
 }: PublicationDetailProps) => {
-  const [copied, set_copied] = useState(false); // 🔥 Estado para el mensaje flotante
+  const [copied, set_copied] = useState(false); 
 
   const ordered_archives = useMemo(
     () =>
@@ -47,7 +47,6 @@ const PublicationDetail = ({
     );
   };
 
-  // 🔥 Función nativa para copiar la URL actual del navegador
   const handle_share = async () => {
     try {
       const current_url = window.location.href;
@@ -99,11 +98,10 @@ const PublicationDetail = ({
             <PublicationStatus status={publication.tipo} />
           </div>
 
-          {/* 🔥 Agregamos posición relativa para controlar el cartel emergente */}
           <div style={{ position: "relative" }}>
             <button
               className="publication_share_button"
-              onClick={handle_share} // 🔥 Conectamos la acción
+              onClick={handle_share} 
             >
               <Share2
                 size={26}
@@ -111,7 +109,6 @@ const PublicationDetail = ({
               />
             </button>
 
-            {/* 🔥 Cartel que se muestra de forma condicional */}
             {copied && <span className="share_copied_toast">¡Link copiado!</span>}
           </div>
         </div>

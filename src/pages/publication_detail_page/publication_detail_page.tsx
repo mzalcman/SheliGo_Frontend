@@ -140,6 +140,7 @@ const PublicationDetailPage = () => {
               <QuestionCard
                 key={question.id}
                 question={question}
+                publication={publication}
                 is_owner={is_owner}
                 on_answer_submitted={refresh_questions}
               />

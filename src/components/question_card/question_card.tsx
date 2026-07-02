@@ -3,22 +3,26 @@ import { useState } from "react";
 import type { Question } from "../../types/question";
 import QuestionInput from "../question_input/question_input";
 import { create_answer } from "../../services/question_service";
-import { getImageUrl, } from "../../utils/get_image_url";
+import type { Publication } from "../../types/publication";
+import { getImageUrl } from "../../utils/get_image_url";
 
 interface QuestionCardProps {
   question: Question;
+  publication: Publication;
   is_owner?: boolean;
   on_answer_submitted?: () => void;
 }
 
 const QuestionCard = ({
   question,
+  publication, 
   is_owner = false,
   on_answer_submitted,
 }: QuestionCardProps) => {
   const [is_replying, set_is_replying] = useState(false);
   const [reply_text, set_reply_text] = useState("");
   const DEFAULT_USER_IMAGE = "/user_predeterminada.png";
+
   const handle_submit_reply = async () => {
     if (!reply_text.trim()) return;
     try {
@@ -39,9 +43,12 @@ const QuestionCard = ({
       <div className="question_card_main">
         <div className="question_user">
           <img
-            src={question.usuario?.foto || "/images/user_placeholder.png"}
+            src={question.usuario?.foto ? getImageUrl(question.usuario.foto) : DEFAULT_USER_IMAGE}
             alt="Usuario"
             className="question_user_image"
+            onError={(e) => {
+              e.currentTarget.src = DEFAULT_USER_IMAGE;
+            }}
           />
           <div className="question_user_meta">
             <span className="question_user_name">
@@ -83,8 +90,8 @@ const QuestionCard = ({
           <div className="question_answer_orange_line"></div>
           <img
             src={
-              question.respuesta?.foto && question.respuesta.foto.trim() !== ""
-                ? getImageUrl(question.respuesta.foto)
+              publication?.usuario_foto && publication.usuario_foto.trim() !== ""
+                ? getImageUrl(publication.usuario_foto)
                 : DEFAULT_USER_IMAGE
             }
             alt="Dueño"

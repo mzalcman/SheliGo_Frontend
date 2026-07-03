@@ -1,4 +1,5 @@
 import "./app.css";
+import { useEffect } from "react";
 import HomePage from "./pages/home_page/home_page";
 import PublicationDetailPage from "./pages/publication_detail_page/publication_detail_page";
 import SearchPage from "./pages/search_page/search_page";
@@ -11,6 +12,16 @@ import ProtectedRoute from "./components/protected_route/protected_route";
 import { Routes, Route } from "react-router-dom";
 
 function App() {
+
+  useEffect(() => {
+    const currentPath = window.location.pathname;
+    
+    // Si la URL es la de una publicación, la guardamos a fuego en el storage de entrada
+    if (currentPath.startsWith("/publicacion/")) {
+      localStorage.setItem("redirect_after_login", currentPath);
+    }
+  }, []);
+
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />

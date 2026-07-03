@@ -23,9 +23,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (session?.user) {
         const miTokenPropio = localStorage.getItem("token");
 
-        // Si Supabase se logueó pero NO tenemos el token de nuestro backend local, lo vamos a buscar
         if (!miTokenPropio) {
-          setLoading(true); // Bloquea la UI para evitar recargas raras
+          setLoading(true); 
           try {
             const response = await fetch("http://localhost:3000/auth/google", {
               method: "POST",
@@ -37,7 +36,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
             const resBody = await response.json();
 
-            // Recordá que tu auth_service lee response.data.data
             if (resBody?.data?.token) {
               localStorage.setItem("token", resBody.data.token);
               localStorage.setItem("user", JSON.stringify(resBody.data.usuario));
@@ -49,14 +47,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               });
               
               setLoading(false);
-              window.location.href = "/home"; // Redirección limpia
+              window.location.href = "/home"; 
               return;
             }
           } catch (error) {
             console.error("Error al sincronizar Google con tu backend:", error);
           }
         } else {
-          // Si ya teníamos nuestro token guardado, levantamos el usuario existente
           const storedUser = localStorage.getItem("user");
           if (storedUser) {
             const usuario = JSON.parse(storedUser);
@@ -67,7 +64,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       }
 
-      // Persistencia tradicional del formulario
       const storedUser = localStorage.getItem("user");
       if (storedUser && !user) {
         try {
@@ -97,7 +93,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       options: {
         redirectTo: `${window.location.origin}/login`, 
         queryParams: {
-          prompt: 'select_account', 
+          prompt: 'select_account consent', 
           access_type: 'offline',
         },
       },

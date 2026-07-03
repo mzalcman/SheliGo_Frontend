@@ -41,6 +41,9 @@ const SearchFilters = ({
   const [institucionesData, setInstitucionesData] =
     useState<any[]>([]);
 
+  // Limita el calendario nativo hasta el día de hoy
+  const hoyLimiter = new Date().toISOString().split("T")[0];
+
   useEffect(() => {
 
     const fetchData = async () => {
@@ -129,6 +132,28 @@ const SearchFilters = ({
 
   };
 
+  // 🔴 FUNCIÓN MODIFICADA: Ahora devuelve "Fecha: DD/MM - DD/MM"
+  const fechasSeleccionadasTexto = () => {
+    if (!fechaDesde && !fechaHasta) return "Fecha";
+
+    const formatearFechaCorta = (fechaStr: string) => {
+      if (!fechaStr) return "";
+      const [anio, mes, dia] = fechaStr.split("-");
+      return `${dia}/${mes}`;
+    };
+
+    const desdeFormateado = formatearFechaCorta(fechaDesde);
+    const hastaFormateado = formatearFechaCorta(fechaHasta);
+
+    if (fechaDesde && fechaHasta) {
+      return `Fecha: ${desdeFormateado} - ${hastaFormateado}`;
+    } else if (fechaDesde) {
+      return `Fecha: ${desdeFormateado} - ...`;
+    } else {
+      return `Fecha: ... - ${hastaFormateado}`;
+    }
+  };
+
   return (
 
     <>
@@ -176,7 +201,7 @@ const SearchFilters = ({
         </button>
 
         <button
-          className={`search_filter ${openFilter === "fecha"
+          className={`search_filter ${openFilter === "fecha" || fechaDesde || fechaHasta
             ? "active"
             : ""
             }`}
@@ -188,13 +213,7 @@ const SearchFilters = ({
           <CalendarDays size={18} />
 
           <span>
-
-            {
-              fechaDesde || fechaHasta
-                ? "Fecha"
-                : "Fecha"
-            }
-
+            {fechasSeleccionadasTexto()}
           </span>
 
           <ChevronDown size={16} />
@@ -290,7 +309,23 @@ const SearchFilters = ({
             <input
               type="date"
               value={fechaDesde}
-              onChange={(e) => setFechaDesde(e.target.value)}
+              max={hoyLimiter}
+              onChange={(e) => {
+                const valor = e.target.value;
+                if (!valor) {
+                  setFechaDesde("");
+                  return;
+                }
+
+                const anio = valor.split("-")[0];
+                if (anio && anio.length > 4) return;
+
+                if (new Date(valor) > new Date(hoyLimiter)) {
+                  setFechaDesde(hoyLimiter);
+                } else {
+                  setFechaDesde(valor);
+                }
+              }}
             />
           </div>
 
@@ -299,7 +334,24 @@ const SearchFilters = ({
             <input
               type="date"
               value={fechaHasta}
-              onChange={(e) => setFechaHasta(e.target.value)}
+              max={hoyLimiter}
+              min={fechaDesde || undefined}
+              onChange={(e) => {
+                const valor = e.target.value;
+                if (!valor) {
+                  setFechaHasta("");
+                  return;
+                }
+
+                const anio = valor.split("-")[0];
+                if (anio && anio.length > 4) return;
+
+                if (new Date(valor) > new Date(hoyLimiter)) {
+                  setFechaHasta(hoyLimiter);
+                } else {
+                  setFechaHasta(valor);
+                }
+              }}
             />
           </div>
         </div>

@@ -16,13 +16,13 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // 🔴 CORRECCIÓN 1: Forzar la redirección si el usuario ya está detectado por el Contexto
+  // 🔴 COORDINA LA REDIRECCIÓN CUANDO EL USUARIO YA EXISTE (Login tradicional y OAuth)
   useEffect(() => {
     if (user) {
       const redirectUrl = localStorage.getItem("redirect_after_login");
       if (redirectUrl) {
-        localStorage.removeItem("redirect_after_login"); // Limpiamos inmediatamente
-        navigate(redirectUrl, { replace: true }); // Usamos replace para limpiar el historial de navegación
+        localStorage.removeItem("redirect_after_login");
+        navigate(redirectUrl, { replace: true });
       } else {
         navigate("/home", { replace: true });
       }
@@ -52,22 +52,11 @@ const LoginPage = () => {
         throw new Error("Respuesta inválida del servidor");
       }
 
-      // 1. Guardamos las credenciales del usuario
+      // 1. Guardamos el token primero
       localStorage.setItem("token", token);
-      
-      // 2. 🔴 CORRECCIÓN 2: Capturamos la URL del storage ANTES de disparar el estado del contexto
-      const redirectUrl = localStorage.getItem("redirect_after_login");
 
-      // 3. Impactamos el contexto (esto cambiará el estado 'user' global)
+      // 2. Seteamos el usuario en el contexto (Esto va a disparar el useEffect de arriba automáticamente)
       loginContext(usuario);
-
-      // 4. Redirigimos inmediatamente de forma síncrona aquí por si el useEffect demora un ciclo en reaccionar
-      if (redirectUrl) {
-        localStorage.removeItem("redirect_after_login");
-        navigate(redirectUrl, { replace: true });
-      } else {
-        navigate("/home", { replace: true });
-      }
 
     } catch (error: any) {
       console.error(error);
@@ -85,7 +74,6 @@ const LoginPage = () => {
       <div className="login_top" />
       <div className="login_content">
         <h1 className="login_logo">SheliGo</h1>
-
         <p className="login_subtitle">
           Encuentra lo que perdiste, devuelve lo que encontraste.
         </p>

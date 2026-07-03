@@ -47,7 +47,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               });
               
               setLoading(false);
-              window.location.href = "/home"; 
+
+              // 🔴 CORRECCIÓN AQUÍ: Revisar si el usuario venía por un enlace compartido antes de forzar /home
+              const redirectUrl = localStorage.getItem("redirect_after_login");
+              if (redirectUrl) {
+                localStorage.removeItem("redirect_after_login"); // Limpiar
+                window.location.href = redirectUrl; // Llevar a la publicación
+              } else {
+                window.location.href = "/home"; // Comportamiento por defecto
+              }
               return;
             }
           } catch (error) {
@@ -87,21 +95,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const loginWithGoogle = async () => {
-  try {
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/login`, 
-        queryParams: {
-          prompt: 'select_account consent', 
-          access_type: 'offline',
+    try {
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/login`, 
+          queryParams: {
+            prompt: 'select_account consent', 
+            access_type: 'offline',
+          },
         },
-      },
-    });
-  } catch (error) {
-    console.error("Error al autenticar con Google:", error);
-  }
-};
+      });
+    } catch (error) {
+      console.error("Error al autenticar con Google:", error);
+    }
+  };
 
   const logout = async () => {
     await supabase.auth.signOut();

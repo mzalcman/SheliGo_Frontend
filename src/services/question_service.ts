@@ -19,10 +19,8 @@ export const create_question = async (
 
 export const create_answer = async (
   question_id: string,
-  contenido: string
+  data: { contenido: string }
 ) => {
-  const response = await api.post(`/preguntas/${question_id}/respuestas`, {
-    contenido,
-  });
+  const response = await api.post(`/publicaciones/preguntas/${question_id}/respuesta`, data);
   return response.data;
 };

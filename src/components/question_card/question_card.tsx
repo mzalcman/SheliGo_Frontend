@@ -21,12 +21,15 @@ const QuestionCard = ({
 }: QuestionCardProps) => {
   const [is_replying, set_is_replying] = useState(false);
   const [reply_text, set_reply_text] = useState("");
+  const [is_submitting, set_is_submitting] = useState(false);
   const DEFAULT_USER_IMAGE = "/user_predeterminada.png";
 
   const handle_submit_reply = async () => {
-    if (!reply_text.trim()) return;
+    if (!reply_text.trim() || is_submitting) return;
+    
     try {
-      await create_answer(question.id, reply_text);
+      set_is_submitting(true);
+      await create_answer(question.id, { contenido: reply_text.trim() });
 
       set_is_replying(false);
       set_reply_text("");
@@ -35,6 +38,8 @@ const QuestionCard = ({
     } catch (error) {
       console.error("Error al responder la pregunta:", error);
       alert("No se pudo enviar la respuesta. Inténtalo de nuevo.");
+    } finally {
+      set_is_submitting(false);
     }
   };
 
@@ -69,19 +74,42 @@ const QuestionCard = ({
         )}
       </div>
 
+      {/* 🔴 INTERFAZ CORREGIDA: Sin duplicaciones y estilizado */}
       {is_replying && (
-        <div className="question_reply_form_container">
-          <QuestionInput
-            value={reply_text}
-            on_change={set_reply_text}
-            on_submit={handle_submit_reply}
-          />
-          <button
-            className="question_reply_cancel"
-            onClick={() => set_is_replying(false)}
-          >
-            Cancelar
-          </button>
+        <div className="answer_form_card animate_fade_in">
+          <div className="answer_form_user">
+            <img
+              src={
+                publication?.usuario_foto && publication.usuario_foto.trim() !== ""
+                  ? getImageUrl(publication.usuario_foto)
+                  : DEFAULT_USER_IMAGE
+              }
+              alt="Tu perfil"
+              className="answer_form_avatar"
+              onError={(e) => { e.currentTarget.src = DEFAULT_USER_IMAGE; }}
+            />
+            <span className="answer_form_username">Responder como Autor</span>
+          </div>
+
+          <div className="answer_input_wrapper">
+            {/* Le pasamos el handle_submit_reply directo al QuestionInput */}
+            <QuestionInput
+              value={reply_text}
+              on_change={set_reply_text}
+              on_submit={handle_submit_reply}
+              placeholder="Escribe aquí tu respuesta..."
+            />
+          </div>
+
+          <div className="answer_form_actions">
+            <button
+              type="button"
+              className="answer_cancel_button"
+              onClick={() => set_is_replying(false)}
+            >
+              Cancelar
+            </button>
+          </div>
         </div>
       )}
 

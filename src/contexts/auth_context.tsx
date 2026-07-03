@@ -1,4 +1,4 @@
-import {createContext,useContext,useState, useEffect,} from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import type { User } from "../types/user";
 import { supabase } from "../services/supabase";
@@ -13,43 +13,66 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true); 
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      
       if (session?.user) {
-        const googleUser = {
-          id: session.user.id,
-          nombre: session.user.user_metadata.full_name || session.user.user_metadata.name,
-          foto: session.user.user_metadata.avatar_url,
-        };
+        const miTokenPropio = localStorage.getItem("token");
 
-        localStorage.setItem("user", JSON.stringify(googleUser));
-        
-        setUser({
-          id: googleUser.id,
-          name: googleUser.nombre,
-          profile_image: googleUser.foto,
-        });
-        setLoading(false); 
-        return;
+        // Si Supabase se logueó pero NO tenemos el token de nuestro backend local, lo vamos a buscar
+        if (!miTokenPropio) {
+          setLoading(true); // Bloquea la UI para evitar recargas raras
+          try {
+            const response = await fetch("http://localhost:3000/auth/google", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${session.access_token}`
+              }
+            });
+
+            const resBody = await response.json();
+
+            // Recordá que tu auth_service lee response.data.data
+            if (resBody?.data?.token) {
+              localStorage.setItem("token", resBody.data.token);
+              localStorage.setItem("user", JSON.stringify(resBody.data.usuario));
+              
+              setUser({
+                id: resBody.data.usuario.id,
+                name: resBody.data.usuario.nombre,
+                profile_image: resBody.data.usuario.foto,
+              });
+              
+              setLoading(false);
+              window.location.href = "/home"; // Redirección limpia
+              return;
+            }
+          } catch (error) {
+            console.error("Error al sincronizar Google con tu backend:", error);
+          }
+        } else {
+          // Si ya teníamos nuestro token guardado, levantamos el usuario existente
+          const storedUser = localStorage.getItem("user");
+          if (storedUser) {
+            const usuario = JSON.parse(storedUser);
+            setUser({ id: usuario.id, name: usuario.nombre, profile_image: usuario.foto });
+          }
+          setLoading(false);
+          return;
+        }
       }
 
+      // Persistencia tradicional del formulario
       const storedUser = localStorage.getItem("user");
-      if (storedUser) {
+      if (storedUser && !user) {
         try {
           const usuario = JSON.parse(storedUser);
-          setUser({
-            id: usuario.id,
-            name: usuario.nombre,
-            profile_image: usuario.foto,
-          });
+          setUser({ id: usuario.id, name: usuario.nombre, profile_image: usuario.foto });
         } catch (e) {
           console.error("Error al parsear el usuario del localStorage", e);
         }
@@ -63,49 +86,37 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   const login = (usuario: any) => {
-    localStorage.setItem(
-      "user",
-      JSON.stringify(usuario)
-    );
-
-    setUser({
-      id: usuario.id,
-      name: usuario.nombre,
-      profile_image: usuario.foto,
-    });
+    localStorage.setItem("user", JSON.stringify(usuario));
+    setUser({ id: usuario.id, name: usuario.nombre, profile_image: usuario.foto });
   };
 
   const loginWithGoogle = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: window.location.origin, 
+  try {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/login`, 
+        queryParams: {
+          prompt: 'select_account', 
+          access_type: 'offline',
         },
-      });
-      if (error) throw error;
-    } catch (error) {
-      console.error("Error al autenticar con Google:", error);
-    }
-  };
+      },
+    });
+  } catch (error) {
+    console.error("Error al autenticar con Google:", error);
+  }
+};
 
   const logout = async () => {
     await supabase.auth.signOut();
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
+    window.location.href = "/login";
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading, 
-        login,
-        loginWithGoogle,
-        logout,
-      }}
-    >
+    <AuthContext.Provider value={{ user, loading, login, loginWithGoogle, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -113,12 +124,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
 export const useAuthContext = () => {
   const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error(
-      "useAuthContext debe usarse dentro de AuthProvider"
-    );
-  }
-
+  if (!context) throw new Error("useAuthContext debe usarse dentro de AuthProvider");
   return context;
 };

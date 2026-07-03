@@ -23,7 +23,6 @@ const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
-  // 🔴 Estado para controlar cuándo mostrar la tarjeta de éxito
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
@@ -70,20 +69,18 @@ const RegisterPage = () => {
 
     setLoading(true);
 
-    // 🔴 FUNCIÓN AUXILIAR: Pone en mayúscula la primera letra de cada palabra
     const capitalizeWords = (str: string) => {
       return str
-        .trim() // Saca espacios de más al principio y al final
-        .toLowerCase() // Pasa todo a minúsculas primero
-        .split(/\s+/) // Separa por cualquier cantidad de espacios
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Mayúscula a la primera
-        .join(" "); // Vuelve a unir con un solo espacio limpio
+        .trim() 
+        .toLowerCase() 
+        .split(/\s+/) 
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1)) 
+        .join(" ");
     };
 
     try {
       const formData = new FormData();
       
-      // 🔴 Aplicamos el formateo a Nombre y Apellido antes de mandarlo
       formData.append("nombre", capitalizeWords(name));
       formData.append("apellido", capitalizeWords(lastname));
       

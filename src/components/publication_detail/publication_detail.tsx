@@ -16,7 +16,7 @@ interface PublicationDetailProps {
 const PublicationDetail = ({
   publication, archives,
 }: PublicationDetailProps) => {
-  const [copied, set_copied] = useState(false); 
+  const [copied, set_copied] = useState(false);
 
   const ordered_archives = useMemo(
     () =>
@@ -101,7 +101,7 @@ const PublicationDetail = ({
           <div style={{ position: "relative" }}>
             <button
               className="publication_share_button"
-              onClick={handle_share} 
+              onClick={handle_share}
             >
               <Share2
                 size={26}
@@ -141,7 +141,7 @@ const PublicationDetail = ({
           Descripción
         </h2>
         <div className="publication_box">
-          {publication.descripcion}
+          {publication.descripcion?.trim()}
         </div>
       </section>
 

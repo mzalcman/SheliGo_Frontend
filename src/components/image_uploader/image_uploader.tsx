@@ -1,16 +1,16 @@
 import "./image_uploader.css";
-import { Camera, X } from "lucide-react"; // 🔴 Importamos la X para borrar
+import { Camera, X } from "lucide-react"; 
 
 interface ImageUploaderProps {
   images: File[];
   setImages: (images: File[]) => void;
-  maxFiles?: number; // 🔴 Nueva propiedad opcional inteligente
+  maxFiles?: number;
 }
 
 const ImageUploader = ({
   images,
   setImages,
-  maxFiles = 5, // 🔴 Por defecto permite 5 si no se especifica
+  maxFiles = 5,
 }: ImageUploaderProps) => {
 
   const handleChange = (
@@ -20,12 +20,33 @@ const ImageUploader = ({
 
     const nuevosArchivos = Array.from(event.target.files);
 
+    const archivosUnicos = nuevosArchivos.filter((nuevo) => {
+      const yaExiste = images.some(
+        (existente) =>
+          existente.name === nuevo.name &&
+          existente.size === nuevo.size &&
+          existente.lastModified === nuevo.lastModified
+      );
+      
+      if (yaExiste) {
+        console.warn(`La imagen "${nuevo.name}" ya está agregada.`);
+      }
+      return !yaExiste;
+    });
+
+    if (archivosUnicos.length === 0) {
+      event.target.value = ""; 
+      return;
+    }
+
     if (maxFiles === 1) {
-      setImages([nuevosArchivos[0]]);
+      setImages([archivosUnicos[0]]);
     } else {
-      const listaCombinada = [...images, ...nuevosArchivos];
+      const listaCombinada = [...images, ...archivosUnicos];
       setImages(listaCombinada.slice(0, maxFiles));
     }
+
+    event.target.value = "";
   };
 
   const handleRemoveImage = (indexToRemove: number) => {

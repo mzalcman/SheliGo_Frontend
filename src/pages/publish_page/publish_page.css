@@ -205,10 +205,6 @@
   background: #f0f0f0;
 }
 
-/* ==========================================================================
-   ESTILOS DEL MODAL OVERLAY (Éxito de publicación)
-   ========================================================================== */
-
 .modal_overlay {
   position: fixed;
   top: 0;
@@ -315,4 +311,47 @@
 
 .publish_input:not(.date_placeholder)::-webkit-datetime-edit {
   color: #000000;
+}
+
+.publish_input.input_error,
+.publish_textarea.input_error {
+  border: 1px solid #d32f2f !important;
+  background-color: #fff8f8; 
+}
+
+.error_message_text {
+  font-family: "louis_george";
+  font-weight: 700;
+  font-size: 13px;
+  color: #d32f2f;
+  margin-top: -6px;
+  margin-bottom: 4px;
+  padding-left: 4px;
+}
+
+.error_icon_circle {
+  background: #ffebee !important;
+}
+
+.modal_icon_error {
+  color: #c62828;
+}
+
+.modal_error_button {
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  background: #c62828; 
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: "Poppins";
+  padding: 14px;
+  cursor: pointer;
+  box-shadow: 0px 4px 10px rgba(198, 40, 40, 0.2);
+  transition: transform 0.1s ease;
+}
+
+.modal_error_button:active {
+  transform: scale(0.98);
 }

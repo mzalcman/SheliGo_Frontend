@@ -135,16 +135,21 @@ const PublicationDetailPage = () => {
             )}
           </div>
 
+          {/* 🔴 CAMBIO AQUÍ: Validación si no hay preguntas públicas todavía */}
           <div className="questions_list">
-            {questions.map((question) => (
-              <QuestionCard
-                key={question.id}
-                question={question}
-                publication={publication}
-                is_owner={is_owner}
-                on_answer_submitted={refresh_questions}
-              />
-            ))}
+            {questions.length === 0 ? (
+              <p className="no_questions_text">No hay preguntas públicas aún</p>
+            ) : (
+              questions.map((question) => (
+                <QuestionCard
+                  key={question.id}
+                  question={question}
+                  publication={publication}
+                  is_owner={is_owner}
+                  on_answer_submitted={refresh_questions}
+                />
+              ))
+            )}
           </div>
 
           {user ? (
@@ -176,22 +181,22 @@ const PublicationDetailPage = () => {
       <Footer />
 
       {show_delete_modal && (
-  <div className="delete_modal_overlay">
-    <div className="delete_modal_card">
-      <div className="delete_modal_icon_container">
-        <Trash2 size={24} color="#D32F2F" strokeWidth={2.5} />
-      </div>
-      <h2>¿Deseas borrar esta publicación?</h2>
-      <p>No volverá a aparecer y se borrará permanentemente</p>
-      <button className="modal_confirm_button" onClick={handle_delete_publication}>
-        Confirmar
-      </button>
-      <button className="modal_cancel_button" onClick={() => set_show_delete_modal(false)}>
-        Cancelar
-      </button>
-    </div>
-  </div>
-)}
+        <div className="delete_modal_overlay">
+          <div className="delete_modal_card">
+            <div className="delete_modal_icon_container">
+              <Trash2 size={24} color="#D32F2F" strokeWidth={2.5} />
+            </div>
+            <h2>¿Deseas borrar esta publicación?</h2>
+            <p>No volverá a aparecer y se borrará permanentemente</p>
+            <button className="modal_confirm_button" onClick={handle_delete_publication}>
+              Confirmar
+            </button>
+            <button className="modal_cancel_button" onClick={() => set_show_delete_modal(false)}>
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -252,3 +252,14 @@
 .modal_cancel_button:active {
   transform: scale(0.98);
 }
+.no_questions_text {
+  font-family: "louis_george";
+  font-weight: 600;
+  font-size: 16px;
+  color: #717171;
+  text-align: center;
+  padding: 10px 20px;
+  border-radius: 32px;
+  margin: 0;
+  box-sizing: border-box;
+}

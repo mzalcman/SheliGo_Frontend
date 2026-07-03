@@ -127,7 +127,7 @@ const LoginPage = () => {
           </button>
 
 
-          <div style={{ margin: "15px 0", textAlign: "center", color: "#888", fontSize: "14px" }}>
+          <div style={{ margin: "3px 0", textAlign: "center", color: "#888", fontSize: "14px" }}>
             <span>o también puedes</span>
           </div>
 

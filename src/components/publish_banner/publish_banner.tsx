@@ -9,14 +9,14 @@ const navigate = useNavigate();
   <div className="publish_banner_content">
 
     <h2>
-      ¿Encontraste algo y querés devolverlo?
+      ¿Encontraste o perdiste algo?
     </h2>
 
     <button
       className="banner_publish_button"
       onClick={() => navigate("/publicar")}
       >
-      Publicar Hallazgo
+      Publicar
     </button>
 
   </div>

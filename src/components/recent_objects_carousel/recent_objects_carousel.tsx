@@ -11,17 +11,26 @@ interface ObjectType {
 
 interface RecentObjectsCarouselProps {
   objects: ObjectType[];
+  limit?: number;
 }
 
 const RecentObjectsCarousel = ({
   objects,
+  limit,
 }: RecentObjectsCarouselProps) => {
+  if (!objects || objects.length === 0) {
+    return (
+      <div className="recent_objects_empty">
+        <p className="empty_message_text">No hay objetos recientes en este momento.</p>
+      </div>
+    );
+  }
+
+  const displayedObjects = limit ? objects.slice(0, limit) : objects;
 
   return (
     <div className="recent_objects_carousel">
-
-      {objects.map((object) => (
-
+      {displayedObjects.map((object) => (
         <ObjectCard
           key={object.id}
           id={object.id}
@@ -30,9 +39,7 @@ const RecentObjectsCarousel = ({
           location={object.lugar_institucion}
           status={object.tipo}
         />
-
       ))}
-
     </div>
   );
 };

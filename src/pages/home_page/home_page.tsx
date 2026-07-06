@@ -109,10 +109,10 @@ const HomePage = () => {
           </div>
         ) : (
           <>
-            <InstitutionLogos institutions={institutions} />
+            <InstitutionLogos institutions={institutions} limit={10}/>
             <section className="recent_section">
               <h2 className="recent_title">Objetos Recientes</h2>
-              <RecentObjectsCarousel objects={publications} />
+              <RecentObjectsCarousel objects={publications} limit={20}/>
             </section>
           </>
         )}

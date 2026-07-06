@@ -8,14 +8,19 @@ interface Institution {
 
 interface InstitutionLogosProps {
   institutions: Institution[];
+  limit?: number; 
 }
 
 const InstitutionLogos = ({
   institutions,
+  limit, 
 }: InstitutionLogosProps) => {
+  
+  const displayedInstitutions = limit ? institutions.slice(0, limit) : institutions;
+
   return (
     <div className="institution_logos">
-      {institutions.map((institution) => (
+      {displayedInstitutions.map((institution) => (
         <div
           key={institution.id}
           className="institution_item"

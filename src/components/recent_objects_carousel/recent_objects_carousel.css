@@ -9,3 +9,33 @@
 .recent_objects_carousel::-webkit-scrollbar {
   display: none;
 }
+
+.recent_objects_carousel {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+
+.recent_objects_empty {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+  border: 2px dashed #e0e0e0;
+  border-radius: 20px;
+  box-sizing: border-box;
+  margin: 10px 0;
+}
+
+.empty_message_text {
+  margin: 0;
+  color: #717171;
+  font-size: 16px;
+  font-family: "louis_george"; 
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.3px;
+}

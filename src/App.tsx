@@ -8,6 +8,7 @@ import LandingPage from "./pages/landing_page/landing_page";
 import MenuPage from "./pages/menu_page/menu_page";
 import LoginPage from "./pages/login_page/login_page";
 import RegisterPage from "./pages/register_page/register_page";
+import HelpPage from "./pages/help_page/help_page";
 import ProtectedRoute from "./components/protected_route/protected_route"; 
 import { Routes, Route } from "react-router-dom";
 
@@ -16,7 +17,6 @@ function App() {
   useEffect(() => {
     const currentPath = window.location.pathname;
     
-    // Si la URL es la de una publicación, la guardamos a fuego en el storage de entrada
     if (currentPath.startsWith("/publicacion/")) {
       localStorage.setItem("redirect_after_login", currentPath);
     }
@@ -28,6 +28,7 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/buscar" element={<SearchPage />} />
+      <Route path="/ayuda" element={<HelpPage />} />
 
       <Route element={<ProtectedRoute />}>
         <Route path="/home" element={<HomePage />} />

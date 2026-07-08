@@ -1,6 +1,6 @@
 import "./menu_page.css";
 import { User, Package, Wallet, Headphones, LogOut, ArrowLeft } from "lucide-react";
-import { useState } from "react"; // 👈 Importamos useState
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/use_auth";
 import { getImageUrl } from "../../utils/get_image_url";
@@ -10,11 +10,8 @@ const MenuPage = () => {
   const navigate = useNavigate();
 
   const user = typedUser as any;
-  
-  // 🔥 Estado para controlar el modal de cerrar sesión
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  // Esta función ahora solo se ejecuta si el usuario confirma en el modal
   const handleLogoutConfirm = () => {
     logout();
     navigate("/login", {
@@ -47,13 +44,9 @@ const MenuPage = () => {
             <div className="menu_online_dot" />
           </div>
 
-          <h2 className="menu_name">
-            {userFullName}
-          </h2>
+          <h2 className="menu_name">{userFullName}</h2>
 
-          <button className="menu_view_profile">
-            Ver perfil
-          </button>
+          <button className="menu_view_profile">Ver perfil</button>
         </div>
 
         <div className="menu_options">
@@ -72,13 +65,15 @@ const MenuPage = () => {
             <span>Movimientos</span>
           </button>
 
-          <button className="menu_option">
+          <button
+            className="menu_option"
+            onClick={() => navigate("/ayuda")}
+          >
             <Headphones size={20} />
             <span>Ayuda</span>
           </button>
         </div>
 
-        {/* 🔥 Al hacer click acá, solo abrimos el modal */}
         <button className="menu_logout" onClick={() => setShowLogoutModal(true)}>
           <LogOut size={20} />
           <span>Cerrar sesión</span>
@@ -86,14 +81,13 @@ const MenuPage = () => {
 
       </div>
 
-      {/* 🔥 MODAL DE CERRAR SESIÓN (MISMA LÓGICA QUE EL DE BORRAR) */}
       {showLogoutModal && (
         <div className="delete_modal_overlay">
           <div className="delete_modal_card">
             <div className="logout_modal_icon_container">
               <LogOut size={24} color="#8D4F2A" strokeWidth={2.5} />
             </div>
-            
+
             <h2>¿Deseas cerrar sesión?</h2>
             <p>Tendrás que volver a ingresar tus credenciales para acceder a SheliGo.</p>
 

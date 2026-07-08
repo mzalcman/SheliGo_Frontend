@@ -197,6 +197,7 @@ const PublicationDetailPage = () => {
           </div>
         </div>
       )}
+      <Footer/>
     </div>
   );
 };

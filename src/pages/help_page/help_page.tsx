@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AlertCircle, ShieldCheck, RefreshCw, Lock, ChevronDown, ChevronUp, ArrowLeft, MessageSquare } from "lucide-react";
+import { AlertCircle, ShieldCheck, RefreshCw, Lock, ChevronDown, ChevronUp, ArrowLeft, Send } from "lucide-react";
 import "./help_page.css";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
@@ -119,7 +119,7 @@ const HelpPage = () => {
             className="submit_query_button" 
             onClick={() => navigate("/enviar-consulta")}
           >
-            Enviar consulta <MessageSquare size={18} style={{ marginLeft: '8px', display: 'inline' }} />
+            Enviar consulta <Send size={18} style={{ marginLeft: '8px', display: 'inline' }} />
           </button>
         </section>
       </div>

@@ -1,0 +1,209 @@
+.search_filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.search_filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid #d9d9d9;
+  border-radius: 999px;
+  background: white;
+  cursor: pointer;
+  transition: .25s;
+  font-family: "louis_george";
+  font-size: 15px;
+  font-weight: 700;
+  color: #3b3b3b;
+}
+
+.search_filter svg {
+  flex-shrink: 0;
+}
+
+.search_filter:hover {
+  border-color: #ff6f00;
+}
+
+.search_filter.active {
+  background: #ff6f00;
+  color: white;
+  border-color: #ff6f00;
+}
+
+.search_filter.active svg {
+  color: white;
+}
+
+.clear_filters_button {
+  color: #ff6f00;
+  border-color: #ff6f00; 
+}
+
+.clear_filters_button svg {
+  color: #ff6f00; 
+}
+
+.clear_filters_button:hover {
+  background-color: rgba(255, 111, 0, 0.05);
+  opacity: 1; 
+}
+
+.bottom_sheet_overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  z-index: 999;
+}
+
+.bottom_sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  border-radius: 28px 28px 0 0;
+  padding: 22px;
+  max-height: 70vh;
+  overflow-y: auto;
+  animation: bottomSheet .25s ease;
+  z-index: 1000;
+}
+
+@keyframes bottomSheet {
+
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+
+}
+
+.bottom_sheet_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.bottom_sheet_title {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: "poppins";
+  color: #ff6f00;
+}
+
+.bottom_sheet_close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: #f2f2f2;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: .2s;
+}
+
+.bottom_sheet_close:hover {
+  background: #e6e6e6;
+}
+
+.bottom_sheet_search {
+  width: 100%;
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid #d7d7d7;
+  padding: 0 16px;
+  outline: none;
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+
+.bottom_sheet_search:focus {
+  border-color: #ff6f00;
+}
+
+.bottom_sheet_content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.bottom_sheet_option {
+  border: none;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: #ececec;
+  cursor: pointer;
+  transition: .2s;
+  font-family: "louis_george";
+  font-size: 15px;
+  font-weight: 700;
+  color: #5d5d5d;
+}
+
+.bottom_sheet_option:hover {
+  background: #dddddd;
+}
+
+.bottom_sheet_option.selected {
+  background: #ff6f00;
+  color: white;
+}
+
+/* ---------- FECHAS ---------- */
+
+.date_range_container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.date_field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.date_field label {
+  font-family: "louis_george";
+  font-weight: 700;
+  color: #ff6f00;
+}
+
+.date_field input {
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid #d7d7d7;
+  padding: 0 15px;
+  font-size: 15px;
+}
+
+.date_field input:focus {
+  outline: none;
+  border-color: #ff6f00;
+}
+
+@media (max-width: 768px) {
+  .search_filters {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+  }
+  .search_filters::-webkit-scrollbar {
+    display: none;
+  }
+  .search_filter {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}

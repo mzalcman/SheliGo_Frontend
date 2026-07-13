@@ -1,5 +1,5 @@
 export const mock_logged_user = {
 
   id:
-    "a66c8253-2cae-42a3-a229-aaa7f545029a",
+    "72730f86-58b6-4370-b793-679132165e20",
 };

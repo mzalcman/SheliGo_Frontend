@@ -1,22 +1,20 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
+import "./styles/fonts.css"; //agregado
 import "./index.css";
 import { AuthProvider } from "./contexts/auth_context";
-import "./styles/fonts.css";
-import "./index.css";
+import { BrowserRouter } from "react-router-dom";
+
 
 ReactDOM.createRoot(
   document.getElementById("root")!
 ).render(
   <React.StrictMode>
-
-    {/* Provider global auth */}
     <AuthProvider>
-
-      <App />
-
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </AuthProvider>
-
   </React.StrictMode>
 );

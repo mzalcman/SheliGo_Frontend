@@ -1,0 +1,46 @@
+.filter_chip {
+  border: 1px solid transparent;
+  background: #f3f4f6;
+  color: #717171;
+  padding: 10px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "louis_george";
+  transition:
+    background .2s,
+    color .2s,
+    border-color .2s,
+    transform .15s,
+    box-shadow .2s;
+  user-select: none;
+}
+
+.filter_chip:hover {
+  background: #ececec;
+  border-color: #d8d8d8;
+  transform: translateY(-1px);
+}
+
+.filter_chip:active {
+  transform: scale(.97);
+}
+
+.filter_chip.active {
+  background: #ff6f00;
+  color: white;
+  border-color: #ff6f00;
+  box-shadow: 0 4px 14px rgba(255,111,0,.28);
+}
+
+.filter_chip.active:hover {
+  background: #f56600;
+  border-color: #f56600;
+}
+
+.filter_chip:focus-visible {
+  outline: none;
+  box-shadow:  0 0 0 3px rgba(255,111,0,.18);
+
+}

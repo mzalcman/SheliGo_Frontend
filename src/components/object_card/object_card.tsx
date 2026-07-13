@@ -1,11 +1,11 @@
 import "./object_card.css";
 import { MapPin } from "lucide-react";
 import PublicationStatus
-from "../publication_status/publication_status";
+  from "../publication_status/publication_status";
 import { useNavigate } from "react-router-dom";
 
 interface ObjectCardProps {
-  id:string;
+  id: string;
   image: string;
   title: string;
   location: string;
@@ -19,22 +19,30 @@ const ObjectCard = ({
   location,
   status,
 }: ObjectCardProps) => {
-  
-const navigate = useNavigate();
+
+  const navigate = useNavigate();
   return (
     <div
-  className="object_card" onClick={() => navigate(`/publicacion/${id}`)}>
+      className="object_card" onClick={() => navigate(`/publicacion/${id}`)}>
 
       <div className="object_card_image_container">
 
         <img
-          src={image}
+          src={
+            image ||
+            "/obj_predeterminada.png"
+          }
           alt={title}
           className="object_card_image"
+          onError={(event) => {
+            event.currentTarget.onerror = null;
+            event.currentTarget.src =
+              "/obj_predeterminada.png";
+          }}
         />
 
         <div className="object_card_status">
-            <PublicationStatus status={status}small={true} />
+          <PublicationStatus status={status} small={true} />
         </div>
 
       </div>

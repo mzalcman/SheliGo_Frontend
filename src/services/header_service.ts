@@ -6,7 +6,7 @@ export const get_header_data =
   async () => {
 
     const response =
-      await api.get("/header");
+      await api.get("/usuarios/me");
 
-    return response.data;
+    return response.data.data;
   };

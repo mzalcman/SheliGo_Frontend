@@ -13,5 +13,6 @@ export interface Question {
     id: string;
     contenido: string;
     created_at: string;
+    foto:string;
   } | null;
 }

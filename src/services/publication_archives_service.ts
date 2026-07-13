@@ -8,5 +8,5 @@ export const get_publication_archives =
       await api.get(
         `/publicaciones/${publication_id}/archivos`
       );
-    return response.data;
+    return response.data.data.archivos;
   };

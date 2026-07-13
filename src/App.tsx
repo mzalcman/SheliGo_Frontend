@@ -12,6 +12,9 @@ import HelpPage from "./pages/help_page/help_page";
 import ProtectedRoute from "./components/protected_route/protected_route"; 
 import { Routes, Route } from "react-router-dom";
 
+// 1. Agregamos el import de la nueva pantalla de contáctanos
+import ContactPage from "./pages/contact_page/ContactPage";
+
 function App() {
 
   useEffect(() => {
@@ -29,6 +32,9 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/buscar" element={<SearchPage />} />
       <Route path="/ayuda" element={<HelpPage />} />
+      
+      {/* 2. Agregamos la ruta para que matchee con el botón de la HelpPage */}
+      <Route path="/contactanos" element={<ContactPage />} />
 
       <Route element={<ProtectedRoute />}>
         <Route path="/home" element={<HomePage />} />

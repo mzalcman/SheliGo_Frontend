@@ -1,0 +1,197 @@
+.edit_page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
+.edit_content {
+  padding: 0 24px;
+}
+
+/* 🎯 Modificado para verse idéntico a tu imagen: texto negro y limpio */
+.edit_back_btn {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 25px;
+  font-family: "poppins", sans-serif;
+  font-weight: 500;
+  color: #000000; /* Texto Negro */
+  cursor: pointer;
+  margin-top: 26px;
+  padding: 0;
+  letter-spacing: -0.5px;
+}
+
+.edit_title {
+  font-size: 24px;
+  font-family: "poppins", sans-serif;
+  font-weight: 700;
+  color: #000000;
+  margin: 24px 0 4px 0;
+}
+
+.edit_subtitle {
+  font-size: 14px;
+  color: #6e6e6e;
+  font-family: "louis_george", sans-serif;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 24px;
+}
+
+/* Espaciado del contenedor del ImageUploader */
+.edit_uploader_wrapper {
+  margin-bottom: 26px; 
+}
+
+.edit_backend_images_preview {
+  margin-top: 16px;
+}
+
+.edit_section_mini_title {
+  font-family: "poppins", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #444444;
+  margin-bottom: 8px;
+}
+
+/* Bloque contenedor del formulario */
+.edit_form_card {
+  background-color: #eeeeee;
+  border-radius: 28px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.edit_form_card label {
+  font-family: "poppins", sans-serif;
+  font-weight: 700;
+  font-size: 14.5px;
+  color: #000000;
+  margin-top: 4px;
+}
+
+/* Inputs con lógica de colores */
+.edit_input, .edit_textarea {
+  width: 100%;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 18px;
+  padding: 14px 18px;
+  font-family: "louis_george", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: color 0.2s ease;
+}
+
+.text_gray {
+  color: #929292; /* Gris inicial (Autocompletado) */
+}
+
+.text_black {
+  color: #000000; /* Negro (Cuando edita) */
+}
+
+.edit_textarea {
+  height: 95px;
+  resize: none;
+}
+
+.input_error {
+  border: 1.5px solid #ff3b30;
+}
+
+/* Grupo de botones Descartar / Guardar */
+.edit_buttons_group {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.edit_btn_discard {
+  flex: 1;
+  background-color: #f4f4f4;
+  color: #ff3b30;
+  border: none;
+  border-radius: 50px;
+  padding: 16px 0;
+  font-family: "poppins", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.edit_btn_save {
+  flex: 1;
+  background-color: #ff6f00;
+  color: #ffffff;
+  border: none;
+  border-radius: 50px;
+  padding: 16px 0;
+  font-family: "poppins", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.edit_bottom_notice {
+  text-align: center;
+  font-size: 13px;
+  color: #7a7a7a;
+  font-family: "louis_george", sans-serif;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 24px 0 40px 0;
+}
+
+.edit_loader_fallback {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: #ffffff;
+}
+
+.edit_autocomplete_container {
+  position: relative;
+  width: 100%;
+}
+
+.edit_dropdown_list {
+  position: absolute;
+  top: 105%;
+  left: 0;
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 8px 0;
+  margin: 0;
+  list-style: none;
+  z-index: 10;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.edit_dropdown_list li {
+  padding: 12px 18px;
+  font-family: "louis_george", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #000000;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.edit_dropdown_list li:hover {
+  background-color: #f5f5f5;
+}

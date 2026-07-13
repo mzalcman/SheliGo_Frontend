@@ -18,10 +18,9 @@ const PublishPage = () => {
   const [categorias, setCategorias] = useState<BackendItem[]>([]);
   const [instituciones, setInstituciones] = useState<BackendItem[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false); // 🔴 Nuevo modal de error
+  const [showErrorModal, setShowErrorModal] = useState(false); 
   const [images, setImages] = useState<File[]>([]);
 
-  // Estados de formulario
   const [nombre, setNombre] = useState("");
   const [tipo, setTipo] = useState("");
   const [categoriaId, setCategoriaId] = useState("");
@@ -30,14 +29,12 @@ const PublishPage = () => {
   const [descripcion, setDescripcion] = useState("");
   const [institucion, setInstitucion] = useState("");
 
-  // Estado para capturar qué campos faltan completar
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
 
   const [filteredInstituciones, setFilteredInstituciones] = useState<BackendItem[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const autocompleteRef = useRef<HTMLDivElement>(null);
 
-  // 🔴 Obtener la fecha de hoy en formato YYYY-MM-DD para bloquear fechas futuras
   const todayStr = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
@@ -94,23 +91,20 @@ const PublishPage = () => {
   }, []);
 
   const handlePublish = async () => {
-    // 🔴 NUEVO: Validar si la fecha ingresada es mayor a la de hoy o tiene un año absurdo
     const selectedDate = new Date(fechaEvento + "T00:00:00");
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Limpiamos horas para comparar solo días
+    today.setHours(0, 0, 0, 0); 
 
-    // Extraemos el año para validar que no tenga más de 4 dígitos (ej: 20265)
     const anioDigitado = fechaEvento.split("-")[0];
 
     const isFutureDate = selectedDate > today;
     const isInvalidYear = anioDigitado.length > 4 || parseInt(anioDigitado) < 1900;
 
-    // Armamos el objeto de errores dinámico incluyendo las nuevas reglas de fecha
     const errors: Record<string, boolean> = {
       nombre: !nombre.trim(),
       tipo: !tipo,
       categoriaId: !categoriaId,
-      fechaEvento: !fechaEvento || isFutureDate || isInvalidYear, // 🔴 Se marca error si es futura o año roto
+      fechaEvento: !fechaEvento || isFutureDate || isInvalidYear,
       lugarInstitucion: !lugarInstitucion.trim(),
       descripcion: !descripcion.trim(),
       institucion: !institucion.trim(),
@@ -118,7 +112,6 @@ const PublishPage = () => {
 
     setFormErrors(errors);
 
-    // Si hay algún error, frena y muestra el lindo overlay que armamos
     if (Object.values(errors).some((isError) => isError)) {
       setShowErrorModal(true);
       return;
@@ -246,7 +239,6 @@ const PublishPage = () => {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0); 
 
-                // Si el usuario intentó tipear o elegir un día del futuro, lo obligamos a volver a hoy
                 if (selectedDate > today) {
                   setFechaEvento(todayStr); 
                   if (formErrors.fechaEvento) setFormErrors(prev => ({ ...prev, fechaEvento: false }));

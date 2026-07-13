@@ -36,3 +36,12 @@ export const delete_publication = async (id: string) => {
   const response = await api.delete(`/publicaciones/${id}`);
   return response.data;
 };
+
+export const update_publication = async (id: string, formData: FormData) => {
+  const response = await api.patch(`/publicaciones/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};

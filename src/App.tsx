@@ -9,6 +9,7 @@ import MenuPage from "./pages/menu_page/menu_page";
 import LoginPage from "./pages/login_page/login_page";
 import RegisterPage from "./pages/register_page/register_page";
 import HelpPage from "./pages/help_page/help_page";
+import EditPublicationPage from "./pages/edit_publication_page/edit_publication_page";
 import ProtectedRoute from "./components/protected_route/protected_route"; 
 import { Routes, Route } from "react-router-dom";
 
@@ -34,6 +35,7 @@ function App() {
         <Route path="/home" element={<HomePage />} />
         <Route path="/publicacion/:id" element={<PublicationDetailPage />} />
         <Route path="/publicar" element={<PublishPage />} />
+        <Route path="/publicaciones/editar/:id" element={<EditPublicationPage />} />
         <Route path="/menu" element={<MenuPage />} />
       </Route>
     </Routes>

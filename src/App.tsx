@@ -16,6 +16,9 @@ import ChatsListPage from "./pages/chats_list_page/chats_list_page";
 import ChatRoomPage from "./pages/chat_room_page/chat_room_page";
 import MyPublicatiosPage from "./pages/my_publications_page/my_publications_page";
 
+// 1. Agregamos el import de la nueva pantalla de contáctanos
+import ContactPage from "./pages/contact_page/ContactPage";
+
 function App() {
 
   useEffect(() => {
@@ -33,6 +36,9 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/buscar" element={<SearchPage />} />
       <Route path="/ayuda" element={<HelpPage />} />
+      
+      {/* 2. Agregamos la ruta para que matchee con el botón de la HelpPage */}
+      <Route path="/contactanos" element={<ContactPage />} />
 
       <Route element={<ProtectedRoute />}>
         <Route path="/home" element={<HomePage />} />

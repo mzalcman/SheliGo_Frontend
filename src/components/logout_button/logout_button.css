@@ -1,0 +1,104 @@
+.menu_logout {
+  margin-top: auto;
+  border: none;
+  background: transparent;
+  font-family: "louis_george";
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #ff4d4d;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.menu_logout:hover {
+  opacity: 0.7;
+}
+
+.delete_modal_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999; 
+}
+
+.delete_modal_card {
+  background-color: white;
+  width: 85%;
+  max-width: 340px;
+  border-radius: 32px;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.logout_modal_icon_container {
+  background-color: #FDF5E6;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.delete_modal_card h2 {
+  font-family: "Poppins";
+  font-size: 20px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0 0 10px 0;
+}
+
+.delete_modal_card p {
+  font-family: "louis_george";
+  font-size: 14px;
+  color: #757575;
+  margin: 0 0 24px 0;
+  line-height: 1.4;
+}
+
+.modal_confirm_button {
+  background-color: #ff6f00;
+  color: white;
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 25px;
+  font-family: "Poppins";
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: transform 0.1s ease;
+}
+
+.modal_cancel_button {
+  background: none;
+  color: #616161;
+  width: 100%;
+  height: 40px;
+  border: none;
+  font-family: "Poppins";
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal_confirm_button:active,
+.modal_cancel_button:active {
+  transform: scale(0.98);
+}

@@ -1,24 +1,15 @@
 import "./menu_page.css";
-import { User, Package, Wallet, Headphones, LogOut, ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { User, Package, Wallet, Headphones, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/use_auth";
 import { getImageUrl } from "../../utils/get_image_url";
+import LogoutButton from "../../components/logout_button/logout_button";
 
 const MenuPage = () => {
-  const { user: typedUser, logout } = useAuth();
+  const { user: typedUser } = useAuth();
   const navigate = useNavigate();
 
   const user = typedUser as any;
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
-
-  const handleLogoutConfirm = () => {
-    logout();
-    navigate("/login", {
-      replace: true,
-    });
-  };
-
   const userFullName = user?.name || "Usuario";
 
   return (
@@ -56,8 +47,8 @@ const MenuPage = () => {
           </button>
 
           <button 
-          className="menu_option"
-          onClick={() => navigate('/mispublicaciones')}
+            className="menu_option"
+            onClick={() => navigate('/mispublicaciones')}
           >
             <Package size={20} />
             <span>Mis publicaciones</span>
@@ -77,32 +68,9 @@ const MenuPage = () => {
           </button>
         </div>
 
-        <button className="menu_logout" onClick={() => setShowLogoutModal(true)}>
-          <LogOut size={20} />
-          <span>Cerrar sesión</span>
-        </button>
+        <LogoutButton />
 
       </div>
-
-      {showLogoutModal && (
-        <div className="delete_modal_overlay">
-          <div className="delete_modal_card">
-            <div className="logout_modal_icon_container">
-              <LogOut size={24} color="#8D4F2A" strokeWidth={2.5} />
-            </div>
-
-            <h2>¿Deseas cerrar sesión?</h2>
-            <p>Tendrás que volver a ingresar tus credenciales para acceder a SheliGo.</p>
-
-            <button className="modal_confirm_button" onClick={handleLogoutConfirm}>
-              Confirmar
-            </button>
-            <button className="modal_cancel_button" onClick={() => setShowLogoutModal(false)}>
-              Cancelar
-            </button>
-          </div>
-        </div>
-      )}
     </main>
   );
 };

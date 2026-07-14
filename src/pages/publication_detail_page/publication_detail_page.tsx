@@ -1,6 +1,6 @@
 import "./publication_detail_page.css";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom"; 
+import { useParams, useNavigate } from "react-router-dom";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import PublicationDetail from "../../components/publication_detail/publication_detail";
@@ -10,19 +10,19 @@ import ClaimButton from "../../components/claim_button/claim_button";
 import type { Publication } from "../../types/publication";
 import type { Question } from "../../types/question";
 import type { PublicationArchive } from "../../types/publication_archive";
-import { get_publication_by_id, delete_publication } from "../../services/publication_service"; 
+import { get_publication_by_id, delete_publication } from "../../services/publication_service";
 import { get_questions, create_question } from "../../services/question_service";
 import { get_publication_archives } from "../../services/publication_archives_service";
-import { useAuthContext } from "../../contexts/auth_context"; 
+import { useAuthContext } from "../../contexts/auth_context";
 import Loader from "../../components/loader/loader";
-import { Pencil, Trash2 } from "lucide-react"; 
+import { Pencil, Trash2 } from "lucide-react";
 
 const PublicationDetailPage = () => {
   const { id } = useParams();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const publication_id = id || "";
-  
-  const { user } = useAuthContext(); 
+
+  const { user } = useAuthContext();
 
   const [publication, set_publication] = useState<Publication | null>(null);
   const [archives, set_archives] = useState<PublicationArchive[]>([]);
@@ -30,7 +30,7 @@ const PublicationDetailPage = () => {
   const [new_question, set_new_question] = useState("");
   const [loading, set_loading] = useState(true);
   const [error, set_error] = useState("");
-  
+
   const [show_delete_modal, set_show_delete_modal] = useState(false);
   const [is_deleting, set_is_deleting] = useState(false);
 
@@ -68,10 +68,10 @@ const PublicationDetailPage = () => {
   const handle_delete_publication = async () => {
     try {
       set_is_deleting(true);
-     
-      await delete_publication(publication_id); 
+
+      await delete_publication(publication_id);
       set_show_delete_modal(false);
-      navigate("/home"); 
+      navigate("/home");
     } catch (err) {
       console.error("Error al eliminar la publicación:", err);
       alert("No se pudo eliminar la publicación. Inténtalo de nuevo.");
@@ -81,10 +81,10 @@ const PublicationDetailPage = () => {
   };
 
   const add_question = async () => {
-    if (!new_question.trim() || !user?.id) return; 
+    if (!new_question.trim() || !user?.id) return;
 
     try {
-      await create_question(publication_id, user.id, new_question); 
+      await create_question(publication_id, user.id, new_question);
       await refresh_questions();
       set_new_question("");
     } catch (error) {
@@ -107,17 +107,17 @@ const PublicationDetailPage = () => {
 
         {is_owner && (
           <div className="owner_actions_container">
-            <button 
+            <button
               className="publication_edit_pill_button"
-              onClick={() => navigate(`/publicaciones/editar/${publication_id}`)} 
+              onClick={() => navigate(`/publicaciones/editar/${publication_id}`)}
             >
               <Pencil size={18} strokeWidth={2.5} />
               <span>Editar</span>
             </button>
 
-            <button 
+            <button
               className="publication_delete_pill_button"
-              onClick={() => set_show_delete_modal(true)} 
+              onClick={() => set_show_delete_modal(true)}
             >
               <Trash2 size={18} strokeWidth={2.5} />
               <span>Borrar</span>
@@ -159,7 +159,12 @@ const PublicationDetailPage = () => {
                   on_change={set_new_question}
                   on_submit={add_question}
                 />
-                <ClaimButton />
+                <ClaimButton
+                  otroUsuarioId={String(publication.usuario_id)}
+                  // Usamos 'any' temporal o leemos de propiedades que sí existan en tu tipo Publication
+                  usuarioNombre={(publication as any).usuario_nombre || "Creador de la publicación"}
+                  usuarioAvatar={(publication as any).usuario_avatar || ""}
+                />
               </>
             )
           ) : (
@@ -167,7 +172,7 @@ const PublicationDetailPage = () => {
               <p className="login_required_text">
                 ¿Reconoces este objeto o tienes alguna duda?
               </p>
-              <button 
+              <button
                 className="login_redirect_button"
                 onClick={() => navigate("/login")}
               >
@@ -196,7 +201,7 @@ const PublicationDetailPage = () => {
           </div>
         </div>
       )}
-      <Footer/>
+      <Footer />
     </div>
   );
 };

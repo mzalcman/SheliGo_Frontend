@@ -109,7 +109,7 @@ const ChatRoomPage = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3000/api/chat/mensaje", {
+      const response = await fetch("http://localhost:3000/chat/mensaje", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

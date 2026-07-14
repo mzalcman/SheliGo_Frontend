@@ -162,3 +162,13 @@
   background-color: #ff6f00;
   border-radius: 50%;
 }
+
+.chats_empty_text{
+  font-family: "louis_george";
+  font-weight: 600;
+  font-size: 16px;
+  color: #717171;
+  text-align: center;
+  margin: 0;
+  line-height: 1.5;
+}

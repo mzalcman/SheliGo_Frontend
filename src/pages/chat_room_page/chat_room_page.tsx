@@ -17,22 +17,23 @@ const ChatRoomPage = () => {
   const { salaId } = useParams<{ salaId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuthContext(); // Obtenemos el usuario activo
-  const chatInfo = location.state?.usuario; // Info del receptor (avatar y nombre)
+  const { user } = useAuthContext(); 
+  const chatInfo = location.state?.usuario;
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
+  const [cargandoHistorial, setCargandoHistorial] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // 1️⃣ Cargar historial previo de Node + Suscribir a Supabase Realtime
   useEffect(() => {
     if (!salaId) return;
 
-    // Fetch del historial previo a tu API de Node
     const cargarHistorial = async () => {
       try {
+        setCargandoHistorial(true);
         const token = localStorage.getItem("token");
-        const response = await fetch(`http://localhost:3000/api/chat/mensajes/${salaId}`, {
+        
+        const response = await fetch(`http://localhost:3000/chat/salas/${salaId}/mensajes`, {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -41,31 +42,18 @@ const ChatRoomPage = () => {
           const data = await response.json();
           setMessages(data);
         } else {
-          setMessages([
-            {
-              id: "msg_1",
-              sala_id: salaId,
-              contenido: "Encontraste una mochila? de color gris con varias cosas adentro?",
-              emisor_id: "otro_usuario_id",
-              creado_at: new Date(new Date().setHours(10, 15)).toISOString()
-            },
-            {
-              id: "msg_2",
-              sala_id: salaId,
-              contenido: "Holaaa, sisi encontré eso, tenia una botella, unas zapatillas, unas galletitas y algo más",
-              emisor_id: user?.id || "",
-              creado_at: new Date(new Date().setHours(10, 32)).toISOString()
-            }
-          ]);
+          console.error("Error al obtener los mensajes de la API");
         }
       } catch (error) {
-        console.error("Error al cargar historial:", error);
+        console.error("Error de red al cargar el historial:", error);
+      } finally {
+        setCargandoHistorial(false);
       }
     };
 
     cargarHistorial();
 
-    // ESCUCHAR EN TIEMPO REAL (Instrucciones del Back)
+    // ESCUCHAR EN TIEMPO REAL (INSERTs y DELETEs)
     const canal = supabase
       .channel(`sala_${salaId}`)
       .on(
@@ -78,12 +66,26 @@ const ChatRoomPage = () => {
         },
         (payload) => {
           const nuevoMensaje = payload.new as Message;
-          console.log("Nuevo mensaje recibido en vivo:", nuevoMensaje);
+          console.log("Nuevo mensaje en tiempo real:", nuevoMensaje);
           
           setMessages((prev) => {
             if (prev.some((msg) => msg.id === nuevoMensaje.id)) return prev;
             return [...prev, nuevoMensaje];
           });
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "mensajes"
+        },
+        (payload) => {
+          const mensajeEliminadoId = payload.old.id;
+          console.log("Mensaje eliminado en tiempo real:", mensajeEliminadoId);
+          
+          setMessages((prev) => prev.filter((msg) => msg.id !== mensajeEliminadoId));
         }
       )
       .subscribe();
@@ -97,7 +99,7 @@ const ChatRoomPage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // ENVIAR MENSAJE 
+  // ENVIAR MENSAJE A TRAVÉS DE LA API DE NODE (POST /api/chat/mensaje)
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim() || !salaId) return;
@@ -120,10 +122,34 @@ const ChatRoomPage = () => {
       });
 
       if (!response.ok) {
-        console.error("Error enviando el mensaje al backend de Node");
+        console.error("Error enviando el mensaje al servidor de Node");
       }
     } catch (error) {
-      console.error("Fallo de red al enviar mensaje:", error);
+      console.error("Error de red al intentar enviar el mensaje:", error);
+    }
+  };
+
+  // ELIMINAR MENSAJE (DELETE /api/chat/mensaje/:id)
+  const handleBorrarMensaje = async (mensajeId: string, emisorId: string) => {
+    if (emisorId !== user?.id) return;
+
+    const quiereBorrar = window.confirm("¿Deseas eliminar este mensaje para todos?");
+    if (!quiereBorrar) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:3000/api/chat/mensaje/${mensajeId}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        console.error("No se pudo eliminar el mensaje en el backend");
+      }
+    } catch (error) {
+      console.error("Error de red al intentar eliminar mensaje:", error);
     }
   };
 
@@ -134,7 +160,7 @@ const ChatRoomPage = () => {
 
   return (
     <div className="room_container_page">
-      {/* Header específico del Chat */}
+      {/* Header del Chat */}
       <header className="room_header">
         <button className="room_back_btn" onClick={() => navigate(-1)}>
           <ArrowLeft size={26} color="#ff6f00" strokeWidth={2.5} />
@@ -144,39 +170,52 @@ const ChatRoomPage = () => {
           alt="Avatar" 
           className="room_header_avatar" 
         />
-        <span className="room_header_name">{chatInfo?.usuario_nombre || "Juana Perez"}</span>
+        <span className="room_header_name">{chatInfo?.usuario_nombre || "Chat"}</span>
       </header>
 
       {/* Área de Mensajes */}
       <main className="room_chat_area">
         <div className="room_date_tag">
-          <span>HOY</span>
+          <span>CHAT</span>
         </div>
 
         <div className="room_messages_list">
-          {messages.map((msg) => {
-            const esMio = msg.emisor_id === user?.id;
-            return (
-              <div 
-                key={msg.id} 
-                className={`room_bubble_wrapper ${esMio ? "mine" : "theirs"}`}
-              >
-                <div className="room_bubble">
-                  <p className="room_bubble_text">{msg.contenido}</p>
+          {cargandoHistorial ? (
+            <p className="room_delete_hint">Cargando mensajes anteriores...</p>
+          ) : messages.length > 0 ? (
+            messages.map((msg) => {
+              const esMio = msg.emisor_id === user?.id;
+              return (
+                <div 
+                  key={msg.id} 
+                  className={`room_bubble_wrapper ${esMio ? "mine" : "theirs"}`}
+                  onContextMenu={(e) => {
+                    e.preventDefault(); 
+                    handleBorrarMensaje(msg.id, msg.emisor_id);
+                  }}
+                >
+                  <div className="room_bubble">
+                    <p className="room_bubble_text">{msg.contenido}</p>
+                  </div>
+                  <div className="room_bubble_meta">
+                    <span className="room_bubble_time">{formatearHora(msg.creado_at)}</span>
+                    {esMio && <span className="room_double_check">✓✓</span>}
+                  </div>
                 </div>
-                <div className="room_bubble_meta">
-                  <span className="room_bubble_time">{formatearHora(msg.creado_at)}</span>
-                  {esMio && <span className="room_double_check">✓✓</span>}
-                </div>
-              </div>
-            );
-          })}
+              );
+            })
+          ) : (
+            <p className="room_delete_hint" style={{ marginTop: "20px" }}>
+              No hay mensajes aún en esta conversación. ¡Saludá! 👋
+            </p>
+          )}
           <div ref={messagesEndRef} />
         </div>
 
-        <p className="room_delete_hint">MANTÉN PRESIONADO PARA ELIMINAR UN MENSAJE</p>
+        <p className="room_delete_hint">MANTÉN PRESIONADO EN TU BURBUJA PARA ELIMINAR UN MENSAJE</p>
       </main>
 
+      {/* Formulario de Entrada */}
       <form className="room_input_bar" onSubmit={handleSendMessage}>
         <div className="room_input_wrapper">
           <input

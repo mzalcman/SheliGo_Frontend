@@ -20,12 +20,22 @@ const ChatsListPage = () => {
   const [chats, setChats] = useState<ChatRoom[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<"todos" | "no_leidos" | "leidos">("todos");
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     const fetchSalas = async () => {
       try {
+        setCargando(true);
         const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:3000/api/chat/salas", {
+        
+        let url = "http://localhost:3000/chat/salas";
+        if (filter === "no_leidos") {
+          url += "?filtro=no_leidas";
+        } else if (filter === "leidos") {
+          url += "?filtro=leidas";
+        }
+
+        const response = await fetch(url, {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -35,61 +45,21 @@ const ChatsListPage = () => {
           const data = await response.json();
           setChats(data);
         } else {
-          setChats([
-            {
-              sala_id: "sala_juana_123",
-              usuario_nombre: "Juana Perez",
-              usuario_avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
-              ultimo_mensaje: "Encontraste una mochila?",
-              ultimo_mensaje_tiempo: "HACE 2 MIN",
-              leido: false,
-              enviado_por_mi: false
-            },
-            {
-              sala_id: "sala_pilar_456",
-              usuario_nombre: "Pilar Garcia",
-              usuario_avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
-              ultimo_mensaje: "Dale, vamos viendo en la s...",
-              ultimo_mensaje_tiempo: "14:32",
-              leido: true,
-              enviado_por_mi: true
-            },
-            {
-              sala_id: "sala_mario_789",
-              usuario_nombre: "Mario Cohen",
-              usuario_avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
-              ultimo_mensaje: "No hace falta, yo puedo ir ...",
-              ultimo_mensaje_tiempo: "AYER",
-              leido: true,
-              enviado_por_mi: false
-            },
-            {
-              sala_id: "sala_andres_012",
-              usuario_nombre: "Andres Gomez",
-              usuario_avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
-              ultimo_mensaje: "Si, estoy a 5 minutos de ese...",
-              ultimo_mensaje_tiempo: "20/01",
-              leido: false,
-              enviado_por_mi: false
-            }
-          ]);
+          console.error("Error en la respuesta del servidor al traer salas (Posible token inválido o ruta incorrecta)");
         }
       } catch (error) {
-        console.error("Error al traer salas de chat:", error);
+        console.error("Error al conectar con la API de salas:", error);
+      } finally {
+        setCargando(false);
       }
     };
 
     fetchSalas();
-  }, []);
+  }, [filter]);
 
-  const filteredChats = chats.filter((chat) => {
-    const matchesSearch = chat.usuario_nombre.toLowerCase().includes(searchQuery.toLowerCase());
-    if (!matchesSearch) return false;
-
-    if (filter === "no_leidos") return !chat.leido;
-    if (filter === "leidos") return chat.leido;
-    return true;
-  });
+  const filteredChats = chats.filter((chat) =>
+    chat.usuario_nombre.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="chats_container_page">
@@ -134,30 +104,36 @@ const ChatsListPage = () => {
 
         {/* Lista de salas */}
         <div className="chats_list">
-          {filteredChats.map((chat) => (
-            <div 
-              key={chat.sala_id} 
-              className={`chats_item_card ${!chat.leido ? "unread_bg" : ""}`}
-              onClick={() => navigate(`/chat/${chat.sala_id}`, { state: { usuario: chat } })}
-            >
-              <img src={chat.usuario_avatar} alt={chat.usuario_nombre} className="chats_avatar" />
-              
-              <div className="chats_card_info">
-                <div className="chats_card_top_row">
-                  <span className="chats_user_name">{chat.usuario_nombre}</span>
-                  <span className="chats_time_text">{chat.ultimo_mensaje_tiempo}</span>
-                </div>
+          {cargando ? (
+            <p className="chats_empty_text">Cargando conversaciones...</p>
+          ) : filteredChats.length > 0 ? (
+            filteredChats.map((chat) => (
+              <div 
+                key={chat.sala_id} 
+                className={`chats_item_card ${!chat.leido ? "unread_bg" : ""}`}
+                onClick={() => navigate(`/chat/${chat.sala_id}`, { state: { usuario: chat } })}
+              >
+                <img src={chat.usuario_avatar} alt={chat.usuario_nombre} className="chats_avatar" />
                 
-                <div className="chats_card_bottom_row">
-                  <span className="chats_preview_message">
-                    {chat.enviado_por_mi && <span className="chats_double_check">✓✓ </span>}
-                    {chat.ultimo_mensaje}
-                  </span>
-                  {!chat.leido && <div className="chats_unread_dot" />}
+                <div className="chats_card_info">
+                  <div className="chats_card_top_row">
+                    <span className="chats_user_name">{chat.usuario_nombre}</span>
+                    <span className="chats_time_text">{chat.ultimo_mensaje_tiempo}</span>
+                  </div>
+                  
+                  <div className="chats_card_bottom_row">
+                    <span className="chats_preview_message">
+                      {chat.enviado_por_mi && <span className="chats_double_check">✓✓ </span>}
+                      {chat.ultimo_mensaje}
+                    </span>
+                    {!chat.leido && <div className="chats_unread_dot" />}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="chats_empty_text">No tenés conversaciones en esta lista.</p>
+          )}
         </div>
       </main>
 

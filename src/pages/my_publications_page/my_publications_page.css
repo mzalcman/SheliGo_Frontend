@@ -1,0 +1,199 @@
+.mypubs_container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.mypubs_content {
+  flex: 1;
+  padding: 0 24px;
+  margin-top: 20px;
+}
+
+.mypubs_navigation_header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.mypubs_back_btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  transition: transform 0.1s ease;
+}
+
+.mypubs_back_btn:active {
+  transform: scale(0.9);
+}
+
+.mypubs_title {
+  font-family: "poppins", sans-serif;
+  font-size: 28px;
+  font-weight: 400;
+  color: #000000;
+  margin: 0;
+}
+
+.mypubs_activity_section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+
+.mypubs_subtitle {
+  font-family: "poppins", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ff6f00;
+  letter-spacing: 0.8px;
+}
+
+.mypubs_headline {
+  font-family: "poppins", sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: #000000;
+  margin: 2px 0 0 0;
+}
+
+.mypubs_description {
+  font-family: "louis_george", sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: #6e6e6e;
+  line-height: 1.4;
+  margin: 8px 0 0 0;
+}
+
+/* Banner naranja de objetos totales */
+.mypubs_badge_banner {
+  background-color: #ff6f00;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 32px;
+}
+
+.mypubs_badge_count {
+  font-family: "poppins", sans-serif;
+  font-size: 34px;
+  font-weight: 900;
+  color: #000000;
+  line-height: 1;
+}
+
+.mypubs_badge_text {
+  font-family: "poppins", sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: 0.5px;
+}
+
+/* Grilla de publicaciones */
+.mypubs_list_wrapper {
+  margin-bottom: 50px;
+}
+
+.mypubs_grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Loader */
+.mypubs_loading_spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  gap: 12px;
+  font-family: "poppins", sans-serif;
+  color: #6e6e6e;
+  font-weight: 500;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 111, 0, 0.1);
+  border-left-color: #ff6f00;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Estado Vacío Profesional */
+.mypubs_empty_state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #fcfcfc;
+  border: 1.5px dashed #e0e0e0;
+  border-radius: 28px;
+}
+
+.mypubs_empty_icon_wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: rgba(255, 111, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.mypubs_empty_title {
+  font-family: "poppins", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #222222;
+  margin: 0 0 10px 0;
+}
+
+.mypubs_empty_subtitle {
+  font-family: "louis_george", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #7d7d7d;
+  line-height: 1.4;
+  max-width: 280px;
+  margin: 0 0 24px 0;
+}
+
+.mypubs_empty_action_btn {
+  background-color: #ff6f00;
+  color: #ffffff;
+  border: none;
+  border-radius: 50px;
+  padding: 14px 28px;
+  font-family: "poppins", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+  box-shadow: 0px 4px 12px rgba(255, 111, 0, 0.2);
+}
+
+.mypubs_empty_action_btn:active {
+  transform: scale(0.96);
+}

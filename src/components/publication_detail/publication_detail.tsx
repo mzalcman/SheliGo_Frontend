@@ -52,7 +52,7 @@ const PublicationDetail = ({
       const current_url = window.location.href;
       await navigator.clipboard.writeText(current_url);
       set_copied(true);
-      setTimeout(() => set_copied(false), 2000); // Se oculta a los 2 segundos
+      setTimeout(() => set_copied(false), 2000); 
     } catch (err) {
       console.error("Error al copiar el link: ", err);
     }

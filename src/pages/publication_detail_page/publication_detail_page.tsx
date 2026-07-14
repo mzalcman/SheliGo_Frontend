@@ -135,7 +135,6 @@ const PublicationDetailPage = () => {
             )}
           </div>
 
-          {/* 🔴 CAMBIO AQUÍ: Validación si no hay preguntas públicas todavía */}
           <div className="questions_list">
             {questions.length === 0 ? (
               <p className="no_questions_text">No hay preguntas públicas aún</p>

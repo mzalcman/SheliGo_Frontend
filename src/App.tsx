@@ -14,6 +14,7 @@ import ProtectedRoute from "./components/protected_route/protected_route";
 import { Routes, Route } from "react-router-dom";
 import ChatsListPage from "./pages/chats_list_page/chats_list_page"; 
 import ChatRoomPage from "./pages/chat_room_page/chat_room_page";
+import MyPublicatiosPage from "./pages/my_publications_page/my_publications_page";
 
 function App() {
 
@@ -40,6 +41,7 @@ function App() {
         <Route path="/publicaciones/editar/:id" element={<EditPublicationPage />} />
         <Route path="/chats" element={<ChatsListPage />} />
         <Route path="/chat/:salaId" element={<ChatRoomPage />} />
+        <Route path="/mispublicaciones" element={<MyPublicatiosPage />} />
         <Route path="/menu" element={<MenuPage />} />
       </Route>
     </Routes>

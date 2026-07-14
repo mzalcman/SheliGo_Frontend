@@ -55,7 +55,10 @@ const MenuPage = () => {
             <span>Información personal</span>
           </button>
 
-          <button className="menu_option">
+          <button 
+          className="menu_option"
+          onClick={() => navigate('/mispublicaciones')}
+          >
             <Package size={20} />
             <span>Mis publicaciones</span>
           </button>

@@ -34,14 +34,16 @@ const Header = () => {
 
       <div className="header_icons">
 
-        <button className="header_icon_button">
+        <button 
+        className="header_icon_button" 
+        onClick={() => navigate('/chats')}>
           <MessageCircle
             size={34}
             strokeWidth={2.2}
           />
         </button>
 
-        <button className="header_icon_button">
+        <button className="header_icon_button" >
           <Bell
             size={34}
             strokeWidth={2.2}

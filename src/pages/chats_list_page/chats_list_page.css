@@ -1,0 +1,164 @@
+.chats_container_page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.chats_content {
+  flex: 1;
+  padding: 0 24px;
+  margin-top: 20px;
+}
+
+.chats_main_title {
+  font-family: "poppins", sans-serif;
+  font-size: 38px;
+  font-weight: 400;
+  color: #1c1c1c;
+  margin-bottom: 24px;
+}
+
+.chats_search_wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.chats_search_icon {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.chats_search_input {
+  width: 100%;
+  background-color: #dbdbdb80;
+  border: none;
+  border-radius: 50px;
+  padding: 14px 14px 14px 48px;
+  font-family: "poppins", sans-serif;
+  font-size: 16px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.chats_filter_chips {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 28px;
+  background-color: #f1f1f1;
+  padding: 5px;
+  border-radius: 20px;
+}
+
+.chats_chip {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 10px 0;
+  border-radius: 15px;
+  font-family: "poppins", sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #6e6e6e;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chats_chip.active {
+  background-color: #ffffff;
+  color: #ff6f00;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.chats_list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.chats_item_card {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background-color: #ffffff;
+  border-radius: 28px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.chats_item_card.unread_bg {
+  background-color: #f8f8f8;
+}
+
+.chats_item_card:active {
+  transform: scale(0.98);
+}
+
+.chats_avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 16px;
+}
+
+.chats_card_info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chats_card_top_row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chats_user_name {
+  font-family: "poppins", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #000000;
+}
+
+.chats_time_text {
+  font-family: "poppins", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #a0a0a0;
+}
+
+.chats_card_bottom_row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chats_preview_message {
+  font-family: "louis_george", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #6e6e6e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 210px;
+}
+
+.chats_double_check {
+  color: #ff6f00;
+  font-weight: bold;
+}
+
+.chats_unread_dot {
+  width: 12px;
+  height: 12px;
+  background-color: #ff6f00;
+  border-radius: 50%;
+}

@@ -1,0 +1,198 @@
+.room_container_page {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+}
+
+.room_header {
+  display: flex;
+  align-items: center;
+  padding: 18px 24px;
+  background-color: #f7f7f7;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.room_back_btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-right: 14px;
+}
+
+.room_header_avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 14px;
+}
+
+.room_header_name {
+  font-family: "poppins", sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: #000000;
+}
+
+.room_chat_area {
+  flex: 1;
+  padding: 20px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.room_date_tag {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.room_date_tag span {
+  background-color: #dbdbdb;
+  color: #7d7d7d;
+  font-family: "poppins", sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 6px 16px;
+  border-radius: 20px;
+}
+
+.room_messages_list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Burbujas */
+.room_bubble_wrapper {
+  display: flex;
+  flex-direction: column;
+  max-width: 75%;
+}
+
+.room_bubble_wrapper.mine {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.room_bubble_wrapper.theirs {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.room_bubble {
+  padding: 16px 20px;
+  border-radius: 24px;
+}
+
+.room_bubble_wrapper.mine .room_bubble {
+  background-color: #ff6f00;
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+}
+
+.room_bubble_wrapper.theirs .room_bubble {
+  background-color: #ffffff;
+  border: 1px solid #eaeaea;
+  color: #000000;
+  border-top-left-radius: 4px;
+}
+
+.room_bubble_text {
+  font-family: "louis_george", sans-serif;
+  font-weight: 600;
+  font-size: 14.5px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.room_bubble_meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.room_bubble_time {
+  font-family: "poppins", sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: #a0a0a0;
+}
+
+.room_double_check {
+  color: #ff6f00;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.room_delete_hint {
+  text-align: center;
+  font-family: "poppins", sans-serif;
+  font-size: 11px;
+  color: #a8a8a8;
+  letter-spacing: 0.8px;
+  margin-top: 36px;
+  margin-bottom: 20px;
+}
+
+/* Barra de Entrada de texto */
+.room_input_bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 24px 30px 24px; /* Más padding abajo para la zona segura de móviles */
+  background-color: #ffffff;
+}
+
+.room_input_wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background-color: #f1f1f1;
+  border-radius: 30px;
+  padding: 6px 18px;
+}
+
+.room_text_input {
+  flex: 1;
+  border: none;
+  background: none;
+  font-family: "louis_george", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 10px 0;
+  outline: none;
+  color: #000000;
+}
+
+.room_attachment_btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+}
+
+.room_send_btn {
+  background-color: #ff6f00;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0px 4px 10px rgba(255, 111, 0, 0.25);
+  transition: transform 0.1s ease;
+}
+
+.room_send_btn:active {
+  transform: scale(0.95);
+}

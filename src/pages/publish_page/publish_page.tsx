@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import ImageUploader from "../../components/image_uploader/image_uploader";
-import { Send, Check, X } from "lucide-react"; // Importamos X para la cruz
+import { Send, Check, X } from "lucide-react";
 import { create_publication, getCategories, getInstitutions } from "../../services/publication_service";
 
 interface BackendItem {
@@ -18,7 +18,7 @@ const PublishPage = () => {
   const [categorias, setCategorias] = useState<BackendItem[]>([]);
   const [instituciones, setInstituciones] = useState<BackendItem[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false); 
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const [images, setImages] = useState<File[]>([]);
 
   const [nombre, setNombre] = useState("");
@@ -34,6 +34,8 @@ const PublishPage = () => {
   const [filteredInstituciones, setFilteredInstituciones] = useState<BackendItem[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const autocompleteRef = useRef<HTMLDivElement>(null);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const todayStr = new Date().toISOString().split("T")[0];
 
@@ -91,9 +93,11 @@ const PublishPage = () => {
   }, []);
 
   const handlePublish = async () => {
+    if (isSubmitting) return;
+
     const selectedDate = new Date(fechaEvento + "T00:00:00");
     const today = new Date();
-    today.setHours(0, 0, 0, 0); 
+    today.setHours(0, 0, 0, 0);
 
     const anioDigitado = fechaEvento.split("-")[0];
 
@@ -127,11 +131,19 @@ const PublishPage = () => {
       return;
     }
 
+    setIsSubmitting(true);
+
     const formData = new FormData();
     formData.append("nombre", nombre);
     formData.append("tipo", tipo);
     formData.append("categoria_id", categoriaId);
-    formData.append("fecha_evento", fechaEvento);
+
+    if (fechaEvento) {
+      const fechaFormateadaParaBack = `${fechaEvento}T00:00:00`;
+      formData.append("fecha_evento", fechaFormateadaParaBack);
+    } else {
+      formData.append("fecha_evento", "");
+    }
     formData.append("lugar_institucion", lugarInstitucion);
     formData.append("descripcion", descripcion);
     formData.append("institucion_id", institucionEncontrada.id);
@@ -146,6 +158,8 @@ const PublishPage = () => {
     } catch (error) {
       console.error("Error al publicar:", error);
       alert("Error al publicar el objeto. Revisa los datos e intenta nuevamente.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -221,7 +235,7 @@ const PublishPage = () => {
             className={`publish_input ${!fechaEvento ? "date_placeholder" : ""} ${formErrors.fechaEvento ? "input_error" : ""}`}
             value={fechaEvento}
             onChange={(e) => {
-              const val = e.target.value; 
+              const val = e.target.value;
 
               if (!val) {
                 setFechaEvento("");
@@ -237,10 +251,10 @@ const PublishPage = () => {
               if (val.length === 10) {
                 const selectedDate = new Date(val + "T00:00:00");
                 const today = new Date();
-                today.setHours(0, 0, 0, 0); 
+                today.setHours(0, 0, 0, 0);
 
                 if (selectedDate > today) {
-                  setFechaEvento(todayStr); 
+                  setFechaEvento(todayStr);
                   if (formErrors.fechaEvento) setFormErrors(prev => ({ ...prev, fechaEvento: false }));
                   return;
                 }
@@ -311,9 +325,22 @@ const PublishPage = () => {
           {formErrors.institucion && <span className="error_message_text">Falta completar</span>}
         </section>
 
-        <button className="publish_button" onClick={handlePublish}>
-          <span>Publicar Objeto</span>
-          <Send size={20} strokeWidth={2.5} />
+        <button
+          className={`publish_button ${isSubmitting ? "button_loading" : ""}`}
+          onClick={handlePublish}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              <span>Publicando...</span>
+              <div className="spinner_small"></div>
+            </>
+          ) : (
+            <>
+              <span>Publicar Objeto</span>
+              <Send size={20} strokeWidth={2.5} />
+            </>
+          )}
         </button>
       </main>
 

@@ -355,3 +355,24 @@
 .modal_error_button:active {
   transform: scale(0.98);
 }
+.spinner_small {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin_button 0.8s ease-in-out infinite;
+  margin-left: 8px;
+}
+
+.publish_button:disabled {
+  background-color: #cccccc !important;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+@keyframes spin_button {
+  to {
+    transform: rotate(360deg);
+  }
+}

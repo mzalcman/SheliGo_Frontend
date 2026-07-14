@@ -22,26 +22,22 @@ const EditPublicationPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  // Estados de datos maestros
   const [categorias, setCategorias] = useState<BackendItem[]>([]);
   const [instituciones, setInstituciones] = useState<BackendItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
-  // Imágenes
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [newImages, setNewImages] = useState<File[]>([]);
 
-  // Estados del Formulario
   const [nombre, setNombre] = useState("");
   const [tipo, setTipo] = useState("");
   const [categoriaId, setCategoriaId] = useState("");
   const [fechaEvento, setFechaEvento] = useState("");
   const [lugarInstitucion, setLugarInstitucion] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const [institucion, setInstitucion] = useState(""); // Texto del input de institución
+  const [institucion, setInstitucion] = useState(""); 
 
-  // Autocompletado de Instituciones
   const [filteredInstituciones, setFilteredInstituciones] = useState<BackendItem[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const autocompleteRef = useRef<HTMLDivElement>(null);
@@ -49,7 +45,6 @@ const EditPublicationPage = () => {
   const [isModified, setIsModified] = useState<Record<string, boolean>>({});
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
 
-  // String con la fecha de hoy en formato YYYY-MM-DD para bloquear fechas futuras
   const todayStr = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
@@ -75,7 +70,6 @@ const EditPublicationPage = () => {
           setLugarInstitucion(pubData.lugar_institucion || "");
           setDescripcion(pubData.descripcion || "");
           
-          // Buscar el nombre de la institución que ya tenía asociada
           const instMatch = listaInstituciones.find((inst) => String(inst.id) === String(pubData.institucion_id));
           if (instMatch) setInstitucion(instMatch.nombre);
 
@@ -101,7 +95,6 @@ const EditPublicationPage = () => {
     fetchAllData();
   }, [id]);
 
-  // Lógica de filtrado dinámico para el autocompletado de instituciones
   useEffect(() => {
     if (institucion.trim() === "") {
       setFilteredInstituciones([]);
@@ -113,7 +106,6 @@ const EditPublicationPage = () => {
     }
   }, [institucion, instituciones]);
 
-  // Cerrar el dropdown del buscador si se clickea afuera de la caja
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (autocompleteRef.current && !autocompleteRef.current.contains(event.target as Node)) {
@@ -142,7 +134,6 @@ const EditPublicationPage = () => {
     setFormErrors(errors);
     if (Object.values(errors).some(isError => isError)) return;
 
-    // Validar que la institución escrita exista en la lista real
     const institucionEncontrada = instituciones.find(
       (item) => item.nombre.toLowerCase() === institucion.trim().toLowerCase()
     );
@@ -228,7 +219,6 @@ const EditPublicationPage = () => {
           )}
         </div>
 
-        {/* Formulario contenedor gris */}
         <section className="edit_form_card">
           <label>¿Qué encontraste o perdiste?</label>
           <input
@@ -271,7 +261,6 @@ const EditPublicationPage = () => {
             ))}
           </select>
 
-          {/* 📅 Campo Fecha: max={todayStr} bloquea los días futuros exactamente como en publicar */}
           <label>¿Cuándo ocurrió?</label>
           <input
             type="date"

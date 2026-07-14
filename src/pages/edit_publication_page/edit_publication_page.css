@@ -8,7 +8,6 @@
   padding: 0 24px;
 }
 
-/* 🎯 Modificado para verse idéntico a tu imagen: texto negro y limpio */
 .edit_back_btn {
   background: none;
   border: none;
@@ -16,9 +15,9 @@
   align-items: center;
   gap: 12px;
   font-size: 25px;
-  font-family: "poppins", sans-serif;
-  font-weight: 500;
-  color: #000000; /* Texto Negro */
+  font-family: "poppins";
+  font-weight: 400;
+  color: #000000;
   cursor: pointer;
   margin-top: 26px;
   padding: 0;
@@ -27,22 +26,21 @@
 
 .edit_title {
   font-size: 24px;
-  font-family: "poppins", sans-serif;
-  font-weight: 700;
+  font-family: "poppins";
+  font-weight: 600;
   color: #000000;
-  margin: 24px 0 4px 0;
+  margin: 10px 0 10px 0;
 }
 
 .edit_subtitle {
   font-size: 14px;
   color: #6e6e6e;
-  font-family: "louis_george", sans-serif;
+  font-family: "louis_george";
   font-weight: 600;
   line-height: 1.4;
   margin-bottom: 24px;
 }
 
-/* Espaciado del contenedor del ImageUploader */
 .edit_uploader_wrapper {
   margin-bottom: 26px; 
 }
@@ -52,14 +50,13 @@
 }
 
 .edit_section_mini_title {
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-size: 13px;
   font-weight: 600;
   color: #444444;
   margin-bottom: 8px;
 }
 
-/* Bloque contenedor del formulario */
 .edit_form_card {
   background-color: #eeeeee;
   border-radius: 28px;
@@ -70,21 +67,20 @@
 }
 
 .edit_form_card label {
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-weight: 700;
   font-size: 14.5px;
   color: #000000;
   margin-top: 4px;
 }
 
-/* Inputs con lógica de colores */
 .edit_input, .edit_textarea {
   width: 100%;
   background-color: #ffffff;
   border: none;
   border-radius: 18px;
   padding: 14px 18px;
-  font-family: "louis_george", sans-serif;
+  font-family: "louis_george";
   font-weight: 600;
   font-size: 14px;
   box-sizing: border-box;
@@ -92,11 +88,10 @@
 }
 
 .text_gray {
-  color: #929292; /* Gris inicial (Autocompletado) */
+  color: #929292; 
 }
-
 .text_black {
-  color: #000000; /* Negro (Cuando edita) */
+  color: #000000;
 }
 
 .edit_textarea {
@@ -108,12 +103,12 @@
   border: 1.5px solid #ff3b30;
 }
 
-/* Grupo de botones Descartar / Guardar */
 .edit_buttons_group {
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  margin-top: 32px;
+  margin-top: 20px;
+  margin-bottom: 30px;
 }
 
 .edit_btn_discard {
@@ -123,8 +118,8 @@
   border: none;
   border-radius: 50px;
   padding: 16px 0;
-  font-family: "poppins", sans-serif;
-  font-weight: 700;
+  font-family: "poppins";
+  font-weight: 600;
   font-size: 16px;
   cursor: pointer;
 }
@@ -132,11 +127,11 @@
 .edit_btn_save {
   flex: 1;
   background-color: #ff6f00;
-  color: #ffffff;
+  color: #000000;
   border: none;
   border-radius: 50px;
   padding: 16px 0;
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-weight: 700;
   font-size: 16px;
   cursor: pointer;
@@ -146,7 +141,7 @@
   text-align: center;
   font-size: 13px;
   color: #7a7a7a;
-  font-family: "louis_george", sans-serif;
+  font-family: "louis_george";
   font-weight: 600;
   line-height: 1.4;
   margin: 24px 0 40px 0;
@@ -184,7 +179,7 @@
 
 .edit_dropdown_list li {
   padding: 12px 18px;
-  font-family: "louis_george", sans-serif;
+  font-family: "louis_george";
   font-weight: 600;
   font-size: 14px;
   color: #000000;

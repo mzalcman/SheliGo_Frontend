@@ -1,6 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
 
-const SUPABASE_URL = "https://evovbsxgvzljkbcheipp.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2b3Zic3hndnpsamtiY2hlaXBwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MDkwNDksImV4cCI6MjA5NDA4NTA0OX0.xD8NZ3aHAB6O0umypmfDducvo421pHwUMY4s9PxOY6g";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.warn(
+    "¡Atención! No se encontraron las variables de entorno de Supabase. " +
+    "Asegúrate de tener configurado tu archivo .env.local en la raíz del proyecto."
+  );
+}
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

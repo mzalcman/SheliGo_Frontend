@@ -26,27 +26,27 @@ const ClaimButton: React.FC<ClaimButtonProps> = ({
           "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
-          usuario_id: otroUsuarioId 
+          otroUsuarioId: otroUsuarioId 
         })
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const jsonResponse = await response.json();
         
-        // Si el backend te devuelve la sala creada o recuperada
-        if (data && data.sala_id) {
-          // Redirigimos al chat pasando la información por el state de React Router
-          navigate(`/chat/${data.sala_id}`, {
+        if (jsonResponse && jsonResponse.status === "success" && jsonResponse.data?.sala_id) {
+          const salaId = jsonResponse.data.sala_id;
+
+          navigate(`/chat/${salaId}`, {
             state: {
               usuario: {
-                sala_id: data.sala_id,
+                sala_id: salaId,
                 usuario_nombre: usuarioNombre,
                 usuario_avatar: usuarioAvatar
               }
             }
           });
         } else {
-          console.error("El backend no devolvió el ID de la sala esperado:", data);
+          console.error("El backend no devolvió el ID de la sala esperado:", jsonResponse);
         }
       } else {
         console.error("Error al intentar abrir o crear la sala de chat (HTTP:", response.status, ")");

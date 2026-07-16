@@ -10,7 +10,7 @@ interface Message {
   sala_id: string;
   contenido: string;
   emisor_id: string;
-  creado_at: string;
+  created_at: string; 
 }
 
 const ChatRoomPage = () => {
@@ -39,8 +39,10 @@ const ChatRoomPage = () => {
           }
         });
         if (response.ok) {
-          const data = await response.json();
-          setMessages(data);
+          const resJson = await response.json();
+          if (resJson && resJson.status === "success" && Array.isArray(resJson.data)) {
+            setMessages(resJson.data);
+          }
         } else {
           console.error("Error al obtener los mensajes de la API");
         }
@@ -99,7 +101,7 @@ const ChatRoomPage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // ENVIAR MENSAJE A TRAVÉS DE LA API DE NODE (POST /api/chat/mensaje)
+  // ENVIAR MENSAJE A TRAVÉS DE LA API DE NODE (POST /chat/mensaje)
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim() || !salaId) return;
@@ -129,7 +131,7 @@ const ChatRoomPage = () => {
     }
   };
 
-  // ELIMINAR MENSAJE (DELETE /api/chat/mensaje/:id)
+  // ELIMINAR MENSAJE (DELETE /chat/mensaje/:id)
   const handleBorrarMensaje = async (mensajeId: string, emisorId: string) => {
     if (emisorId !== user?.id) return;
 
@@ -138,7 +140,7 @@ const ChatRoomPage = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:3000/api/chat/mensaje/${mensajeId}`, {
+      const response = await fetch(`http://localhost:3000/chat/mensaje/${mensajeId}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`
@@ -154,6 +156,7 @@ const ChatRoomPage = () => {
   };
 
   const formatearHora = (isoString: string) => {
+    if (!isoString) return "";
     const fecha = new Date(isoString);
     return fecha.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
@@ -166,7 +169,7 @@ const ChatRoomPage = () => {
           <ArrowLeft size={26} color="#ff6f00" strokeWidth={2.5} />
         </button>
         <img 
-          src={chatInfo?.usuario_avatar || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150"} 
+          src={chatInfo?.usuario_avatar || "/user_predeterminada.png"} 
           alt="Avatar" 
           className="room_header_avatar" 
         />
@@ -198,7 +201,7 @@ const ChatRoomPage = () => {
                     <p className="room_bubble_text">{msg.contenido}</p>
                   </div>
                   <div className="room_bubble_meta">
-                    <span className="room_bubble_time">{formatearHora(msg.creado_at)}</span>
+                    <span className="room_bubble_time">{formatearHora(msg.created_at)}</span>
                     {esMio && <span className="room_double_check">✓✓</span>}
                   </div>
                 </div>
@@ -206,7 +209,7 @@ const ChatRoomPage = () => {
             })
           ) : (
             <p className="room_delete_hint" style={{ marginTop: "20px" }}>
-              No hay mensajes aún en esta conversación. ¡Saludá! 👋
+              No hay mensajes aún en esta conversación. ¡Saludá! 
             </p>
           )}
           <div ref={messagesEndRef} />

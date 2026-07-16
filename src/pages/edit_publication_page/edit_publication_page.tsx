@@ -1,4 +1,3 @@
-import "./edit_publication_page.css";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../../components/header/header";
@@ -12,10 +11,16 @@ import {
   get_publication_by_id, 
   update_publication 
 } from "../../services/publication_service";
+import "./edit_publication_page.css";
 
 interface BackendItem {
   id: string;
   nombre: string;
+}
+
+interface PublicationImage {
+  id: string;
+  url: string;
 }
 
 const EditPublicationPage = () => {
@@ -27,7 +32,8 @@ const EditPublicationPage = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
-  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [originalBackendImages, setOriginalBackendImages] = useState<PublicationImage[]>([]);
+  const [existingImages, setExistingImages] = useState<PublicationImage[]>([]);
   const [newImages, setNewImages] = useState<File[]>([]);
 
   const [nombre, setNombre] = useState("");
@@ -56,8 +62,8 @@ const EditPublicationPage = () => {
           get_publication_by_id(id!)
         ]);
 
-        let listaCategorias: BackendItem[] = categoriasRes?.categorias || categoriasRes?.data?.categorias || (Array.isArray(categoriasRes) ? categoriasRes : []);
-        let listaInstituciones: BackendItem[] = institucionesRes?.instituciones || institucionesRes?.data?.instituciones || (Array.isArray(institucionesRes) ? institucionesRes : []);
+        const listaCategorias: BackendItem[] = categoriasRes?.categorias || categoriasRes?.data?.categorias || (Array.isArray(categoriasRes) ? categoriasRes : []);
+        const listaInstituciones: BackendItem[] = institucionesRes?.instituciones || institucionesRes?.data?.instituciones || (Array.isArray(institucionesRes) ? institucionesRes : []);
         
         setCategorias(listaCategorias);
         setInstituciones(listaInstituciones);
@@ -74,14 +80,22 @@ const EditPublicationPage = () => {
           if (instMatch) setInstitucion(instMatch.nombre);
 
           if (pubData.imagenes) {
-            let imagenesProcesadas: string[] = [];
+            let imagenesProcesadas: PublicationImage[] = [];
             if (Array.isArray(pubData.imagenes)) {
-              imagenesProcesadas = pubData.imagenes.map((img: any) => 
-                typeof img === "string" ? img : img.url || img.ruta || ""
-              ).filter(Boolean);
+              imagenesProcesadas = pubData.imagenes.map((img: any) => {
+                if (typeof img === "string") {
+                  return { id: img, url: img };
+                }
+                return {
+                  id: img.id || img.url || img.ruta || "",
+                  url: img.url || img.ruta || ""
+                };
+              }).filter((img) => img.url !== "");
             } else if (typeof pubData.imagenes === "string") {
-              imagenesProcesadas = [pubData.imagenes];
+              imagenesProcesadas = [{ id: pubData.imagenes, url: pubData.imagenes }];
             }
+            
+            setOriginalBackendImages(imagenesProcesadas);
             setExistingImages(imagenesProcesadas);
           }
         }
@@ -152,19 +166,34 @@ const EditPublicationPage = () => {
     formData.append("lugar_institucion", lugarInstitucion);
     formData.append("descripcion", descripcion);
     formData.append("institucion_id", institucionEncontrada.id);
-    
-    formData.append("imagenes_existentes", JSON.stringify(existingImages));
 
-    newImages.forEach((image) => {
-      formData.append("imagenes_nuevas", image);
+    // 🎯 Calculamos qué imágenes originales se eliminaron
+    const fotosAEliminar = originalBackendImages
+      .filter(origImg => !existingImages.some(currImg => currImg.id === origImg.id))
+      .map(img => img.id);
+
+    // Mandamos los IDs a eliminar como valores planos, no JSON stringificado
+    fotosAEliminar.forEach((idFoto) => {
+      formData.append("fotosAEliminar[]", idFoto);
     });
+
+    // 🚀 Mandamos las imágenes nuevas solo si existen
+    if (newImages.length > 0) {
+      newImages.forEach((image) => {
+        formData.append("imagenes", image);
+      });
+    }
 
     try {
       await update_publication(id!, formData);
       setShowModal(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al guardar cambios:", error);
-      alert("Hubo un error al actualizar los datos.");
+      if (error?.response?.status === 403) {
+        alert("No tienes permisos para editar esta publicación.");
+      } else {
+        alert("Hubo un error al actualizar los datos.");
+      }
     }
   };
 
@@ -202,9 +231,9 @@ const EditPublicationPage = () => {
             <div className="edit_backend_images_preview">
               <p className="edit_section_mini_title">Imágenes actuales de la publicación:</p>
               <div className="image_preview_container">
-                {existingImages.map((url, index) => (
+                {existingImages.map((image, index) => (
                   <div key={`existing-${index}`} className="image_preview_wrapper">
-                    <img src={url} className="image_preview" alt="Existente backend" />
+                    <img src={image.url} className="image_preview" alt="Existente backend" />
                     <button
                       type="button"
                       className="remove_image_button"

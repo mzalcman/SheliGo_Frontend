@@ -30,11 +30,11 @@ const PublishPage = () => {
   const [institucion, setInstitucion] = useState("");
 
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+  const [backendErrors, setBackendErrors] = useState<string[]>([]);
 
   const [filteredInstituciones, setFilteredInstituciones] = useState<BackendItem[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const autocompleteRef = useRef<HTMLDivElement>(null);
-
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const todayStr = new Date().toISOString().split("T")[0];
@@ -95,39 +95,68 @@ const PublishPage = () => {
   const handlePublish = async () => {
     if (isSubmitting) return;
 
-    const selectedDate = new Date(fechaEvento + "T00:00:00");
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Reiniciamos estados de error
+    setFormErrors({});
+    setBackendErrors([]);
 
-    const anioDigitado = fechaEvento.split("-")[0];
+    const errors: Record<string, boolean> = {};
+    const messages: string[] = [];
 
-    const isFutureDate = selectedDate > today;
-    const isInvalidYear = anioDigitado.length > 4 || parseInt(anioDigitado) < 1900;
+    // 1. Validaciones del lado del Cliente basadas en tu Zod Schema (Crear de una vez el mapa de errores completo)
+    if (!nombre.trim() || nombre.trim().length < 3) {
+      errors.nombre = true;
+      messages.push("El nombre debe tener al menos 3 caracteres.");
+    }
+    if (nombre.trim().length > 100) {
+      errors.nombre = true;
+      messages.push("El nombre no puede superar los 100 caracteres.");
+    }
 
-    const errors: Record<string, boolean> = {
-      nombre: !nombre.trim(),
-      tipo: !tipo,
-      categoriaId: !categoriaId,
-      fechaEvento: !fechaEvento || isFutureDate || isInvalidYear,
-      lugarInstitucion: !lugarInstitucion.trim(),
-      descripcion: !descripcion.trim(),
-      institucion: !institucion.trim(),
-    };
+    if (!tipo) {
+      errors.tipo = true;
+      messages.push("El tipo debe ser perdido o encontrado.");
+    }
 
-    setFormErrors(errors);
+    if (!categoriaId) {
+      errors.categoriaId = true;
+      messages.push("La categoría es inválida o no ha sido seleccionada.");
+    }
 
-    if (Object.values(errors).some((isError) => isError)) {
-      setShowErrorModal(true);
-      return;
+    if (!fechaEvento) {
+      errors.fechaEvento = true;
+      messages.push("La fecha ingresada no es válida.");
+    } else {
+      const parsedDate = Date.parse(`${fechaEvento}T00:00:00`);
+      if (isNaN(parsedDate)) {
+        errors.fechaEvento = true;
+        messages.push("La fecha ingresada no es válida.");
+      }
+    }
+
+    if (lugarInstitucion.trim().length > 100) {
+      errors.lugarInstitucion = true;
+      messages.push("La ubicación no puede superar los 100 caracteres.");
+    }
+
+    if (descripcion.trim().length > 1000) {
+      errors.descripcion = true;
+      messages.push("La descripción no puede superar los 1000 caracteres.");
     }
 
     const institucionEncontrada = instituciones.find(
       (item) => item.nombre.toLowerCase() === institucion.trim().toLowerCase()
     );
 
-    if (!institucionEncontrada) {
-      setFormErrors(prev => ({ ...prev, institucion: true }));
-      alert("Debes seleccionar una institución válida de la lista.");
+    if (!institucion.trim() || !institucionEncontrada) {
+      errors.institucion = true;
+      messages.push("La institución es inválida o no ha sido seleccionada de la lista.");
+    }
+
+    // Si hay algún error, interrumpimos la petición y marcamos TODO en naranja
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      setBackendErrors(messages);
+      setShowErrorModal(true);
       return;
     }
 
@@ -137,16 +166,10 @@ const PublishPage = () => {
     formData.append("nombre", nombre);
     formData.append("tipo", tipo);
     formData.append("categoria_id", categoriaId);
-
-    if (fechaEvento) {
-      const fechaFormateadaParaBack = `${fechaEvento}T00:00:00`;
-      formData.append("fecha_evento", fechaFormateadaParaBack);
-    } else {
-      formData.append("fecha_evento", "");
-    }
+    formData.append("fecha_evento", `${fechaEvento}T00:00:00`);
     formData.append("lugar_institucion", lugarInstitucion);
     formData.append("descripcion", descripcion);
-    formData.append("institucion_id", institucionEncontrada.id);
+    formData.append("institucion_id", institucionEncontrada ? institucionEncontrada.id : "");
 
     images.forEach((image) => {
       formData.append("imagenes", image);
@@ -155,9 +178,46 @@ const PublishPage = () => {
     try {
       await create_publication(formData);
       setShowModal(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al publicar:", error);
-      alert("Error al publicar el objeto. Revisa los datos e intenta nuevamente.");
+
+      const nuevosErroresCampos: Record<string, boolean> = {};
+      let mensajesError: string[] = [];
+
+      if (error.response && error.response.data) {
+        const data = error.response.data;
+
+        if (Array.isArray(data.errors)) {
+          data.errors.forEach((err: any) => {
+            if (err && typeof err === "object") {
+              if (err.path && err.path.length > 0) {
+                const campo = err.path[0];
+                mensajesError.push(err.message);
+
+                if (campo === "categoria_id") nuevosErroresCampos.categoriaId = true;
+                else if (campo === "fecha_evento") nuevosErroresCampos.fechaEvento = true;
+                else if (campo === "lugar_institucion") nuevosErroresCampos.lugarInstitucion = true;
+                else if (campo === "institucion_id") nuevosErroresCampos.institucion = true;
+                else nuevosErroresCampos[campo] = true;
+              } else if (typeof err === "string") {
+                mensajesError.push(err);
+              }
+            } else if (typeof err === "string") {
+              mensajesError.push(err);
+            }
+          });
+        } else if (data.message) {
+          mensajesError = [data.message];
+        }
+      }
+
+      if (mensajesError.length === 0) {
+        mensajesError = ["Ocurrió un error inesperado al procesar la publicación."];
+      }
+
+      setFormErrors(nuevosErroresCampos);
+      setBackendErrors(mensajesError);
+      setShowErrorModal(true);
     } finally {
       setIsSubmitting(false);
     }
@@ -186,14 +246,13 @@ const PublishPage = () => {
           <input
             className={`publish_input ${formErrors.nombre ? "input_error" : ""}`}
             value={nombre}
-            maxLength={45}
+            maxLength={110}
             placeholder="Ej: buzo azul"
             onChange={(e) => {
               setNombre(e.target.value);
               if (formErrors.nombre) setFormErrors(prev => ({ ...prev, nombre: false }));
             }}
           />
-          {formErrors.nombre && <span className="error_message_text">Falta completar</span>}
 
           <label>Estado del objeto</label>
           <select
@@ -208,7 +267,6 @@ const PublishPage = () => {
             <option value="perdido">Perdido</option>
             <option value="encontrado">Encontrado</option>
           </select>
-          {formErrors.tipo && <span className="error_message_text">Falta completar</span>}
 
           <label>Categoría</label>
           <select
@@ -226,7 +284,6 @@ const PublishPage = () => {
               </option>
             ))}
           </select>
-          {formErrors.categoriaId && <span className="error_message_text">Falta completar</span>}
 
           <label>Fecha del evento</label>
           <input
@@ -235,38 +292,10 @@ const PublishPage = () => {
             className={`publish_input ${!fechaEvento ? "date_placeholder" : ""} ${formErrors.fechaEvento ? "input_error" : ""}`}
             value={fechaEvento}
             onChange={(e) => {
-              const val = e.target.value;
-
-              if (!val) {
-                setFechaEvento("");
-                return;
-              }
-
-              const parts = val.split("-");
-
-              if (parts[0] && parts[0].length > 4) {
-                return;
-              }
-
-              if (val.length === 10) {
-                const selectedDate = new Date(val + "T00:00:00");
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-
-                if (selectedDate > today) {
-                  setFechaEvento(todayStr);
-                  if (formErrors.fechaEvento) setFormErrors(prev => ({ ...prev, fechaEvento: false }));
-                  return;
-                }
-              }
-
-              setFechaEvento(val);
-              if (formErrors.fechaEvento) {
-                setFormErrors(prev => ({ ...prev, fechaEvento: false }));
-              }
+              setFechaEvento(e.target.value);
+              if (formErrors.fechaEvento) setFormErrors(prev => ({ ...prev, fechaEvento: false }));
             }}
           />
-          {formErrors.fechaEvento && <span className="error_message_text">Falta completar o fecha inválida</span>}
 
           <label>Ubicación</label>
           <input
@@ -278,7 +307,6 @@ const PublishPage = () => {
               if (formErrors.lugarInstitucion) setFormErrors(prev => ({ ...prev, lugarInstitucion: false }));
             }}
           />
-          {formErrors.lugarInstitucion && <span className="error_message_text">Falta completar</span>}
 
           <label>Descripción adicional</label>
           <textarea
@@ -290,7 +318,6 @@ const PublishPage = () => {
               if (formErrors.descripcion) setFormErrors(prev => ({ ...prev, descripcion: false }));
             }}
           />
-          {formErrors.descripcion && <span className="error_message_text">Falta completar</span>}
 
           <label>Institución</label>
           <div ref={autocompleteRef} className="autocomplete_container">
@@ -322,7 +349,6 @@ const PublishPage = () => {
               </ul>
             )}
           </div>
-          {formErrors.institucion && <span className="error_message_text">Falta completar</span>}
         </section>
 
         <button
@@ -346,6 +372,7 @@ const PublishPage = () => {
 
       <Footer />
 
+      {/* Modal de éxito */}
       {showModal && (
         <div className="modal_overlay">
           <div className="modal_container">
@@ -363,18 +390,37 @@ const PublishPage = () => {
         </div>
       )}
 
+      {/* Modal de Errores*/}
       {showErrorModal && (
         <div className="modal_overlay">
-          <div className="modal_container animate_fade_in">
+          <div className="modal_container">
             <div className="modal_icon_circle error_icon_circle">
               <X size={32} strokeWidth={3} className="modal_icon_error" />
             </div>
-            <h2 className="modal_title">Campos incompletos</h2>
-            <p className="modal_text">
-              Te faltan campos por completar. Por favor, revisa el formulario antes de continuar.
+
+            <h2 className="modal_title" style={{ color: "#000000" }}>No se pudo publicar</h2>
+
+            <p style={{
+              fontSize: "15px",
+              color: "#424242",
+              fontFamily: "louis_george",
+              fontWeight: 700,
+              margin: "8px 0 0"
+            }}>
+              Por favor corrige los siguientes detalles:
             </p>
+
+            <div className="error_list_container">
+              {backendErrors.map((err, idx) => (
+                <div key={idx} className="error_list_item">
+                  <span className="error_item_bullet">!</span>
+                  <span className="error_item_text">{err}</span>
+                </div>
+              ))}
+            </div>
+
             <button className="modal_error_button" onClick={() => setShowErrorModal(false)}>
-              Revisar
+              Entendido
             </button>
           </div>
         </div>

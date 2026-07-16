@@ -56,3 +56,9 @@ export const update_publication = async (id: string, formData: FormData) => {
 
   return response.json();
 };
+
+export const get_publication_photos = async (id: string) => {
+  const response = await api.get(`/publicaciones/${id}/archivos`);
+  // Segun tu backend devuelve: { status: 'success', data: { archivos } }
+  return response.data?.data?.archivos || response.data?.archivos || [];
+};

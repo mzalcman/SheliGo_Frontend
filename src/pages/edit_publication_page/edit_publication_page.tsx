@@ -4,12 +4,13 @@ import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import Loader from "../../components/loader/loader";
 import ImageUploader from "../../components/image_uploader/image_uploader";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, X } from "lucide-react"; // 👈 Se agregó la X para el botón de borrar
 import { 
   getCategories, 
   getInstitutions, 
   get_publication_by_id, 
-  update_publication 
+  update_publication,
+  get_publication_photos 
 } from "../../services/publication_service";
 import "./edit_publication_page.css";
 
@@ -56,10 +57,12 @@ const EditPublicationPage = () => {
   useEffect(() => {
     const fetchAllData = async () => {
       try {
-        const [categoriasRes, institucionesRes, pubData] = await Promise.all([
+        // Ejecutamos la consulta de las categorías, instituciones, la publicación Y las fotos en paralelo 🚀
+        const [categoriasRes, institucionesRes, pubData, fotosRes] = await Promise.all([
           getCategories(),
           getInstitutions(),
-          get_publication_by_id(id!)
+          get_publication_by_id(id!),
+          get_publication_photos(id!) // 👈 Nueva consulta de fotos
         ]);
 
         const listaCategorias: BackendItem[] = categoriasRes?.categorias || categoriasRes?.data?.categorias || (Array.isArray(categoriasRes) ? categoriasRes : []);
@@ -79,25 +82,31 @@ const EditPublicationPage = () => {
           const instMatch = listaInstituciones.find((inst) => String(inst.id) === String(pubData.institucion_id));
           if (instMatch) setInstitucion(instMatch.nombre);
 
-          if (pubData.imagenes) {
-            let imagenesProcesadas: PublicationImage[] = [];
-            if (Array.isArray(pubData.imagenes)) {
-              imagenesProcesadas = pubData.imagenes.map((img: any) => {
-                if (typeof img === "string") {
-                  return { id: img, url: img };
-                }
-                return {
-                  id: img.id || img.url || img.ruta || "",
-                  url: img.url || img.ruta || ""
-                };
-              }).filter((img) => img.url !== "");
-            } else if (typeof pubData.imagenes === "string") {
-              imagenesProcesadas = [{ id: pubData.imagenes, url: pubData.imagenes }];
-            }
-            
-            setOriginalBackendImages(imagenesProcesadas);
-            setExistingImages(imagenesProcesadas);
+          // 📸 Procesamos las fotos recibidas del endpoint /:id/archivos
+          const fotosRaw = fotosRes || [];
+          let imagenesProcesadas: PublicationImage[] = [];
+          
+          if (Array.isArray(fotosRaw)) {
+            imagenesProcesadas = fotosRaw.map((img: any) => {
+              if (typeof img === "string") {
+                return { id: img, url: img };
+              }
+              // Mapeamos según lo que devuelva el backend: 'ruta', 'nombre_servidor' o 'url'
+              // Si tu backend guarda solo el nombre de archivo (ej: "foto.jpg"), le concatenamos la URL base
+              const urlFoto = img.url || img.ruta || img.nombre_servidor || "";
+              const urlCompleta = urlFoto.startsWith("http") 
+                ? urlFoto 
+                : `http://localhost:3000/uploads/${urlFoto}`; // 👈 Ajustá "/uploads/" si tu carpeta estática se llama distinto
+
+              return {
+                id: String(img.id || img.ruta || img.nombre_servidor || ""),
+                url: urlCompleta
+              };
+            }).filter((img) => img.url !== "");
           }
+          
+          setOriginalBackendImages(imagenesProcesadas);
+          setExistingImages(imagenesProcesadas);
         }
         setLoading(false);
       } catch (error) {
@@ -108,7 +117,7 @@ const EditPublicationPage = () => {
 
     fetchAllData();
   }, [id]);
-
+  
   useEffect(() => {
     if (institucion.trim() === "") {
       setFilteredInstituciones([]);
@@ -238,8 +247,9 @@ const EditPublicationPage = () => {
                       type="button"
                       className="remove_image_button"
                       onClick={() => setExistingImages(prev => prev.filter((_, i) => i !== index))}
+                      title="Eliminar imagen"
                     >
-                      <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#fff' }}>✕</span>
+                      <X size={13} strokeWidth={2.5} /> {/* 👈 Ícono de cruz moderno con Lucide React */}
                     </button>
                   </div>
                 ))}

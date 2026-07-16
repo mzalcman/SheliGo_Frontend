@@ -125,9 +125,17 @@
 }
 
 .room_double_check {
-  color: #ff6f00;
   font-size: 10px;
   font-weight: bold;
+  transition: color 0.2s ease;
+}
+
+.room_double_check.unread {
+  color: #a0a0a0;
+}
+
+.room_double_check.read {
+  color: #ff6f00;
 }
 
 .room_delete_hint {
@@ -195,4 +203,102 @@
 
 .room_send_btn:active {
   transform: scale(0.95);
+}
+/* --- Estilos del Modal de Confirmación --- */
+.room_modal_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px); /* Difumina de fondo las burbujas */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: roomFadeIn 0.2s ease-out;
+}
+
+.room_modal_card {
+  background-color: #ffffff;
+  width: 90%;
+  max-width: 360px;
+  padding: 24px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  animation: roomScaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.room_modal_title {
+  font-family: "poppins", sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #000000;
+  margin: 0 0 10px 0;
+}
+
+.room_modal_text {
+  font-family: "louis_george", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #707070;
+  line-height: 1.5;
+  margin: 0 0 24px 0;
+}
+
+.room_modal_actions {
+  display: flex;
+  gap: 12px;
+}
+
+.room_modal_btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  font-family: "poppins", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.room_modal_btn:active {
+  transform: scale(0.97);
+}
+
+.room_modal_btn.cancel {
+  background-color: #f1f1f1;
+  color: #505050;
+}
+
+.room_modal_btn.cancel:hover {
+  background-color: #e5e5e5;
+}
+
+.room_modal_btn.confirm {
+  background-color: #ff6f00; 
+  color: #ffffff;
+}
+
+.room_modal_btn.confirm:hover {
+  background-color: #e06200;
+}
+
+@keyframes roomFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes roomScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

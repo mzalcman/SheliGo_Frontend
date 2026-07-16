@@ -187,7 +187,7 @@ const ChatsListPage = () => {
 
                   <div className="chats_card_bottom_row">
                     <span className="chats_preview_message">
-                      {/* 🎯 TICS DINÁMICOS:
+                      {/* TICS DINÁMICOS:
                           Si lo mandaste vos, pintamos el tic.
                           Si la otra persona lo leyó, le metemos la clase "read" (naranja), si no, "unread" (gris) 
                       */}

@@ -12,7 +12,7 @@ interface Message {
   contenido: string;
   emisor_id: string;
   created_at: string;
-  leido?: boolean | number | string; // Campo de lectura agregado para el tipado
+  leido?: boolean | number | string; 
 }
 
 const ChatRoomPage = () => {
@@ -166,7 +166,7 @@ const ChatRoomPage = () => {
 
     try {
       const token = localStorage.getItem("token");
-      
+
       const response = await fetch(`http://localhost:3000/chat/mensaje/${mensajeAEliminar}`, {
         method: "DELETE",
         headers: {
@@ -207,8 +207,8 @@ const ChatRoomPage = () => {
         </button>
         <img
           src={
-            chatInfo?.usuario_avatar
-              ? getImageUrl(chatInfo.usuario_avatar)
+            chatInfo?.usuario_avatar || chatInfo?.avatar || chatInfo?.foto
+              ? getImageUrl(chatInfo.usuario_avatar || chatInfo.avatar || chatInfo.foto)
               : "/user_predeterminada.png"
           }
           alt="Avatar"
@@ -232,11 +232,11 @@ const ChatRoomPage = () => {
           ) : messages.length > 0 ? (
             messages.map((msg) => {
               const esMio = msg.emisor_id === user?.id;
-              
-              const estaLeido = 
-                msg.leido === true || 
-                msg.leido === 1 || 
-                msg.leido === "1" || 
+
+              const estaLeido =
+                msg.leido === true ||
+                msg.leido === 1 ||
+                msg.leido === "1" ||
                 msg.leido === "true";
 
               return (
@@ -245,7 +245,7 @@ const ChatRoomPage = () => {
                   className={`room_bubble_wrapper ${esMio ? "mine" : "theirs"}`}
                   onContextMenu={(e) => {
                     e.preventDefault();
-                    // 🚨 Modificado para abrir el modal interactivo
+                    // Modal 
                     abrirModalConfirmacion(msg.id, msg.emisor_id);
                   }}
                 >
@@ -272,7 +272,7 @@ const ChatRoomPage = () => {
         </div>
       </main>
 
-      {/* Formulario de Entrada */}
+      {/* Formulario */}
       <form className="room_input_bar" onSubmit={handleSendMessage}>
         <div className="room_input_wrapper">
           <input
@@ -291,7 +291,7 @@ const ChatRoomPage = () => {
         </button>
       </form>
 
-      {/* 🚨 MODAL DE CONFIRMACIÓN INTEGRADO EN EL JSX 🚨 */}
+      {/* MODAL DE CONFIRMACIÓN INTEGRADO*/}
       {mostrarModal && (
         <div className="room_modal_overlay" onClick={() => { setMostrarModal(false); setMensajeAEliminar(null); }}>
           <div className="room_modal_card" onClick={(e) => e.stopPropagation()}>
@@ -300,16 +300,16 @@ const ChatRoomPage = () => {
               Esto eliminará el mensaje para todos en la conversación de forma permanente.
             </p>
             <div className="room_modal_actions">
-              <button 
-                type="button" 
-                className="room_modal_btn cancel" 
+              <button
+                type="button"
+                className="room_modal_btn cancel"
                 onClick={() => { setMostrarModal(false); setMensajeAEliminar(null); }}
               >
                 Cancelar
               </button>
-              <button 
-                type="button" 
-                className="room_modal_btn confirm" 
+              <button
+                type="button"
+                className="room_modal_btn confirm"
                 onClick={handleBorrarMensajeConfirmado}
               >
                 Eliminar

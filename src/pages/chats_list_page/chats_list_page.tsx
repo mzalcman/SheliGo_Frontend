@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
+import { useAuth } from "../../hooks/use_auth"; 
 import "./chats_list_page.css";
 import { getImageUrl } from "../../utils/get_image_url";
 
@@ -13,51 +14,15 @@ interface ChatRoom {
   ultimo_mensaje: string;
   ultimo_mensaje_tiempo: string;
   leido: boolean;
-  enviado_por_mi: boolean; 
-  receptor_leyo_mi_mensaje: boolean; 
 }
 
 const ChatsListPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth(); 
   const [chats, setChats] = useState<ChatRoom[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<"todos" | "no_leidos" | "leidos">("todos");
   const [cargando, setCargando] = useState(true);
-
-  // Función inteligente para formatear la fecha/hora estilo WhatsApp
-  const formatearFechaMensaje = (fechaStr: string): string => {
-    if (!fechaStr) return "";
-    
-    const fechaMsj = new Date(fechaStr);
-    const ahora = new Date();
-    
-    // Resetear horas para comparar días exactos
-    const hoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
-    const ayer = new Date(hoy);
-    ayer.setDate(ayer.getDate() - 1);
-    
-    const fechaMsjCeroHoras = new Date(fechaMsj.getFullYear(), fechaMsj.getMonth(), fechaMsj.getDate());
-
-    // 1. Si es HOY: mostramos la hora
-    if (fechaMsjCeroHoras.getTime() === hoy.getTime()) {
-      return fechaMsj.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    }
-
-    // 2. Si fue AYER: "Ayer"
-    if (fechaMsjCeroHoras.getTime() === ayer.getTime()) {
-      return "Ayer";
-    }
-
-    // 3. Si fue en la última semana (menos de 7 días atrás)
-    const diferenciaDias = Math.floor((hoy.getTime() - fechaMsjCeroHoras.getTime()) / (1000 * 60 * 60 * 24));
-    if (diferenciaDias < 7) {
-      const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-      return diasSemana[fechaMsj.getDay()];
-    }
-
-    // 4. Si es más viejo: fecha completa corta (dd/mm/aaaa)
-    return fechaMsj.toLocaleDateString([], { day: "2-digit", month: "2-digit", year: "numeric" });
-  };
 
   useEffect(() => {
     const fetchSalas = async () => {
@@ -97,18 +62,13 @@ const ChatsListPage = () => {
               }
             }
 
-            // Usamos la nueva función inteligente de formateo
-            const tiempoFormateado = formatearFechaMensaje(sala.ultimo_mensaje_fecha);
+            let tiempoFormateado = "";
+            if (sala.ultimo_mensaje_fecha) {
+              const fecha = new Date(sala.ultimo_mensaje_fecha);
+              tiempoFormateado = fecha.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+            }
+
             const sinLeerCount = parseInt(sala.mensajes_sin_leer || "0", 10);
-
-            const enviadoPorMi = 
-              sala.ultimo_mensaje_enviado_por_mi === true || 
-              sala.ultimo_mensaje_enviado_por_mi === 1 ||
-              sala.enviado_por_mi === true ||
-              sala.enviado_por_mi === 1 ||
-              (sinLeerCount === 0 && sala.ultimo_mensaje && sala.ultimo_mensaje !== "Sin mensajes");
-
-            const receptorLeyoMiMensaje = enviadoPorMi && sinLeerCount === 0;
 
             return {
               sala_id: sala.sala_id,
@@ -116,9 +76,7 @@ const ChatsListPage = () => {
               usuario_avatar: avatarUrl,
               ultimo_mensaje: sala.ultimo_mensaje || "Sin mensajes",
               ultimo_mensaje_tiempo: tiempoFormateado,
-              leido: sinLeerCount === 0,
-              enviado_por_mi: !!enviadoPorMi, 
-              receptor_leyo_mi_mensaje: !!receptorLeyoMiMensaje
+              leido: sinLeerCount === 0
             };
           });
 
@@ -135,8 +93,10 @@ const ChatsListPage = () => {
       }
     };
 
-    fetchSalas();
-  }, [filter]);
+    if (user) {
+      fetchSalas();
+    }
+  }, [filter, user]);
 
   const chatsSeguros = Array.isArray(chats) ? chats : [];
   const filteredChats = chatsSeguros.filter((chat) =>
@@ -211,13 +171,7 @@ const ChatsListPage = () => {
                     <span className="chats_time_text">{chat.ultimo_mensaje_tiempo}</span>
                     
                     <div className="chats_status_wrapper">
-                      {chat.enviado_por_mi ? (
-                        <span className={`chats_list_double_check ${chat.receptor_leyo_mi_mensaje ? "read" : "unread"}`}>
-                          ✓✓
-                        </span>
-                      ) : (
-                        !chat.leido && <div className="chats_unread_dot" />
-                      )}
+                      {!chat.leido && <div className="chats_unread_dot" />}
                     </div>
                   </div>
                 </div>

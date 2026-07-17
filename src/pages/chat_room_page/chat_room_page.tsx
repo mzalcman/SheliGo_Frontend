@@ -76,6 +76,12 @@ const ChatRoomPage = () => {
           const nuevoMensaje = payload.new as Message;
           console.log("Nuevo mensaje en tiempo real:", nuevoMensaje);
 
+          // 🎯 ACTUALIZACIÓN DE HISTORIAL LOCAL EN TIEMPO REAL:
+          // Si el mensaje entrante no es tuyo, marcamos que el último emisor es el "otro"
+          if (nuevoMensaje.emisor_id !== user?.id) {
+            localStorage.setItem(`ultimo_emisor_${salaId}`, "otro");
+          }
+
           setMessages((prev) => {
             if (prev.some((msg) => msg.id === nuevoMensaje.id)) return prev;
             return [...prev, nuevoMensaje];
@@ -145,7 +151,11 @@ const ChatRoomPage = () => {
         })
       });
 
-      if (!response.ok) {
+      if (response.ok) {
+        // 🎯 FIJAMOS EL CONTROL DE LOS TICS:
+        // Como mandaste vos el mensaje con éxito, dejamos grabado que el último emisor fue "yo"
+        localStorage.setItem(`ultimo_emisor_${salaId}`, "yo");
+      } else {
         console.error("Error enviando el mensaje al servidor de Node");
       }
     } catch (error) {

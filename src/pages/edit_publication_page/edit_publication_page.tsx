@@ -55,7 +55,7 @@ const EditPublicationPage = () => {
 
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [backendErrors, setBackendErrors] = useState<string[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false); // 👈 Control de submits
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const todayStr = new Date().toISOString().split("T")[0];
 
@@ -153,7 +153,7 @@ const EditPublicationPage = () => {
     const errors: Record<string, boolean> = {};
     const messages: string[] = [];
 
-    // 🚀 Mismas validaciones previas que en PublishPage
+    // Mismas validaciones previas que en PublishPage
     if (!nombre.trim() || nombre.trim().length < 3) {
       errors.nombre = true;
       messages.push("El nombre debe tener al menos 3 caracteres.");
@@ -200,7 +200,7 @@ const EditPublicationPage = () => {
     formData.append("tipo", tipo);
     formData.append("categoria_id", categoriaId);
     
-    // 🎯 AQUÍ ESTÁ EL TRUCO: Enviamos la fecha con el mismo formato "T00:00:00" que sí acepta tu back
+    // Enviamos la fecha con el mismo formato "T00:00:00" que sí acepta tu back
     formData.append("fecha_evento", `${fechaEvento}T00:00:00`);
     
     formData.append("lugar_institucion", lugarInstitucion);
@@ -450,7 +450,7 @@ const EditPublicationPage = () => {
 
       <Footer />
 
-      {/* 🟢 MODAL DE ÉXITO */}
+      {/* MODAL DE ÉXITO */}
       <Modal
         isOpen={showModal}
         onClose={() => setShowModal(false)}

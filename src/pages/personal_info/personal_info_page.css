@@ -1,0 +1,145 @@
+.personal_info_layout_page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.personal_info_container {
+  flex: 1;
+  padding: 24px 20px 40px 20px;
+  box-sizing: border-box;
+}
+
+/* --- Botón Volver Atrás --- */
+.personal_info_back_btn {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 6px;
+  margin-bottom: 24px;
+}
+
+.personal_info_back_btn span {
+  font-family: "Poppins", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+/* --- Hero Cabecera Avatar --- */
+.personal_info_hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.personal_info_avatar_wrapper {
+  position: relative;
+  width: 95px;
+  height: 95px;
+  margin-bottom: 14px;
+}
+
+.personal_info_main_avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ffffff;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.personal_info_edit_avatar_badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background-color: #ff6f00;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.personal_info_edit_avatar_badge:hover {
+  transform: scale(1.1);
+}
+
+.personal_info_user_name {
+  font-family: "Poppins", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+/* --- Formulario de Información Personal --- */
+.personal_info_form_section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.personal_info_form_section h2 {
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0 0 4px 0;
+}
+
+.personal_info_field_group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.personal_info_field_group label {
+  font-family: "Poppins", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1A1A1A;
+  padding-left: 4px;
+}
+
+.personal_info_input_wrapper {
+  position: relative;
+  width: 100%;
+  background-color: #f4f4f4;
+  border-radius: 20px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding-right: 18px;
+}
+
+.personal_info_input_wrapper input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 16px 18px;
+  font-family: "louis_george", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1A1A1A;
+}
+
+.personal_info_field_edit_icon {
+  color: #8c8c8c;
+  cursor: pointer;
+}

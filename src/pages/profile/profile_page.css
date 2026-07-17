@@ -1,0 +1,320 @@
+.profile_layout_page {
+  width: 100%;
+  height: 100vh; /* Bloqueamos la ventana al tamaño del dispositivo */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Evita scrolls dobles molestos */
+  background-color: #ffffff;
+  box-sizing: border-box;
+}
+
+.profile_scroll_container {
+  flex: 1;
+  padding: 24px 20px 120px 20px; /* 👈 Generoso espacio de 120px abajo para que el footer no tape nada */
+  overflow-y: auto; /* Habilita el scroll vertical fluido únicamente aquí */
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}
+
+/* --- Hero Cabecera de Usuario --- */
+.profile_hero_section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 24px;
+}
+
+.profile_avatar_wrapper {
+  position: relative;
+  width: 95px;
+  height: 95px;
+  margin-bottom: 14px;
+}
+
+.profile_main_avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ffffff;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile_edit_avatar_badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background-color: #ff6f00;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.profile_edit_avatar_badge:hover {
+  transform: scale(1.1);
+}
+
+.profile_user_display_name {
+  font-family: "Poppins", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+/* --- Tarjeta de Estadísticas --- */
+.profile_stats_row {
+  background-color: #f4f4f4;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  padding: 18px 0;
+  margin-bottom: 28px;
+}
+
+.profile_stat_item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile_stat_number {
+  font-family: "Poppins", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #ff6f00;
+  line-height: 1;
+}
+
+.profile_stat_label {
+  font-family: "Poppins", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+}
+
+.profile_stat_divider {
+  width: 1px;
+  height: 30px;
+  background-color: #d1d1d1;
+}
+
+/* --- Secciones Generales --- */
+.profile_block_section {
+  margin-bottom: 28px;
+}
+
+.profile_section_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.profile_block_section h2 {
+  font-family: "Poppins", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0;
+}
+
+.profile_see_all_btn {
+  background: none;
+  border: none;
+  color: #ff6f00;
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.profile_cards_stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* --- Tarjetas Mis Objetos --- */
+.profile_item_card {
+  background-color: #f4f4f4;
+  border-radius: 20px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.profile_item_thumbnail {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
+  margin-right: 14px;
+}
+
+.profile_item_info {
+  flex: 1;
+}
+
+.profile_item_info h3 {
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin: 0 0 2px 0;
+}
+
+.profile_item_info p {
+  font-family: "louis_george", sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  color: #8c8c8c;
+  margin: 0;
+}
+
+.profile_item_badge {
+  font-family: "Poppins", sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 12px;
+  letter-spacing: 0.3px;
+}
+
+.badge_buscando {
+  background-color: #e0e0e0;
+  color: #707070;
+}
+
+.badge_localizado {
+  background-color: #ffebe0;
+  color: #ff6f00;
+}
+
+/* --- Tarjetas Historial --- */
+.profile_history_card {
+  background-color: #f4f4f4;
+  border-radius: 20px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.profile_history_card:hover {
+  background-color: #eaeaea;
+}
+
+.profile_history_icon_container {
+  background-color: #e0e0e0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 14px;
+}
+
+.profile_history_info {
+  flex: 1;
+}
+
+.profile_history_info h3 {
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin: 0 0 2px 0;
+}
+
+.profile_history_info p {
+  font-family: "louis_george", sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  color: #8c8c8c;
+  margin: 0;
+}
+
+/* --- Bloque Configuración --- */
+.profile_config_block h2 {
+  margin-bottom: 14px;
+}
+
+.profile_config_menu_card {
+  background-color: #f4f4f4;
+  border-radius: 24px;
+  padding: 12px 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile_config_row_btn {
+  background: none;
+  border: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  cursor: pointer;
+  border-bottom: 1px solid #eaeaea;
+  width: 100%;
+}
+
+.profile_config_left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.profile_config_left span {
+  font-family: "louis_george", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1A1A1A;
+}
+
+/* Negrita para Cambiar Contraseña como en tu foto */
+.profile_config_bold_text {
+  font-family: "Poppins", sans-serif !important;
+  font-weight: 700 !important;
+}
+
+/* Estilo del botón de tu Logout original integrado */
+.profile_config_menu_card .menu_logout {
+  width: 100%;
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+  padding: 16px 0 8px 0;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #ff6f00; /* Naranja SheliGo de Cerrar Sesión */
+}
+
+.profile_config_menu_card .menu_logout svg {
+  color: #ff6f00;
+}

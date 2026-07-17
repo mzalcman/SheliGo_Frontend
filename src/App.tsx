@@ -19,6 +19,10 @@ import MyPublicatiosPage from "./pages/my_publications_page/my_publications_page
 // 1. Agregamos el import de la nueva pantalla de contáctanos
 import ContactPage from "./pages/contact_page/ContactPage";
 
+// 🚀 IMPORTS DE TUS DOS NUEVAS PANTALLAS DE PERFIL
+import ProfilePage from "./pages/profile/ProfilePage";
+import PersonalInfoPage from "./pages/personal_info/PersonalInfoPage";
+
 function App() {
 
   useEffect(() => {
@@ -49,6 +53,10 @@ function App() {
         <Route path="/chat/:salaId" element={<ChatRoomPage />} />
         <Route path="/mispublicaciones" element={<MyPublicatiosPage />} />
         <Route path="/menu" element={<MenuPage />} />
+
+        {/* 🚀 NUEVAS RUTAS PROTEGIDAS DEL PERFIL */}
+        <Route path="/perfil" element={<ProfilePage />} />
+        <Route path="/perfil/informacion-personal" element={<PersonalInfoPage />} />
       </Route>
     </Routes>
   );

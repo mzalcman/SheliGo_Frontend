@@ -3,23 +3,18 @@ import { ArrowRight, User, Shield, Edit2, CheckCircle2, History, Key } from "luc
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import LogoutButton from "../../components/logout_button/logout_button";
-import { useAuth } from "../../hooks/use_auth"; // 👈 Tu hook real
-import { getImageUrl } from "../../utils/get_image_url"; // 👈 Tu utilitario de imágenes
+import { useAuth } from "../../hooks/use_auth";
+import { getImageUrl } from "../../utils/get_image_url"; 
 import "./profile_page.css";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const { user: typedUser } = useAuth(); // 👈 Consumimos los datos reales
+  const { user: typedUser } = useAuth();
 
   const user = typedUser as any;
-  const userFullName = user?.nombre && user?.apellido 
-    ? `${user.nombre} ${user.apellido}` 
-    : user?.name || "Usuario";
 
-  // Placeholder de respaldo para evitar llamadas rotas al localhost
-  const defaultPlaceholder = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150";
+  const userFullName = user?.name || "Usuario";
 
-  // Objetos temporales (Manteniendo tu estructura)
   const misObjetos = [
     {
       id: "1",
@@ -57,7 +52,7 @@ const ProfilePage = () => {
       <Header />
 
       <main className="profile_scroll_container">
-        {/* Cabecera de Perfil: Redirige al tocar la imagen */}
+        {/* Redirige al tocar la imagen */}
         <section className="profile_hero_section">
           <div 
             className="profile_avatar_wrapper"
@@ -65,13 +60,13 @@ const ProfilePage = () => {
             style={{ cursor: "pointer" }}
           >
             <img 
-              src={user?.foto ? getImageUrl(user.foto) : defaultPlaceholder} 
+              src={
+                user?.profile_image
+                  ? getImageUrl(user.profile_image)
+                  : "/default-user.png"
+              } 
               alt={userFullName} 
               className="profile_main_avatar" 
-              onError={(e) => {
-                // Si falla la imagen por error de red o URL inválida, inyecta el placeholder
-                (e.target as HTMLImageElement).src = defaultPlaceholder;
-              }}
             />
             <button 
               className="profile_edit_avatar_badge"

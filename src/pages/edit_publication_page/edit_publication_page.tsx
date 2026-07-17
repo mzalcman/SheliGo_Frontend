@@ -55,18 +55,18 @@ const EditPublicationPage = () => {
 
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [backendErrors, setBackendErrors] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false); // 👈 Control de submits
 
   const todayStr = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
     const fetchAllData = async () => {
       try {
-        // Ejecutamos la consulta de las categorías, instituciones, la publicación Y las fotos en paralelo 🚀
         const [categoriasRes, institucionesRes, pubData, fotosRes] = await Promise.all([
           getCategories(),
           getInstitutions(),
           get_publication_by_id(id!),
-          get_publication_photos(id!) // 👈 Nueva consulta de fotos
+          get_publication_photos(id!)
         ]);
 
         const listaCategorias: BackendItem[] = categoriasRes?.categorias || categoriasRes?.data?.categorias || (Array.isArray(categoriasRes) ? categoriasRes : []);
@@ -86,7 +86,6 @@ const EditPublicationPage = () => {
           const instMatch = listaInstituciones.find((inst) => String(inst.id) === String(pubData.institucion_id));
           if (instMatch) setInstitucion(instMatch.nombre);
 
-          // 📸 Procesamos las fotos recibidas del endpoint /:id/archivos
           const fotosRaw = fotosRes || [];
           let imagenesProcesadas: PublicationImage[] = [];
 
@@ -95,12 +94,10 @@ const EditPublicationPage = () => {
               if (typeof img === "string") {
                 return { id: img, url: img };
               }
-              // Mapeamos según lo que devuelva el backend: 'ruta', 'nombre_servidor' o 'url'
-              // Si tu backend guarda solo el nombre de archivo (ej: "foto.jpg"), le concatenamos la URL base
               const urlFoto = img.url || img.ruta || img.nombre_servidor || "";
               const urlCompleta = urlFoto.startsWith("http")
                 ? urlFoto
-                : `http://localhost:3000/uploads/${urlFoto}`; // 👈 Ajustá "/uploads/" si tu carpeta estática se llama distinto
+                : `http://localhost:3000/uploads/${urlFoto}`;
 
               return {
                 id: String(img.id || img.ruta || img.nombre_servidor || ""),
@@ -148,24 +145,68 @@ const EditPublicationPage = () => {
   };
 
   const handleSaveChanges = async () => {
-    const formData = new FormData();
-    formData.append("nombre", nombre);
-    formData.append("tipo", tipo);
-    formData.append("categoria_id", categoriaId);
-    formData.append("fecha_evento", fechaEvento);
-    formData.append("lugar_institucion", lugarInstitucion);
-    formData.append("descripcion", descripcion);
+    if (isSubmitting) return;
 
-    // Buscamos si la institución escrita coincide con alguna de la lista
+    setFormErrors({});
+    setBackendErrors([]);
+
+    const errors: Record<string, boolean> = {};
+    const messages: string[] = [];
+
+    // 🚀 Mismas validaciones previas que en PublishPage
+    if (!nombre.trim() || nombre.trim().length < 3) {
+      errors.nombre = true;
+      messages.push("El nombre debe tener al menos 3 caracteres.");
+    }
+    if (!tipo) {
+      errors.tipo = true;
+      messages.push("El tipo debe ser perdido o encontrado.");
+    }
+    if (!categoriaId) {
+      errors.categoriaId = true;
+      messages.push("La categoría es inválida o no ha sido seleccionada.");
+    }
+    if (!fechaEvento) {
+      errors.fechaEvento = true;
+      messages.push("La fecha ingresada no es válida.");
+    } else {
+      const parsedDate = Date.parse(`${fechaEvento}T00:00:00`);
+      if (isNaN(parsedDate)) {
+        errors.fechaEvento = true;
+        messages.push("La fecha ingresada no es válida.");
+      }
+    }
+
     const institucionEncontrada = instituciones.find(
       (item) => item.nombre.toLowerCase() === institucion.trim().toLowerCase()
     );
 
-    // Si existe, mandamos su ID. Si no existe (o está vacío), mandamos vacío 
-    // para que el backend salte y nos diga "La institución es obligatoria o inválida"
+    if (!institucion.trim() || !institucionEncontrada) {
+      errors.institucion = true;
+      messages.push("La institución es inválida o no ha sido seleccionada de la lista.");
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      setBackendErrors(messages);
+      setShowErrorModal(true);
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const formData = new FormData();
+    formData.append("nombre", nombre);
+    formData.append("tipo", tipo);
+    formData.append("categoria_id", categoriaId);
+    
+    // 🎯 AQUÍ ESTÁ EL TRUCO: Enviamos la fecha con el mismo formato "T00:00:00" que sí acepta tu back
+    formData.append("fecha_evento", `${fechaEvento}T00:00:00`);
+    
+    formData.append("lugar_institucion", lugarInstitucion);
+    formData.append("descripcion", descripcion);
     formData.append("institucion_id", institucionEncontrada ? institucionEncontrada.id : "");
 
-    // Calculamos qué imágenes originales se eliminaron
     const fotosAEliminar = originalBackendImages
       .filter(origImg => !existingImages.some(currImg => currImg.id === origImg.id))
       .map(img => img.id);
@@ -181,28 +222,52 @@ const EditPublicationPage = () => {
     }
 
     try {
-      // Mandamos todo al back de una, sin frenos locales 🚀
       await update_publication(id!, formData);
-      setShowModal(true); // Si sale bien, abrimos el modal de éxito
+      setShowModal(true);
     } catch (error: any) {
       console.error("Error al guardar cambios:", error);
 
-      if (error?.response?.status === 403) {
-        setBackendErrors(["No tienes permisos para editar esta publicación."]);
-        setShowErrorModal(true);
-      } else if (error?.response?.data?.errors) {
-        // 👈 ASUMIENDO QUE TU BACKEND DEVUELVE UN ARRAY DE ERRORES EN: error.response.data.errors
-        // Adaptá "error.response.data.errors" u "error.response.data.message" según tu API.
-        const erroresDelServidor = Array.isArray(error.response.data.errors)
-          ? error.response.data.errors
-          : [error.response.data.message || "Error desconocido en el servidor."];
+      const nuevosErroresCampos: Record<string, boolean> = {};
+      let mensajesError: string[] = [];
 
-        setBackendErrors(erroresDelServidor);
-        setShowErrorModal(true);
-      } else {
-        setBackendErrors(["Hubo un error inesperado al actualizar los datos."]);
-        setShowErrorModal(true);
+      if (error?.response?.status === 403) {
+        mensajesError = ["No tienes permisos para editar esta publicación."];
+      } else if (error?.response?.data) {
+        const data = error.response.data;
+
+        if (Array.isArray(data.errors)) {
+          data.errors.forEach((err: any) => {
+            if (err && typeof err === "object") {
+              if (err.path && err.path.length > 0) {
+                const campo = err.path[0];
+                mensajesError.push(err.message);
+
+                if (campo === "categoria_id") nuevosErroresCampos.categoriaId = true;
+                else if (campo === "fecha_evento") nuevosErroresCampos.fechaEvento = true;
+                else if (campo === "lugar_institucion") nuevosErroresCampos.lugarInstitucion = true;
+                else if (campo === "institucion_id") nuevosErroresCampos.institucion = true;
+                else nuevosErroresCampos[campo] = true;
+              } else if (typeof err === "string") {
+                mensajesError.push(err);
+              }
+            } else if (typeof err === "string") {
+              mensajesError.push(err);
+            }
+          });
+        } else if (data.message) {
+          mensajesError = [data.message];
+        }
       }
+
+      if (mensajesError.length === 0) {
+        mensajesError = ["Hubo un error inesperado al actualizar los datos."];
+      }
+
+      setFormErrors(nuevosErroresCampos);
+      setBackendErrors(mensajesError);
+      setShowErrorModal(true);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -224,7 +289,7 @@ const EditPublicationPage = () => {
           <span className="edit_back_text">Editar Publicación</span>
         </button>
 
-        <h1 className="edit_title">Publicar Objeto</h1>
+        <h1 className="edit_title">Modificar Objeto</h1>
         <p className="edit_subtitle">
           Ayúdanos a devolverle el alma al club reportando lo que falta o lo que sobra.
         </p>
@@ -370,11 +435,11 @@ const EditPublicationPage = () => {
         </section>
 
         <div className="edit_buttons_group">
-          <button className="edit_btn_discard" onClick={() => navigate(-1)}>
+          <button className="edit_btn_discard" onClick={() => navigate(-1)} disabled={isSubmitting}>
             Descartar
           </button>
-          <button className="edit_btn_save" onClick={handleSaveChanges}>
-            Guardar
+          <button className="edit_btn_save" onClick={handleSaveChanges} disabled={isSubmitting}>
+            {isSubmitting ? "Guardando..." : "Guardar"}
           </button>
         </div>
 
@@ -384,6 +449,7 @@ const EditPublicationPage = () => {
       </main>
 
       <Footer />
+
       {/* 🟢 MODAL DE ÉXITO */}
       <Modal
         isOpen={showModal}

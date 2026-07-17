@@ -225,7 +225,7 @@ const PersonalInfoPage = () => {
               boxShadow: "0px 4px 12px rgba(255, 111, 0, 0.25)"
             }}
           >
-            {saving ? "GUARDANDO..." : "GUARDAR CAMBIOS"}
+            {saving ? "Guardando..." : "Guardar cambios"}
           </button>
         </form>
       </main>

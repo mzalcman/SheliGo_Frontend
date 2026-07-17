@@ -24,6 +24,41 @@ const ChatsListPage = () => {
   const [filter, setFilter] = useState<"todos" | "no_leidos" | "leidos">("todos");
   const [cargando, setCargando] = useState(true);
 
+  // Función inteligente para formatear la fecha/hora estilo WhatsApp
+  const formatearFechaMensaje = (fechaStr: string): string => {
+    if (!fechaStr) return "";
+    
+    const fechaMsj = new Date(fechaStr);
+    const ahora = new Date();
+    
+    // Resetear horas para comparar días exactos
+    const hoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
+    const ayer = new Date(hoy);
+    ayer.setDate(ayer.getDate() - 1);
+    
+    const fechaMsjCeroHoras = new Date(fechaMsj.getFullYear(), fechaMsj.getMonth(), fechaMsj.getDate());
+
+    // 1. Si es HOY: mostramos la hora
+    if (fechaMsjCeroHoras.getTime() === hoy.getTime()) {
+      return fechaMsj.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
+
+    // 2. Si fue AYER: "Ayer"
+    if (fechaMsjCeroHoras.getTime() === ayer.getTime()) {
+      return "Ayer";
+    }
+
+    // 3. Si fue en la última semana (menos de 7 días atrás)
+    const diferenciaDias = Math.floor((hoy.getTime() - fechaMsjCeroHoras.getTime()) / (1000 * 60 * 60 * 24));
+    if (diferenciaDias < 7) {
+      const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+      return diasSemana[fechaMsj.getDay()];
+    }
+
+    // 4. Si es más viejo: fecha completa corta (dd/mm/aaaa)
+    return fechaMsj.toLocaleDateString([], { day: "2-digit", month: "2-digit", year: "numeric" });
+  };
+
   useEffect(() => {
     const fetchSalas = async () => {
       try {
@@ -45,8 +80,6 @@ const ChatsListPage = () => {
 
         if (response.ok) {
           const resJson = await response.json();
-          console.log("👉 RESPUESTA REAL DEL BACKEND:", resJson);
-
           const rawSalas = resJson && Array.isArray(resJson.data) ? resJson.data : [];
 
           const salasMapeadas: ChatRoom[] = rawSalas.map((sala: any) => {
@@ -64,18 +97,10 @@ const ChatsListPage = () => {
               }
             }
 
-            let tiempoFormateado = "";
-            if (sala.ultimo_mensaje_fecha) {
-              const fecha = new Date(sala.ultimo_mensaje_fecha);
-              tiempoFormateado = fecha.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-            }
-
+            // Usamos la nueva función inteligente de formateo
+            const tiempoFormateado = formatearFechaMensaje(sala.ultimo_mensaje_fecha);
             const sinLeerCount = parseInt(sala.mensajes_sin_leer || "0", 10);
 
-            // 🔥 TRUCO MÁGICO AUTOMÁTICO:
-            // Si el backend te dice explicitamente que es tuyo, joya. 
-            // Si no te lo dice, pero la sala NO tiene mensajes sin leer tuyos en espera (sinLeerCount === 0) 
-            // Y el último mensaje no está vacío, significa que el hilo está al día porque lo cerraste vos mandando un mensaje.
             const enviadoPorMi = 
               sala.ultimo_mensaje_enviado_por_mi === true || 
               sala.ultimo_mensaje_enviado_por_mi === 1 ||
@@ -83,7 +108,6 @@ const ChatsListPage = () => {
               sala.enviado_por_mi === 1 ||
               (sinLeerCount === 0 && sala.ultimo_mensaje && sala.ultimo_mensaje !== "Sin mensajes");
 
-            // Si lo mandaste vos y no hay pendientes, está en naranja (leído)
             const receptorLeyoMiMensaje = enviadoPorMi && sinLeerCount === 0;
 
             return {
@@ -178,13 +202,11 @@ const ChatsListPage = () => {
                 />
 
                 <div className="chats_card_info">
-                  {/* Izquierda */}
                   <div className="chats_card_left_content">
                     <span className="chats_user_name">{chat.usuario_nombre}</span>
                     <span className="chats_preview_message">{chat.ultimo_mensaje}</span>
                   </div>
 
-                  {/* Derecha */}
                   <div className="chats_card_right_content">
                     <span className="chats_time_text">{chat.ultimo_mensaje_tiempo}</span>
                     

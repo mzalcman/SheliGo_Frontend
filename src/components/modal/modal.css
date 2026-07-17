@@ -56,13 +56,13 @@
   font-weight: 700;
   color: #1a1a1a;
   margin: 0 0 8px 0;
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
 }
 
 .modal_description_text {
   font-size: 15px;
   color: #424242;
-  font-family: "louis_george", sans-serif;
+  font-family: "louis_george";
   font-weight: 700;
   margin: 8px 0 16px;
   line-height: 1.4;
@@ -101,7 +101,7 @@
 .error_item_text {
   font-size: 14px;
   color: #555;
-  font-family: "louis_george", sans-serif;
+  font-family: "louis_george";
 }
 
 /* Botones */
@@ -122,7 +122,7 @@
   border-radius: 14px;
   font-size: 15px;
   font-weight: 600;
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   cursor: pointer;
   transition: all 0.2s;
   border: none;
@@ -175,7 +175,7 @@
   height: 50px;
   border: none;
   border-radius: 25px;
-  font-family: "Poppins", sans-serif;
+  font-family: "poppins";
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
@@ -196,7 +196,7 @@
   width: 100%;
   height: 40px;
   border: none;
-  font-family: "Poppins", sans-serif;
+  font-family: "poppins";
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
@@ -213,7 +213,7 @@
   height: 50px;
   border: none;
   border-radius: 25px;
-  font-family: "Poppins", sans-serif;
+  font-family: "poppins";
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;

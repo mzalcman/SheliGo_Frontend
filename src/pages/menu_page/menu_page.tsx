@@ -37,11 +37,21 @@ const MenuPage = () => {
 
           <h2 className="menu_name">{userFullName}</h2>
 
-          <button className="menu_view_profile">Ver perfil</button>
+          {/* 🚀 Botón "Ver perfil": Ahora te redirige a tu pantalla de perfil */}
+          <button 
+            className="menu_view_profile"
+            onClick={() => navigate("/perfil")}
+          >
+            Ver perfil
+          </button>
         </div>
 
         <div className="menu_options">
-          <button className="menu_option menu_option_active">
+          {/* 🚀 Botón "Información personal": Te lleva directo a la pantalla de info personal */}
+          <button 
+            className="menu_option menu_option_active"
+            onClick={() => navigate("/perfil/informacion-personal")}
+          >
             <User size={20} />
             <span>Información personal</span>
           </button>

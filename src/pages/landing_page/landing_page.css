@@ -5,12 +5,10 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  /* Font base por si acaso */
   font-family: "Poppins";
   overflow-x: hidden;
 }
 
-/* Contenedor de la imagen que cubre todo el fondo superior */
 .landing_image_container {
   position: absolute;
   top: 0;
@@ -27,7 +25,6 @@
   mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 65%, rgba(0,0,0,0) 100%);
 }
 
-/* Contenedor de los textos y botones */
 .landing_content {
   position: relative;
   z-index: 2;
@@ -37,22 +34,20 @@
   margin-top: 45vh;
 }
 
-/* 🏷️ SheliGo en Poppins 600 */
 .landing_logo {
   font-family: "Poppins";
   color: #ff6f00;
   font-size: 3.2rem;
-  font-weight: 600; /* Asignado */
+  font-weight: 600;
   margin: 0;
   letter-spacing: -0.5px;
 }
 
-/* 🏷️ Título principal en Poppins 500 */
 .landing_title {
   font-family: "Poppins";
   margin-top: 16px;
   font-size: 2.5rem;
-  font-weight: 500; /* Asignado */
+  font-weight: 500; 
   line-height: 1.2;
   color: #000000;
 }
@@ -63,18 +58,16 @@
   margin-top: 4px;
 }
 
-/* 🏷️ Subtítulo descriptivo en Poppins 400 */
 .landing_subtitle {
   font-family: "Poppins";
   margin-top: 20px;
   color: #a0a0a0;
   font-size: 1rem;
-  font-weight: 400; /* Asignado */
+  font-weight: 400; 
   line-height: 1.4;
   max-width: 85%;
 }
 
-/* Contenedor de botones */
 .landing_buttons {
   margin-top: 40px;
   display: flex;
@@ -83,7 +76,6 @@
   width: 100%;
 }
 
-/* 🏷️ Botón Registrarse en louis_george 500 */
 .landing_register_button {
   font-family: "louis_george";
   height: 54px;
@@ -97,7 +89,6 @@
   transition: background 0.2s ease;
 }
 
-/* 🏷️ Botón Iniciar Sesión en louis_george 500 */
 .landing_login_button {
   font-family: "louis_george"; 
   height: 54px;

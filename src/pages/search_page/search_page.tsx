@@ -83,7 +83,7 @@ const SearchPage = () => {
           />
         </section>
 
-        {/* 🔴 MODIFICADO: Condicional para cuando no hay publicaciones en los filtros */}
+        {/*Condicional para cuando no hay publicaciones en los filtros */}
         <section className="search_results">
           {objects.length === 0 ? (
             <div className="no_results_container animate_fade_in">

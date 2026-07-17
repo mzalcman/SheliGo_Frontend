@@ -13,7 +13,7 @@
 }
 
 .chats_main_title {
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-size: 38px;
   font-weight: 400;
   color: #1c1c1c;
@@ -39,7 +39,7 @@
   border: none;
   border-radius: 50px;
   padding: 14px 14px 14px 48px;
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-size: 16px;
   box-sizing: border-box;
   outline: none;
@@ -60,7 +60,7 @@
   background: none;
   padding: 10px 0;
   border-radius: 15px;
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-size: 14.5px;
   font-weight: 600;
   color: #6e6e6e;
@@ -121,14 +121,14 @@
 }
 
 .chats_user_name {
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-size: 18px;
   font-weight: 700;
   color: #000000;
 }
 
 .chats_time_text {
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-size: 11px;
   font-weight: 600;
   color: #a0a0a0;
@@ -141,7 +141,7 @@
 }
 
 .chats_preview_message {
-  font-family: "louis_george", sans-serif;
+  font-family: "louis_george";
   font-weight: 600;
   font-size: 14px;
   color: #6e6e6e;

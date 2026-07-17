@@ -6,6 +6,7 @@ import Footer from "../../components/footer/footer";
 import ImageUploader from "../../components/image_uploader/image_uploader";
 import { Send, Check, X } from "lucide-react";
 import { create_publication, getCategories, getInstitutions } from "../../services/publication_service";
+import Modal from "../../components/modal/modal";
 
 interface BackendItem {
   id: string;
@@ -373,58 +374,35 @@ const PublishPage = () => {
       <Footer />
 
       {/* Modal de éxito */}
-      {showModal && (
-        <div className="modal_overlay">
-          <div className="modal_container">
-            <div className="modal_icon_circle">
-              <Check size={32} strokeWidth={3} className="modal_icon_check" />
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title="¡Publicación exitosa!"
+        description="Tu objeto ya se encuentra visible para toda la comunidad de SheliGo."
+        variant="success"
+        icon={<Check size={32} strokeWidth={3} />}
+        onConfirm={handleModalAccept}
+      />
+
+      {/* Modal de Errores */}
+      <Modal
+        isOpen={showErrorModal}
+        onClose={() => setShowErrorModal(false)}
+        title="No se pudo publicar"
+        description="Por favor corrige los siguientes detalles:"
+        variant="error"
+        icon={<X size={32} strokeWidth={3} />}
+        confirmText="Entendido"
+      >
+        <div className="error_list_container">
+          {backendErrors.map((err, idx) => (
+            <div key={idx} className="error_list_item">
+              <span className="error_item_bullet">!</span>
+              <span className="error_item_text">{err}</span>
             </div>
-            <h2 className="modal_title">¡Publicación exitosa!</h2>
-            <p className="modal_text">
-              Tu objeto ya se encuentra visible para toda la comunidad de SheliGo.
-            </p>
-            <button className="modal_accept_button" onClick={handleModalAccept}>
-              Aceptar
-            </button>
-          </div>
+          ))}
         </div>
-      )}
-
-      {/* Modal de Errores*/}
-      {showErrorModal && (
-        <div className="modal_overlay">
-          <div className="modal_container">
-            <div className="modal_icon_circle error_icon_circle">
-              <X size={32} strokeWidth={3} className="modal_icon_error" />
-            </div>
-
-            <h2 className="modal_title" style={{ color: "#000000" }}>No se pudo publicar</h2>
-
-            <p style={{
-              fontSize: "15px",
-              color: "#424242",
-              fontFamily: "louis_george",
-              fontWeight: 700,
-              margin: "8px 0 0"
-            }}>
-              Por favor corrige los siguientes detalles:
-            </p>
-
-            <div className="error_list_container">
-              {backendErrors.map((err, idx) => (
-                <div key={idx} className="error_list_item">
-                  <span className="error_item_bullet">!</span>
-                  <span className="error_item_text">{err}</span>
-                </div>
-              ))}
-            </div>
-
-            <button className="modal_error_button" onClick={() => setShowErrorModal(false)}>
-              Entendido
-            </button>
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 };

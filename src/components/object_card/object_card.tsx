@@ -20,7 +20,7 @@ const ObjectCard = ({
 }: ObjectCardProps) => {
   const navigate = useNavigate();
 
-  // 🎯 Filtro inteligente: si la imagen viene con el link roto "placeholder-bege.jpg" o vacía,
+  // Filtro inteligente: si la imagen viene con el link roto "placeholder-bege.jpg" o vacía,
   // la cambiamos al vuelo por tu propia imagen local para que no tire error en la consola.
   const finalImage = 
     !image || image.includes("placeholder-bege.jpg") 

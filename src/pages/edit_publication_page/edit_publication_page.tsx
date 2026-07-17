@@ -4,13 +4,14 @@ import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import Loader from "../../components/loader/loader";
 import ImageUploader from "../../components/image_uploader/image_uploader";
-import { ArrowLeft, Check, X } from "lucide-react"; // 👈 Se agregó la X para el botón de borrar
-import { 
-  getCategories, 
-  getInstitutions, 
-  get_publication_by_id, 
+import { ArrowLeft, Check, X } from "lucide-react";
+import Modal from "../../components/modal/modal";
+import {
+  getCategories,
+  getInstitutions,
+  get_publication_by_id,
   update_publication,
-  get_publication_photos 
+  get_publication_photos
 } from "../../services/publication_service";
 import "./edit_publication_page.css";
 
@@ -43,7 +44,7 @@ const EditPublicationPage = () => {
   const [fechaEvento, setFechaEvento] = useState("");
   const [lugarInstitucion, setLugarInstitucion] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const [institucion, setInstitucion] = useState(""); 
+  const [institucion, setInstitucion] = useState("");
 
   const [filteredInstituciones, setFilteredInstituciones] = useState<BackendItem[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -67,7 +68,7 @@ const EditPublicationPage = () => {
 
         const listaCategorias: BackendItem[] = categoriasRes?.categorias || categoriasRes?.data?.categorias || (Array.isArray(categoriasRes) ? categoriasRes : []);
         const listaInstituciones: BackendItem[] = institucionesRes?.instituciones || institucionesRes?.data?.instituciones || (Array.isArray(institucionesRes) ? institucionesRes : []);
-        
+
         setCategorias(listaCategorias);
         setInstituciones(listaInstituciones);
 
@@ -78,14 +79,14 @@ const EditPublicationPage = () => {
           setFechaEvento(pubData.fecha_evento ? pubData.fecha_evento.split("T")[0] : "");
           setLugarInstitucion(pubData.lugar_institucion || "");
           setDescripcion(pubData.descripcion || "");
-          
+
           const instMatch = listaInstituciones.find((inst) => String(inst.id) === String(pubData.institucion_id));
           if (instMatch) setInstitucion(instMatch.nombre);
 
           // 📸 Procesamos las fotos recibidas del endpoint /:id/archivos
           const fotosRaw = fotosRes || [];
           let imagenesProcesadas: PublicationImage[] = [];
-          
+
           if (Array.isArray(fotosRaw)) {
             imagenesProcesadas = fotosRaw.map((img: any) => {
               if (typeof img === "string") {
@@ -94,8 +95,8 @@ const EditPublicationPage = () => {
               // Mapeamos según lo que devuelva el backend: 'ruta', 'nombre_servidor' o 'url'
               // Si tu backend guarda solo el nombre de archivo (ej: "foto.jpg"), le concatenamos la URL base
               const urlFoto = img.url || img.ruta || img.nombre_servidor || "";
-              const urlCompleta = urlFoto.startsWith("http") 
-                ? urlFoto 
+              const urlCompleta = urlFoto.startsWith("http")
+                ? urlFoto
                 : `http://localhost:3000/uploads/${urlFoto}`; // 👈 Ajustá "/uploads/" si tu carpeta estática se llama distinto
 
               return {
@@ -104,7 +105,7 @@ const EditPublicationPage = () => {
               };
             }).filter((img) => img.url !== "");
           }
-          
+
           setOriginalBackendImages(imagenesProcesadas);
           setExistingImages(imagenesProcesadas);
         }
@@ -117,7 +118,7 @@ const EditPublicationPage = () => {
 
     fetchAllData();
   }, [id]);
-  
+
   useEffect(() => {
     if (institucion.trim() === "") {
       setFilteredInstituciones([]);
@@ -230,12 +231,12 @@ const EditPublicationPage = () => {
         </p>
 
         <div className="edit_uploader_wrapper">
-          <ImageUploader 
-            images={newImages} 
-            setImages={setNewImages} 
-            maxFiles={5 - existingImages.length} 
+          <ImageUploader
+            images={newImages}
+            setImages={setNewImages}
+            maxFiles={5 - existingImages.length}
           />
-          
+
           {existingImages.length > 0 && (
             <div className="edit_backend_images_preview">
               <p className="edit_section_mini_title">Imágenes actuales de la publicación:</p>
@@ -384,21 +385,15 @@ const EditPublicationPage = () => {
       </main>
 
       <Footer />
-
-      {/* Modal Éxito */}
-      {showModal && (
-        <div className="modal_overlay">
-          <div className="modal_container">
-            <div className="modal_icon_circle">
-              <Check size={32} strokeWidth={3} className="modal_icon_check" />
-            </div>
-            <h2 className="modal_title">¡Cambios guardados!</h2>
-            <button className="modal_accept_button" onClick={() => navigate(`/home`)}>
-              Aceptar
-            </button>
-          </div>
-        </div>
-      )}
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title="¡Cambios guardados!"
+        variant="success"
+        icon={<Check size={32} strokeWidth={3} />}
+        confirmText="Aceptar"
+        onConfirm={() => navigate(`/home`)}
+      />
     </div>
   );
 };

@@ -395,7 +395,7 @@ const EditPublicationPage = () => {
         onConfirm={() => navigate(`/home`)}
       />
 
-      {/* 🔴 MODAL DE ERRORES DEL BACKEND */}
+      {/* MODAL DE ERRORES DEL BACKEND */}
       <Modal
         isOpen={showErrorModal}
         onClose={() => setShowErrorModal(false)}

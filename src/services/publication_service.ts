@@ -1,17 +1,9 @@
 import { api } from "./api";
 
-export const get_publication_by_id =
-  async (
-    id: string
-  ) => {
-
-    const response =
-      await api.get(
-        `/publicaciones/${id}`
-      );
-
-    return response.data.data.publicacion;
-  };
+export const get_publication_by_id = async (id: string) => {
+  const response = await api.get(`/publicaciones/${id}`);
+  return response.data.data.publicacion;
+};
 
 export const getCategories = async () => {
   const response = await api.get("/categorias");
@@ -38,10 +30,35 @@ export const delete_publication = async (id: string) => {
 };
 
 export const update_publication = async (id: string, formData: FormData) => {
-  const response = await api.patch(`/publicaciones/${id}`, formData, {
+  // 1. Obtenemos el token de autenticación
+  const token = localStorage.getItem("token") || "";
+
+  // 2. Realizamos la petición directa a la URL limpia de publicaciones
+  const response = await fetch(`http://localhost:3000/publicaciones/${id}`, {
+    method: "PUT",
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Authorization": `Bearer ${token}`
+      // IMPORTANTE: Al enviar FormData NO hay que definir "Content-Type" manualmente.
+      // El navegador se encarga de ponerlo junto con el boundary correcto.
     },
+    body: formData,
   });
-  return response.data;
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw {
+      response: {
+        status: response.status,
+        data: errorData
+      }
+    };
+  }
+
+  return response.json();
+};
+
+export const get_publication_photos = async (id: string) => {
+  const response = await api.get(`/publicaciones/${id}/archivos`);
+  // Segun tu backend devuelve: { status: 'success', data: { archivos } }
+  return response.data?.data?.archivos || response.data?.archivos || [];
 };

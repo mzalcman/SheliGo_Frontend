@@ -1,21 +1,27 @@
-import "./edit_publication_page.css";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import Loader from "../../components/loader/loader";
 import ImageUploader from "../../components/image_uploader/image_uploader";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, X } from "lucide-react"; // 👈 Se agregó la X para el botón de borrar
 import { 
   getCategories, 
   getInstitutions, 
   get_publication_by_id, 
-  update_publication 
+  update_publication,
+  get_publication_photos 
 } from "../../services/publication_service";
+import "./edit_publication_page.css";
 
 interface BackendItem {
   id: string;
   nombre: string;
+}
+
+interface PublicationImage {
+  id: string;
+  url: string;
 }
 
 const EditPublicationPage = () => {
@@ -27,7 +33,8 @@ const EditPublicationPage = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
-  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [originalBackendImages, setOriginalBackendImages] = useState<PublicationImage[]>([]);
+  const [existingImages, setExistingImages] = useState<PublicationImage[]>([]);
   const [newImages, setNewImages] = useState<File[]>([]);
 
   const [nombre, setNombre] = useState("");
@@ -50,14 +57,16 @@ const EditPublicationPage = () => {
   useEffect(() => {
     const fetchAllData = async () => {
       try {
-        const [categoriasRes, institucionesRes, pubData] = await Promise.all([
+        // Ejecutamos la consulta de las categorías, instituciones, la publicación Y las fotos en paralelo 🚀
+        const [categoriasRes, institucionesRes, pubData, fotosRes] = await Promise.all([
           getCategories(),
           getInstitutions(),
-          get_publication_by_id(id!)
+          get_publication_by_id(id!),
+          get_publication_photos(id!) // 👈 Nueva consulta de fotos
         ]);
 
-        let listaCategorias: BackendItem[] = categoriasRes?.categorias || categoriasRes?.data?.categorias || (Array.isArray(categoriasRes) ? categoriasRes : []);
-        let listaInstituciones: BackendItem[] = institucionesRes?.instituciones || institucionesRes?.data?.instituciones || (Array.isArray(institucionesRes) ? institucionesRes : []);
+        const listaCategorias: BackendItem[] = categoriasRes?.categorias || categoriasRes?.data?.categorias || (Array.isArray(categoriasRes) ? categoriasRes : []);
+        const listaInstituciones: BackendItem[] = institucionesRes?.instituciones || institucionesRes?.data?.instituciones || (Array.isArray(institucionesRes) ? institucionesRes : []);
         
         setCategorias(listaCategorias);
         setInstituciones(listaInstituciones);
@@ -73,17 +82,31 @@ const EditPublicationPage = () => {
           const instMatch = listaInstituciones.find((inst) => String(inst.id) === String(pubData.institucion_id));
           if (instMatch) setInstitucion(instMatch.nombre);
 
-          if (pubData.imagenes) {
-            let imagenesProcesadas: string[] = [];
-            if (Array.isArray(pubData.imagenes)) {
-              imagenesProcesadas = pubData.imagenes.map((img: any) => 
-                typeof img === "string" ? img : img.url || img.ruta || ""
-              ).filter(Boolean);
-            } else if (typeof pubData.imagenes === "string") {
-              imagenesProcesadas = [pubData.imagenes];
-            }
-            setExistingImages(imagenesProcesadas);
+          // 📸 Procesamos las fotos recibidas del endpoint /:id/archivos
+          const fotosRaw = fotosRes || [];
+          let imagenesProcesadas: PublicationImage[] = [];
+          
+          if (Array.isArray(fotosRaw)) {
+            imagenesProcesadas = fotosRaw.map((img: any) => {
+              if (typeof img === "string") {
+                return { id: img, url: img };
+              }
+              // Mapeamos según lo que devuelva el backend: 'ruta', 'nombre_servidor' o 'url'
+              // Si tu backend guarda solo el nombre de archivo (ej: "foto.jpg"), le concatenamos la URL base
+              const urlFoto = img.url || img.ruta || img.nombre_servidor || "";
+              const urlCompleta = urlFoto.startsWith("http") 
+                ? urlFoto 
+                : `http://localhost:3000/uploads/${urlFoto}`; // 👈 Ajustá "/uploads/" si tu carpeta estática se llama distinto
+
+              return {
+                id: String(img.id || img.ruta || img.nombre_servidor || ""),
+                url: urlCompleta
+              };
+            }).filter((img) => img.url !== "");
           }
+          
+          setOriginalBackendImages(imagenesProcesadas);
+          setExistingImages(imagenesProcesadas);
         }
         setLoading(false);
       } catch (error) {
@@ -94,7 +117,7 @@ const EditPublicationPage = () => {
 
     fetchAllData();
   }, [id]);
-
+  
   useEffect(() => {
     if (institucion.trim() === "") {
       setFilteredInstituciones([]);
@@ -152,19 +175,34 @@ const EditPublicationPage = () => {
     formData.append("lugar_institucion", lugarInstitucion);
     formData.append("descripcion", descripcion);
     formData.append("institucion_id", institucionEncontrada.id);
-    
-    formData.append("imagenes_existentes", JSON.stringify(existingImages));
 
-    newImages.forEach((image) => {
-      formData.append("imagenes_nuevas", image);
+    // 🎯 Calculamos qué imágenes originales se eliminaron
+    const fotosAEliminar = originalBackendImages
+      .filter(origImg => !existingImages.some(currImg => currImg.id === origImg.id))
+      .map(img => img.id);
+
+    // Mandamos los IDs a eliminar como valores planos, no JSON stringificado
+    fotosAEliminar.forEach((idFoto) => {
+      formData.append("fotosAEliminar[]", idFoto);
     });
+
+    // 🚀 Mandamos las imágenes nuevas solo si existen
+    if (newImages.length > 0) {
+      newImages.forEach((image) => {
+        formData.append("imagenes", image);
+      });
+    }
 
     try {
       await update_publication(id!, formData);
       setShowModal(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al guardar cambios:", error);
-      alert("Hubo un error al actualizar los datos.");
+      if (error?.response?.status === 403) {
+        alert("No tienes permisos para editar esta publicación.");
+      } else {
+        alert("Hubo un error al actualizar los datos.");
+      }
     }
   };
 
@@ -202,15 +240,16 @@ const EditPublicationPage = () => {
             <div className="edit_backend_images_preview">
               <p className="edit_section_mini_title">Imágenes actuales de la publicación:</p>
               <div className="image_preview_container">
-                {existingImages.map((url, index) => (
+                {existingImages.map((image, index) => (
                   <div key={`existing-${index}`} className="image_preview_wrapper">
-                    <img src={url} className="image_preview" alt="Existente backend" />
+                    <img src={image.url} className="image_preview" alt="Existente backend" />
                     <button
                       type="button"
                       className="remove_image_button"
                       onClick={() => setExistingImages(prev => prev.filter((_, i) => i !== index))}
+                      title="Eliminar imagen"
                     >
-                      <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#fff' }}>✕</span>
+                      <X size={13} strokeWidth={2.5} /> {/* 👈 Ícono de cruz moderno con Lucide React */}
                     </button>
                   </div>
                 ))}

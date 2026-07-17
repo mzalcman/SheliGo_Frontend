@@ -160,10 +160,9 @@ const PublicationDetailPage = () => {
                   on_submit={add_question}
                 />
                 <ClaimButton
-                  otroUsuarioId={String(publication.usuario_id)}
-                  // Usamos 'any' temporal o leemos de propiedades que sí existan en tu tipo Publication
-                  usuarioNombre={(publication as any).usuario_nombre || "Creador de la publicación"}
-                  usuarioAvatar={(publication as any).usuario_avatar || ""}
+                  otroUsuarioId={publication.usuario_id}
+                  usuarioNombre={`${publication.usuario_nombre} ${publication.usuario_apellido}`} 
+                  usuarioAvatar={publication.usuario_foto} 
                 />
               </>
             )

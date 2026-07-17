@@ -15,6 +15,7 @@ import { get_questions, create_question } from "../../services/question_service"
 import { get_publication_archives } from "../../services/publication_archives_service";
 import { useAuthContext } from "../../contexts/auth_context";
 import Loader from "../../components/loader/loader";
+import { getImageUrl } from "../../utils/get_image_url"; // 👈 Usamos tu helper para resolver la foto de Supabase / API
 import { Pencil, Trash2 } from "lucide-react";
 
 const PublicationDetailPage = () => {
@@ -33,6 +34,9 @@ const PublicationDetailPage = () => {
 
   const [show_delete_modal, set_show_delete_modal] = useState(false);
   const [is_deleting, set_is_deleting] = useState(false);
+
+  // Fallback seguro de avatar por si se rompe la red del localhost
+  const defaultUserPlaceholder = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150";
 
   const refresh_questions = async () => {
     try {
@@ -162,7 +166,8 @@ const PublicationDetailPage = () => {
                 <ClaimButton
                   otroUsuarioId={publication.usuario_id}
                   usuarioNombre={`${publication.usuario_nombre} ${publication.usuario_apellido}`} 
-                  usuarioAvatar={publication.usuario_foto} 
+                  // 🚀 Arreglo foto: Resolvemos la URL real de la foto o mandamos el fallback seguro
+                  usuarioAvatar={publication.usuario_foto ? getImageUrl(publication.usuario_foto) : defaultUserPlaceholder} 
                 />
               </>
             )
@@ -200,7 +205,6 @@ const PublicationDetailPage = () => {
           </div>
         </div>
       )}
-      <Footer />
     </div>
   );
 };

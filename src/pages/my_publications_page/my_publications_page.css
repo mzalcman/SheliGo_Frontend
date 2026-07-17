@@ -34,7 +34,7 @@
 }
 
 .mypubs_title {
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-size: 28px;
   font-weight: 400;
   color: #000000;
@@ -49,7 +49,7 @@
 }
 
 .mypubs_subtitle {
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-size: 13px;
   font-weight: 700;
   color: #ff6f00;
@@ -57,7 +57,7 @@
 }
 
 .mypubs_headline {
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-size: 24px;
   font-weight: 800;
   color: #000000;
@@ -65,7 +65,7 @@
 }
 
 .mypubs_description {
-  font-family: "louis_george", sans-serif;
+  font-family: "louis_george";
   font-weight: 600;
   font-size: 15px;
   color: #6e6e6e;
@@ -86,7 +86,7 @@
 }
 
 .mypubs_badge_count {
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-size: 34px;
   font-weight: 900;
   color: #000000;
@@ -94,7 +94,7 @@
 }
 
 .mypubs_badge_text {
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-size: 19px;
   font-weight: 700;
   color: #000000;
@@ -120,7 +120,7 @@
   justify-content: center;
   padding: 40px 0;
   gap: 12px;
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   color: #6e6e6e;
   font-weight: 500;
 }
@@ -163,7 +163,7 @@
 }
 
 .mypubs_empty_title {
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-size: 20px;
   font-weight: 700;
   color: #222222;
@@ -171,7 +171,7 @@
 }
 
 .mypubs_empty_subtitle {
-  font-family: "louis_george", sans-serif;
+  font-family: "louis_george";
   font-weight: 600;
   font-size: 14px;
   color: #7d7d7d;
@@ -186,7 +186,7 @@
   border: none;
   border-radius: 50px;
   padding: 14px 28px;
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-weight: 700;
   font-size: 14px;
   cursor: pointer;

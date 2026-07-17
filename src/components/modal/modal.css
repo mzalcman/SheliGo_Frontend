@@ -1,0 +1,228 @@
+.modal_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal_container {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 28px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Contenedores de Íconos */
+.modal_icon_circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+  background-color: #e8f5e9; 
+}
+
+.modal_icon_circle svg {
+  color: #2e7d32; 
+}
+
+/* Alertas y errores */
+.modal_icon_circle.error_icon_circle {
+  background-color: #ffebee;
+}
+
+.modal_icon_circle.error_icon_circle svg {
+  color: #c62828; 
+}
+
+/* Tipografías */
+.modal_title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+  font-family: "poppins";
+}
+
+.modal_description_text {
+  font-size: 15px;
+  color: #424242;
+  font-family: "louis_george";
+  font-weight: 700;
+  margin: 8px 0 16px;
+  line-height: 1.4;
+}
+
+/* Cuerpo Custom (Para Listas de Errores) */
+.modal_custom_body {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.error_list_container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  max-height: 200px;
+  overflow-y: auto;
+  background: #fafafa;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #eaeaea;
+}
+
+.error_list_item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.error_item_bullet {
+  color: #ff6f00;
+  font-weight: bold;
+}
+
+.error_item_text {
+  font-size: 14px;
+  color: #555;
+  font-family: "louis_george";
+}
+
+/* Botones */
+.modal_buttons_container {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.modal_accept_button,
+.modal_error_button,
+.modal_confirm_button,
+.modal_cancel_button {
+  flex: 1;
+  padding: 12px 24px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: "poppins";
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.modal_accept_button {
+  background-color: #ff6f00;
+  color: #ffffff;
+}
+
+.modal_error_button {
+  background-color: #212121;
+  color: #ffffff;
+}
+
+.modal_confirm_button {
+  background-color: #8d4f2a; 
+  color: #ffffff;
+}
+
+.modal_cancel_button {
+  background-color: #e0e0e0;
+  color: #424242;
+}
+
+.modal_accept_button:hover,
+.modal_confirm_button:hover {
+  filter: brightness(0.9);
+}
+.modal_icon_circle.confirm_icon_circle {
+  background-color: #f7ede8; 
+}
+
+.modal_icon_circle.confirm_icon_circle svg {
+  color: #8d4f2a; 
+}
+
+.modal_buttons_container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.modal_accept_button,
+.modal_confirm_button {
+  background-color: #ff6f00;
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 25px;
+  font-family: "poppins";
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: transform 0.1s ease, filter 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal_confirm_button.confirm_brown {
+  background-color: #FF6F00; 
+}
+
+.modal_cancel_button {
+  background: none;
+  color: #616161;
+  width: 100%;
+  height: 40px;
+  border: none;
+  font-family: "poppins";
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal_error_button {
+  background-color: #212121;
+  color: #ffffff;
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 25px;
+  font-family: "poppins";
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.modal_confirm_button:active,
+.modal_accept_button:active,
+.modal_error_button:active,
+.modal_cancel_button:active {
+  transform: scale(0.98);
+}

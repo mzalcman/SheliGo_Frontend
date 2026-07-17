@@ -31,7 +31,7 @@
 }
 
 .room_header_name {
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-size: 19px;
   font-weight: 700;
   color: #000000;
@@ -54,7 +54,7 @@
 .room_date_tag span {
   background-color: #dbdbdb;
   color: #7d7d7d;
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-weight: 600;
   font-size: 12px;
   padding: 6px 16px;
@@ -103,7 +103,7 @@
 }
 
 .room_bubble_text {
-  font-family: "louis_george", sans-serif;
+  font-family: "louis_george";
   font-weight: 600;
   font-size: 14.5px;
   line-height: 1.4;
@@ -118,7 +118,7 @@
 }
 
 .room_bubble_time {
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-size: 10px;
   font-weight: 600;
   color: #a0a0a0;
@@ -140,7 +140,7 @@
 
 .room_delete_hint {
   text-align: center;
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-size: 11px;
   color: #a8a8a8;
   letter-spacing: 0.8px;
@@ -170,7 +170,7 @@
   flex: 1;
   border: none;
   background: none;
-  font-family: "louis_george", sans-serif;
+  font-family: "louis_george";
   font-weight: 600;
   font-size: 16px;
   padding: 10px 0;
@@ -232,7 +232,7 @@
 }
 
 .room_modal_title {
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-weight: 700;
   font-size: 18px;
   color: #000000;
@@ -240,7 +240,7 @@
 }
 
 .room_modal_text {
-  font-family: "louis_george", sans-serif;
+  font-family: "louis_george";
   font-weight: 600;
   font-size: 14px;
   color: #707070;
@@ -257,7 +257,7 @@
   flex: 1;
   padding: 12px;
   border-radius: 12px;
-  font-family: "poppins", sans-serif;
+  font-family: "poppins";
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;

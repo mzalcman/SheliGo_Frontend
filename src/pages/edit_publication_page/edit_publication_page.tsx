@@ -4,13 +4,14 @@ import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import Loader from "../../components/loader/loader";
 import ImageUploader from "../../components/image_uploader/image_uploader";
-import { ArrowLeft, Check, X } from "lucide-react"; // 👈 Se agregó la X para el botón de borrar
-import { 
-  getCategories, 
-  getInstitutions, 
-  get_publication_by_id, 
+import { ArrowLeft, Check, X } from "lucide-react";
+import Modal from "../../components/modal/modal";
+import {
+  getCategories,
+  getInstitutions,
+  get_publication_by_id,
   update_publication,
-  get_publication_photos 
+  get_publication_photos
 } from "../../services/publication_service";
 import "./edit_publication_page.css";
 
@@ -43,7 +44,7 @@ const EditPublicationPage = () => {
   const [fechaEvento, setFechaEvento] = useState("");
   const [lugarInstitucion, setLugarInstitucion] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const [institucion, setInstitucion] = useState(""); 
+  const [institucion, setInstitucion] = useState("");
 
   const [filteredInstituciones, setFilteredInstituciones] = useState<BackendItem[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -51,6 +52,9 @@ const EditPublicationPage = () => {
 
   const [isModified, setIsModified] = useState<Record<string, boolean>>({});
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [backendErrors, setBackendErrors] = useState<string[]>([]);
 
   const todayStr = new Date().toISOString().split("T")[0];
 
@@ -67,7 +71,7 @@ const EditPublicationPage = () => {
 
         const listaCategorias: BackendItem[] = categoriasRes?.categorias || categoriasRes?.data?.categorias || (Array.isArray(categoriasRes) ? categoriasRes : []);
         const listaInstituciones: BackendItem[] = institucionesRes?.instituciones || institucionesRes?.data?.instituciones || (Array.isArray(institucionesRes) ? institucionesRes : []);
-        
+
         setCategorias(listaCategorias);
         setInstituciones(listaInstituciones);
 
@@ -78,14 +82,14 @@ const EditPublicationPage = () => {
           setFechaEvento(pubData.fecha_evento ? pubData.fecha_evento.split("T")[0] : "");
           setLugarInstitucion(pubData.lugar_institucion || "");
           setDescripcion(pubData.descripcion || "");
-          
+
           const instMatch = listaInstituciones.find((inst) => String(inst.id) === String(pubData.institucion_id));
           if (instMatch) setInstitucion(instMatch.nombre);
 
           // 📸 Procesamos las fotos recibidas del endpoint /:id/archivos
           const fotosRaw = fotosRes || [];
           let imagenesProcesadas: PublicationImage[] = [];
-          
+
           if (Array.isArray(fotosRaw)) {
             imagenesProcesadas = fotosRaw.map((img: any) => {
               if (typeof img === "string") {
@@ -94,8 +98,8 @@ const EditPublicationPage = () => {
               // Mapeamos según lo que devuelva el backend: 'ruta', 'nombre_servidor' o 'url'
               // Si tu backend guarda solo el nombre de archivo (ej: "foto.jpg"), le concatenamos la URL base
               const urlFoto = img.url || img.ruta || img.nombre_servidor || "";
-              const urlCompleta = urlFoto.startsWith("http") 
-                ? urlFoto 
+              const urlCompleta = urlFoto.startsWith("http")
+                ? urlFoto
                 : `http://localhost:3000/uploads/${urlFoto}`; // 👈 Ajustá "/uploads/" si tu carpeta estática se llama distinto
 
               return {
@@ -104,7 +108,7 @@ const EditPublicationPage = () => {
               };
             }).filter((img) => img.url !== "");
           }
-          
+
           setOriginalBackendImages(imagenesProcesadas);
           setExistingImages(imagenesProcesadas);
         }
@@ -117,7 +121,7 @@ const EditPublicationPage = () => {
 
     fetchAllData();
   }, [id]);
-  
+
   useEffect(() => {
     if (institucion.trim() === "") {
       setFilteredInstituciones([]);
@@ -144,29 +148,6 @@ const EditPublicationPage = () => {
   };
 
   const handleSaveChanges = async () => {
-    const errors: Record<string, boolean> = {
-      nombre: !nombre.trim(),
-      tipo: !tipo,
-      categoriaId: !categoriaId,
-      fechaEvento: !fechaEvento,
-      lugarInstitucion: !lugarInstitucion.trim(),
-      descripcion: !descripcion.trim(),
-      institucion: !institucion.trim(),
-    };
-
-    setFormErrors(errors);
-    if (Object.values(errors).some(isError => isError)) return;
-
-    const institucionEncontrada = instituciones.find(
-      (item) => item.nombre.toLowerCase() === institucion.trim().toLowerCase()
-    );
-
-    if (!institucionEncontrada) {
-      setFormErrors(prev => ({ ...prev, institucion: true }));
-      alert("Selecciona una institución válida de la lista.");
-      return;
-    }
-
     const formData = new FormData();
     formData.append("nombre", nombre);
     formData.append("tipo", tipo);
@@ -174,19 +155,25 @@ const EditPublicationPage = () => {
     formData.append("fecha_evento", fechaEvento);
     formData.append("lugar_institucion", lugarInstitucion);
     formData.append("descripcion", descripcion);
-    formData.append("institucion_id", institucionEncontrada.id);
 
-    // 🎯 Calculamos qué imágenes originales se eliminaron
+    // Buscamos si la institución escrita coincide con alguna de la lista
+    const institucionEncontrada = instituciones.find(
+      (item) => item.nombre.toLowerCase() === institucion.trim().toLowerCase()
+    );
+
+    // Si existe, mandamos su ID. Si no existe (o está vacío), mandamos vacío 
+    // para que el backend salte y nos diga "La institución es obligatoria o inválida"
+    formData.append("institucion_id", institucionEncontrada ? institucionEncontrada.id : "");
+
+    // Calculamos qué imágenes originales se eliminaron
     const fotosAEliminar = originalBackendImages
       .filter(origImg => !existingImages.some(currImg => currImg.id === origImg.id))
       .map(img => img.id);
 
-    // Mandamos los IDs a eliminar como valores planos, no JSON stringificado
     fotosAEliminar.forEach((idFoto) => {
       formData.append("fotosAEliminar[]", idFoto);
     });
 
-    // 🚀 Mandamos las imágenes nuevas solo si existen
     if (newImages.length > 0) {
       newImages.forEach((image) => {
         formData.append("imagenes", image);
@@ -194,14 +181,27 @@ const EditPublicationPage = () => {
     }
 
     try {
+      // Mandamos todo al back de una, sin frenos locales 🚀
       await update_publication(id!, formData);
-      setShowModal(true);
+      setShowModal(true); // Si sale bien, abrimos el modal de éxito
     } catch (error: any) {
       console.error("Error al guardar cambios:", error);
+
       if (error?.response?.status === 403) {
-        alert("No tienes permisos para editar esta publicación.");
+        setBackendErrors(["No tienes permisos para editar esta publicación."]);
+        setShowErrorModal(true);
+      } else if (error?.response?.data?.errors) {
+        // 👈 ASUMIENDO QUE TU BACKEND DEVUELVE UN ARRAY DE ERRORES EN: error.response.data.errors
+        // Adaptá "error.response.data.errors" u "error.response.data.message" según tu API.
+        const erroresDelServidor = Array.isArray(error.response.data.errors)
+          ? error.response.data.errors
+          : [error.response.data.message || "Error desconocido en el servidor."];
+
+        setBackendErrors(erroresDelServidor);
+        setShowErrorModal(true);
       } else {
-        alert("Hubo un error al actualizar los datos.");
+        setBackendErrors(["Hubo un error inesperado al actualizar los datos."]);
+        setShowErrorModal(true);
       }
     }
   };
@@ -230,12 +230,12 @@ const EditPublicationPage = () => {
         </p>
 
         <div className="edit_uploader_wrapper">
-          <ImageUploader 
-            images={newImages} 
-            setImages={setNewImages} 
-            maxFiles={5 - existingImages.length} 
+          <ImageUploader
+            images={newImages}
+            setImages={setNewImages}
+            maxFiles={5 - existingImages.length}
           />
-          
+
           {existingImages.length > 0 && (
             <div className="edit_backend_images_preview">
               <p className="edit_section_mini_title">Imágenes actuales de la publicación:</p>
@@ -249,7 +249,7 @@ const EditPublicationPage = () => {
                       onClick={() => setExistingImages(prev => prev.filter((_, i) => i !== index))}
                       title="Eliminar imagen"
                     >
-                      <X size={13} strokeWidth={2.5} /> {/* 👈 Ícono de cruz moderno con Lucide React */}
+                      <X size={13} strokeWidth={2.5} />
                     </button>
                   </div>
                 ))}
@@ -384,21 +384,36 @@ const EditPublicationPage = () => {
       </main>
 
       <Footer />
+      {/* 🟢 MODAL DE ÉXITO */}
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title="¡Cambios guardados!"
+        variant="success"
+        icon={<Check size={32} strokeWidth={3} />}
+        confirmText="Aceptar"
+        onConfirm={() => navigate(`/home`)}
+      />
 
-      {/* Modal Éxito */}
-      {showModal && (
-        <div className="modal_overlay">
-          <div className="modal_container">
-            <div className="modal_icon_circle">
-              <Check size={32} strokeWidth={3} className="modal_icon_check" />
+      {/* MODAL DE ERRORES DEL BACKEND */}
+      <Modal
+        isOpen={showErrorModal}
+        onClose={() => setShowErrorModal(false)}
+        title="No se pudo guardar"
+        description="Por favor, corrige los siguientes campos requeridos por el sistema:"
+        variant="error"
+        icon={<X size={32} strokeWidth={3} />}
+        confirmText="Entendido"
+      >
+        <div className="error_list_container">
+          {backendErrors.map((err, idx) => (
+            <div key={idx} className="error_list_item">
+              <span className="error_item_bullet">!</span>
+              <span className="error_item_text">{err}</span>
             </div>
-            <h2 className="modal_title">¡Cambios guardados!</h2>
-            <button className="modal_accept_button" onClick={() => navigate(`/home`)}>
-              Aceptar
-            </button>
-          </div>
+          ))}
         </div>
-      )}
+      </Modal>
     </div>
   );
 };

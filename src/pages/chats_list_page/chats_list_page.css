@@ -110,14 +110,28 @@
 .chats_card_info {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.chats_card_top_row {
-  display: flex;
   justify-content: space-between;
   align-items: center;
+  overflow: hidden;
+}
+
+.chats_card_left_content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+  flex: 1;
+  padding-right: 12px;
+}
+
+.chats_card_right_content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6px;
+  min-width: 65px;
+  flex-shrink: 0;
 }
 
 .chats_user_name {
@@ -132,12 +146,33 @@
   font-size: 11px;
   font-weight: 600;
   color: #a0a0a0;
+  white-space: nowrap;
 }
 
-.chats_card_bottom_row {
+.chats_status_wrapper {
+  height: 18px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: flex-end;
+  min-width: 24px;
+}
+
+/* Forzado absoluto de visualización de los tics */
+.chats_list_double_check {
+  font-family: Arial, sans-serif !important; 
+  font-size: 16px !important;
+  font-weight: bold !important;
+  letter-spacing: -1px;
+  line-height: 1;
+  display: block !important;
+}
+
+.chats_list_double_check.unread {
+  color: #b0b0b0 !important;
+}
+
+.chats_list_double_check.read {
+  color: #ff6f00 !important;
 }
 
 .chats_preview_message {
@@ -148,12 +183,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 210px;
-}
-
-.chats_double_check {
-  color: #ff6f00;
-  font-weight: bold;
+  max-width: 100%; 
 }
 
 .chats_unread_dot {
@@ -163,7 +193,7 @@
   border-radius: 50%;
 }
 
-.chats_empty_text{
+.chats_empty_text {
   font-family: "louis_george";
   font-weight: 600;
   font-size: 16px;

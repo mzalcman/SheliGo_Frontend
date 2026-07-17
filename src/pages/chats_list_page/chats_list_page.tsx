@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
+import { useAuth } from "../../hooks/use_auth"; 
 import "./chats_list_page.css";
 import { getImageUrl } from "../../utils/get_image_url";
 
@@ -13,12 +14,11 @@ interface ChatRoom {
   ultimo_mensaje: string;
   ultimo_mensaje_tiempo: string;
   leido: boolean;
-  enviado_por_mi: boolean; // Si el último mensaje lo mandaste vos
-  receptor_leyo_mi_mensaje: boolean; // Si la otra persona leyó tu mensaje
 }
 
 const ChatsListPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth(); 
   const [chats, setChats] = useState<ChatRoom[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<"todos" | "no_leidos" | "leidos">("todos");
@@ -45,8 +45,6 @@ const ChatsListPage = () => {
 
         if (response.ok) {
           const resJson = await response.json();
-          console.log("ESTO LLEGA DEL BACKEND:", resJson);
-
           const rawSalas = resJson && Array.isArray(resJson.data) ? resJson.data : [];
 
           const salasMapeadas: ChatRoom[] = rawSalas.map((sala: any) => {
@@ -54,7 +52,6 @@ const ChatsListPage = () => {
             const apellido = sala.otro_usuario_apellido || "";
             const nombreCompleto = `${nombre} ${apellido}`.trim() || "Usuario";
 
-            // Procesamos la foto
             const avatarPath = sala.otro_usuario_foto;
             let avatarUrl = "/user_predeterminada.png";
             if (avatarPath) {
@@ -65,7 +62,6 @@ const ChatsListPage = () => {
               }
             }
 
-            // Formateamos la hora
             let tiempoFormateado = "";
             if (sala.ultimo_mensaje_fecha) {
               const fecha = new Date(sala.ultimo_mensaje_fecha);
@@ -74,29 +70,19 @@ const ChatsListPage = () => {
 
             const sinLeerCount = parseInt(sala.mensajes_sin_leer || "0", 10);
 
-            // 🎯 Lógica de tics:
-            // Si el backend te marca la sala con mensajes sin leer enviados por OTRO, enviado_por_mi es false.
-            // Si te devuelve un flag o si deducimos quién lo mandó (ej. si sala.ultimo_mensaje_enviado_por_mi existe):
-            const enviadoPorMi = sala.ultimo_mensaje_enviado_por_mi ?? false; 
-            
-            // Si lo mandaste vos, y el otro no tiene mensajes pendientes de leer en esta sala (ej: "0" sin leer)
-            const receptorLeyoMiMensaje = enviadoPorMi && sinLeerCount === 0;
-
             return {
               sala_id: sala.sala_id,
               usuario_nombre: nombreCompleto,
               usuario_avatar: avatarUrl,
               ultimo_mensaje: sala.ultimo_mensaje || "Sin mensajes",
               ultimo_mensaje_tiempo: tiempoFormateado,
-              leido: sinLeerCount === 0,
-              enviado_por_mi: enviadoPorMi, 
-              receptor_leyo_mi_mensaje: receptorLeyoMiMensaje
+              leido: sinLeerCount === 0
             };
           });
 
           setChats(salasMapeadas);
         } else {
-          console.error("Error al traer salas (HTTP:", response.status, ")");
+          console.error("Error al traer salas:", response.status);
           setChats([]);
         }
       } catch (error) {
@@ -107,15 +93,14 @@ const ChatsListPage = () => {
       }
     };
 
-    fetchSalas();
-  }, [filter]);
+    if (user) {
+      fetchSalas();
+    }
+  }, [filter, user]);
 
   const chatsSeguros = Array.isArray(chats) ? chats : [];
-
   const filteredChats = chatsSeguros.filter((chat) =>
-    chat && chat.usuario_nombre
-      ? chat.usuario_nombre.toLowerCase().includes(searchQuery.toLowerCase())
-      : false
+    chat?.usuario_nombre?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -125,7 +110,6 @@ const ChatsListPage = () => {
       <main className="chats_content">
         <h1 className="chats_main_title">Mensajes</h1>
 
-        {/* Buscador */}
         <div className="chats_search_wrapper">
           <Search className="chats_search_icon" size={20} color="#9e9e9e" />
           <input
@@ -137,7 +121,6 @@ const ChatsListPage = () => {
           />
         </div>
 
-        {/* Categorías */}
         <div className="chats_filter_chips">
           <button
             className={`chats_chip ${filter === "todos" ? "active" : ""}`}
@@ -159,7 +142,6 @@ const ChatsListPage = () => {
           </button>
         </div>
 
-        {/* Lista de salas */}
         <div className="chats_list">
           {cargando ? (
             <p className="chats_empty_text">Cargando conversaciones...</p>
@@ -180,25 +162,17 @@ const ChatsListPage = () => {
                 />
 
                 <div className="chats_card_info">
-                  <div className="chats_card_top_row">
+                  <div className="chats_card_left_content">
                     <span className="chats_user_name">{chat.usuario_nombre}</span>
-                    <span className="chats_time_text">{chat.ultimo_mensaje_tiempo}</span>
+                    <span className="chats_preview_message">{chat.ultimo_mensaje}</span>
                   </div>
 
-                  <div className="chats_card_bottom_row">
-                    <span className="chats_preview_message">
-                      {/* TICS DINÁMICOS:
-                          Si lo mandaste vos, pintamos el tic.
-                          Si la otra persona lo leyó, le metemos la clase "read" (naranja), si no, "unread" (gris) 
-                      */}
-                      {chat.enviado_por_mi && (
-                        <span className={`chats_double_check ${chat.receptor_leyo_mi_mensaje ? "read" : "unread"}`}>
-                          ✓✓{" "}
-                        </span>
-                      )}
-                      {chat.ultimo_mensaje}
-                    </span>
-                    {!chat.leido && <div className="chats_unread_dot" />}
+                  <div className="chats_card_right_content">
+                    <span className="chats_time_text">{chat.ultimo_mensaje_tiempo}</span>
+                    
+                    <div className="chats_status_wrapper">
+                      {!chat.leido && <div className="chats_unread_dot" />}
+                    </div>
                   </div>
                 </div>
               </div>

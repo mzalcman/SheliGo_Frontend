@@ -12,7 +12,6 @@
   box-sizing: border-box;
 }
 
-/* --- Botón Volver Atrás --- */
 .personal_info_back_btn {
   background: none;
   border: none;
@@ -21,14 +20,13 @@
   gap: 10px;
   cursor: pointer;
   padding: 0;
-  margin-top: 6px;
   margin-bottom: 24px;
 }
 
 .personal_info_back_btn span {
   font-family: "poppins";
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 30px;
+  font-weight: 400;
   color: #1A1A1A;
 }
 
@@ -87,7 +85,6 @@
   letter-spacing: -0.3px;
 }
 
-/* --- Formulario de Información Personal --- */
 .personal_info_form_section {
   display: flex;
   flex-direction: column;
@@ -96,7 +93,7 @@
 
 .personal_info_form_section h2 {
   font-family: "poppins";
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: #1A1A1A;
   margin: 0 0 4px 0;
@@ -110,7 +107,7 @@
 
 .personal_info_field_group label {
   font-family: "poppins";
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
   color: #1A1A1A;
   padding-left: 4px;
@@ -135,11 +132,37 @@
   padding: 16px 18px;
   font-family: "louis_george";
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
   color: #1A1A1A;
 }
 
 .personal_info_field_edit_icon {
   color: #8c8c8c;
   cursor: pointer;
+}
+.personal_info_save_btn {
+  flex: 1;
+  background-color: #ff6f00;
+  color: #000000;
+  border: none;
+  border-radius: 50px;
+  padding: 16px 0;
+  font-family: "poppins", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.personal_info_save_btn:disabled {
+  background-color: #b0b0b0;
+  color: #666666;
+  cursor: not-allowed;
+}
+.personal_info_input_wrapper input.input_user_initial {
+  color: #717171;
+}
+
+.personal_info_input_wrapper input.input_user_edited {
+  color: #000000;
 }

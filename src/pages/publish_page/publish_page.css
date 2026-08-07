@@ -7,11 +7,41 @@
   padding: 24px 20px 120px;
 }
 
-.publish_title {
-  font-size: 42px;
-  font-family: "Poppins";
+/* Contenedor que alinea la flecha con el título */
+.publish_header_title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   margin-bottom: 8px;
+}
+
+/* Botón transparente para la flecha naranja */
+.publish_back_btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s ease;
+}
+
+.publish_back_btn:hover:not(:disabled) {
+  opacity: 0.8;
+}
+
+.publish_back_btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.publish_title {
+  font-size: 30px;
+  font-family: "Poppins";
   font-weight: 400;
+  color: black;
+  margin: 0;
 }
 
 .publish_subtitle {

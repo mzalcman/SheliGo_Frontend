@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import ImageUploader from "../../components/image_uploader/image_uploader";
-import { Send, Check, X } from "lucide-react";
+import { ArrowLeft, Send, Check, X } from "lucide-react";
 import { create_publication, getCategories, getInstitutions } from "../../services/publication_service";
 import Modal from "../../components/modal/modal";
 
@@ -37,6 +37,8 @@ const PublishPage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const autocompleteRef = useRef<HTMLDivElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [saving, setSaving] = useState(false);
 
   const todayStr = new Date().toISOString().split("T")[0];
 
@@ -234,7 +236,17 @@ const PublishPage = () => {
       <Header />
 
       <main className="publish_content">
-        <h1 className="publish_title">Publicar Objeto</h1>
+        <div className="publish_header_title">
+          <button
+            className="publish_back_btn"
+            onClick={() => navigate(-1)}
+            disabled={saving}
+            type="button"
+          >
+            <ArrowLeft size={24} color="#ff6f00" strokeWidth={2.5} />
+          </button>
+          <h1 className="publish_title">Publicar objeto</h1>
+        </div>  
 
         <p className="publish_subtitle">
           Ayúdanos a devolverle al club lo que alguien perdió.

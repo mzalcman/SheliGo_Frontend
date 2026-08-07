@@ -71,7 +71,7 @@ const Header = () => {
           src={
             user?.profile_image
               ? getImageUrl(user.profile_image)
-              : "/default-user.png"
+              : "/user_predeterminada.png"
           }
           alt="user profile"
           className="header_profile_image"

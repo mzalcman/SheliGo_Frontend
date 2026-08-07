@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Edit2 } from "lucide-react";
+import { ArrowLeft, Edit2, CheckCircle2, AlertCircle } from "lucide-react";
 import Header from "../../components/header/header";
-import { useAuth } from "../../hooks/use_auth"; // Tu hook real
-import { getImageUrl } from "../../utils/get_image_url"; // Tu utilitario de imágenes
-import { api } from "../../services/api"; // Tu Axios service
+import { useAuth } from "../../hooks/use_auth"; 
+import { getImageUrl } from "../../utils/get_image_url"; 
+import { api } from "../../services/api"; 
+import Modal from "../../components/modal/modal";
 import "./personal_info_page.css";
 
 const PersonalInfoPage = () => {
@@ -14,10 +15,8 @@ const PersonalInfoPage = () => {
 
   const user = typedUser as any;
 
-  // Placeholder de respaldo para evitar llamadas rotas al localhost
-  const defaultPlaceholder = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150";
+  const defaultPlaceholder = "/user_predeterminada.png";
 
-  // 1. Inicializamos los estados con lo que tengamos a mano en el localStorage de inmediato
   const getInitialUser = () => {
     const stored = localStorage.getItem("user");
     if (stored) {
@@ -34,20 +33,36 @@ const PersonalInfoPage = () => {
 
   const [nombre, setNombre] = useState(user?.nombre || initialUser?.nombre || "");
   const [apellido, setApellido] = useState(user?.apellido || initialUser?.apellido || "");
+  
+  const [nombreChanged, setNombreChanged] = useState(false);
+  const [apellidoChanged, setApellidoChanged] = useState(false);
+
   const [avatar, setAvatar] = useState(
     user?.foto 
       ? getImageUrl(user.foto) 
       : (initialUser?.foto ? getImageUrl(initialUser.foto) : defaultPlaceholder)
   );
   
-  // Guardamos el binario para cuando cambiemos la foto
   const [newImageFile, setNewImageFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    variant: "success" | "error";
+    icon: React.ReactNode;
+    onConfirm?: () => void;
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+    variant: "success",
+    icon: null,
+  });
 
   const tempUrlRef = useRef<string | null>(null);
 
-  // 🚀 2. EFECTO CLAVE: Si cambian los datos de useAuth() o del localStorage, actualizamos los inputs
   useEffect(() => {
     const currentUser = user || initialUser;
     if (currentUser) {
@@ -55,7 +70,7 @@ const PersonalInfoPage = () => {
       if (currentUser.apellido) setApellido(currentUser.apellido);
       if (currentUser.foto) setAvatar(getImageUrl(currentUser.foto));
     }
-  }, [user]); // 👈 Escucha activamente la carga del usuario autenticado
+  }, [user]);
 
   useEffect(() => {
     return () => {
@@ -83,13 +98,25 @@ const PersonalInfoPage = () => {
     }
   };
 
+  const closeModal = () => {
+    setModalConfig((prev) => ({ ...prev, isOpen: false }));
+  };
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nombre.trim() || !apellido.trim()) return;
+    if (!nombre.trim() || !apellido.trim()) {
+      setModalConfig({
+        isOpen: true,
+        title: "Campos incompletos",
+        description: "Por favor, completa el nombre y el apellido.",
+        variant: "error",
+        icon: <AlertCircle size={36} color="#d32f2f" />,
+      });
+      return;
+    }
 
     try {
       setSaving(true);
-      setError(null);
 
       const formData = new FormData();
       formData.append("nombre", nombre);
@@ -98,7 +125,6 @@ const PersonalInfoPage = () => {
         formData.append("foto", newImageFile); 
       }
 
-      // Tu ruta real de guardado hacia el backend
       const response = await api.put("/usuarios/me", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -110,14 +136,35 @@ const PersonalInfoPage = () => {
           updateProfile(usuarioActualizado);
         } else {
           localStorage.setItem("user", JSON.stringify(usuarioActualizado));
-          window.location.reload();
         }
 
-        navigate("/perfil");
+        setModalConfig({
+          isOpen: true,
+          title: "¡Perfil actualizado!",
+          description: "Tus cambios se guardaron con éxito.",
+          variant: "success",
+          icon: <CheckCircle2 size={36} color="#2e7d32" />,
+          onConfirm: () => {
+            closeModal();
+            navigate("/perfil");
+          },
+        });
       }
     } catch (err: any) {
       console.error("Error al guardar:", err);
-      setError("Ocurrió un error al guardar tus cambios. Probá nuevamente.");
+      
+      const mensajeError =
+        err.response?.data?.message ||
+        "Ocurrió un error al guardar tus cambios. Por favor, probá nuevamente.";
+
+      setModalConfig({
+        isOpen: true,
+        title: "Ocurrió un error",
+        description: mensajeError,
+        variant: "error",
+        icon: <AlertCircle size={36} color="#d32f2f" />,
+        onConfirm: closeModal,
+      });
     } finally {
       setSaving(false);
     }
@@ -137,12 +184,6 @@ const PersonalInfoPage = () => {
           <ArrowLeft size={20} color="#ff6f00" strokeWidth={2.5} />
           <span>Mi Perfil</span>
         </button>
-
-        {error && (
-          <div style={{ color: "#d32f2f", textAlign: "center", marginBottom: "16px", fontFamily: "Poppins", fontSize: "14px", fontWeight: 600 }}>
-            {error}
-          </div>
-        )}
 
         <section className="personal_info_hero">
           <div className="personal_info_avatar_wrapper" onClick={handleEditAvatarClick} style={{ cursor: "pointer" }}>
@@ -185,7 +226,11 @@ const PersonalInfoPage = () => {
               <input 
                 type="text" 
                 value={nombre} 
-                onChange={(e) => setNombre(e.target.value)} 
+                className={nombreChanged ? "input_user_edited" : "input_user_initial"}
+                onChange={(e) => {
+                  setNombre(e.target.value);
+                  setNombreChanged(true);
+                }} 
                 disabled={saving}
                 required
               />
@@ -199,7 +244,11 @@ const PersonalInfoPage = () => {
               <input 
                 type="text" 
                 value={apellido} 
-                onChange={(e) => setApellido(e.target.value)} 
+                className={apellidoChanged ? "input_user_edited" : "input_user_initial"}
+                onChange={(e) => {
+                  setApellido(e.target.value);
+                  setApellidoChanged(true); 
+                }} 
                 disabled={saving}
                 required
               />
@@ -211,24 +260,22 @@ const PersonalInfoPage = () => {
             type="submit" 
             className="personal_info_save_btn"
             disabled={saving}
-            style={{
-              marginTop: "28px",
-              padding: "16px",
-              borderRadius: "20px",
-              border: "none",
-              backgroundColor: saving ? "#b0b0b0" : "#ff6f00",
-              color: "#ffffff",
-              fontFamily: "Poppins",
-              fontWeight: 700,
-              fontSize: "14px",
-              cursor: saving ? "not-allowed" : "pointer",
-              boxShadow: "0px 4px 12px rgba(255, 111, 0, 0.25)"
-            }}
           >
             {saving ? "Guardando..." : "Guardar cambios"}
           </button>
         </form>
       </main>
+
+      <Modal
+        isOpen={modalConfig.isOpen}
+        onClose={closeModal}
+        title={modalConfig.title}
+        description={modalConfig.description}
+        variant={modalConfig.variant}
+        icon={modalConfig.icon}
+        confirmText="Aceptar"
+        onConfirm={modalConfig.onConfirm || closeModal}
+      />
     </div>
   );
 };

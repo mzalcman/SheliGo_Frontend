@@ -131,10 +131,17 @@
   border: none;
   border-radius: 50px;
   padding: 16px 0;
-  font-family: "poppins";
+  font-family: "poppins", sans-serif;
   font-weight: 700;
   font-size: 16px;
   cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.edit_btn_save:disabled {
+  background-color: #b0b0b0;
+  color: #666666;
+  cursor: not-allowed;
 }
 
 .edit_bottom_notice {

@@ -103,7 +103,8 @@
 
 /* Grilla de publicaciones */
 .mypubs_list_wrapper {
-  margin-bottom: 50px;
+  margin-bottom: 0;
+  padding-bottom: 120px; /* 🚀 ESPACIO RESERVADO PARA QUE EL FOOTER NO TAPE NADA */
 }
 
 .mypubs_grid {

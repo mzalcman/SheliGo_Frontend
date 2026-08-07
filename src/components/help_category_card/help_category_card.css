@@ -1,0 +1,39 @@
+.category_card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background-color: #f5f5f5;
+  border-radius: 24px;
+  padding: 16px 20px;
+  cursor: pointer; 
+  transition: background-color 0.2s ease; 
+}
+
+.category_card:hover {
+  background-color: #ececec;
+}
+
+.category_icon_wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FF6F00;
+}
+
+.category_info h3 {
+  margin: 0;
+  font-size: 17px;
+  font-family: "louis_george";
+  font-weight: 700;
+  color: #222222;
+  margin-bottom: 4px;
+}
+
+.category_info p {
+  margin: 0;
+  font-size: 13px;
+  color: #717171;
+  font-family: "louis_george";
+  font-weight: 600;
+  line-height: 1.4;
+}

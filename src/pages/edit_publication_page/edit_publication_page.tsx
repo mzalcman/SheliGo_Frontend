@@ -91,21 +91,30 @@ const EditPublicationPage = () => {
 
           if (Array.isArray(fotosRaw)) {
             imagenesProcesadas = fotosRaw.map((img: any) => {
+              console.log("📸 Objeto foto crudo del Backend:", img);
+
               if (typeof img === "string") {
                 return { id: img, url: img };
               }
+
               const urlFoto = img.url || img.ruta || img.nombre_servidor || "";
               const urlCompleta = urlFoto.startsWith("http")
                 ? urlFoto
                 : `http://localhost:3000/uploads/${urlFoto}`;
 
+              // Mapea la clave primaria de la foto (priorizando IDs sobre rutas de archivo)
+              const realId = String(
+                img.id ?? img._id ?? img.foto_id ?? img.archivo_id ?? img.id_archivo ?? img.ruta ?? img.nombre_servidor ?? ""
+              );
+
               return {
-                id: String(img.id || img.ruta || img.nombre_servidor || ""),
+                id: realId,
                 url: urlCompleta
               };
             }).filter((img) => img.url !== "");
           }
 
+          console.log("📸 Fotos procesadas final:", imagenesProcesadas);
           setOriginalBackendImages(imagenesProcesadas);
           setExistingImages(imagenesProcesadas);
         }
@@ -153,7 +162,6 @@ const EditPublicationPage = () => {
     const errors: Record<string, boolean> = {};
     const messages: string[] = [];
 
-    // Mismas validaciones previas que en PublishPage
     if (!nombre.trim() || nombre.trim().length < 3) {
       errors.nombre = true;
       messages.push("El nombre debe tener al menos 3 caracteres.");
@@ -196,25 +204,28 @@ const EditPublicationPage = () => {
     setIsSubmitting(true);
 
     const formData = new FormData();
+
+    // 1. CAMPOS DE TEXTO PRIMERO
     formData.append("nombre", nombre);
     formData.append("tipo", tipo);
     formData.append("categoria_id", categoriaId);
-    
-    // Enviamos la fecha con el mismo formato "T00:00:00" que sí acepta tu back
     formData.append("fecha_evento", `${fechaEvento}T00:00:00`);
-    
     formData.append("lugar_institucion", lugarInstitucion);
     formData.append("descripcion", descripcion);
-    formData.append("institucion_id", institucionEncontrada ? institucionEncontrada.id : "");
+    formData.append("institucion_id", institucionEncontrada ? String(institucionEncontrada.id) : "");
 
+    // 2. FOTOS A ELIMINAR (Como JSON String)
     const fotosAEliminar = originalBackendImages
       .filter(origImg => !existingImages.some(currImg => currImg.id === origImg.id))
       .map(img => img.id);
 
-    fotosAEliminar.forEach((idFoto) => {
-      formData.append("fotosAEliminar[]", idFoto);
-    });
+    console.log("🗑️ Fotos a eliminar calculadas (IDs):", fotosAEliminar);
 
+    if (fotosAEliminar.length > 0) {
+      formData.append("fotosAEliminar", JSON.stringify(fotosAEliminar));
+    }
+
+    // 3. ARCHIVOS DE IMAGEN NUEVOS (Al final)
     if (newImages.length > 0) {
       newImages.forEach((image) => {
         formData.append("imagenes", image);

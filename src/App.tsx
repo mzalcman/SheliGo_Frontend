@@ -16,12 +16,13 @@ import ChatsListPage from "./pages/chats_list_page/chats_list_page";
 import ChatRoomPage from "./pages/chat_room_page/chat_room_page";
 import MyPublicatiosPage from "./pages/my_publications_page/my_publications_page";
 
-// 1. Agregamos el import de la nueva pantalla de contáctanos
+// Pantalla de contáctanos
 import ContactPage from "./pages/contact_page/ContactPage";
 
-// 🚀 IMPORTS DE TUS DOS NUEVAS PANTALLAS DE PERFIL
+// IMPORTS DE RUTAS DE PERFIL Y CONFIGURACIÓN
 import ProfilePage from "./pages/profile/ProfilePage";
 import PersonalInfoPage from "./pages/personal_info/PersonalInfoPage";
+import ChangePasswordPage from "./pages/change_password_page/change_password_page";
 
 function App() {
 
@@ -40,8 +41,6 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/buscar" element={<SearchPage />} />
       <Route path="/ayuda" element={<HelpPage />} />
-      
-      {/* 2. Agregamos la ruta para que matchee con el botón de la HelpPage */}
       <Route path="/contactanos" element={<ContactPage />} />
 
       <Route element={<ProtectedRoute />}>
@@ -54,9 +53,10 @@ function App() {
         <Route path="/mispublicaciones" element={<MyPublicatiosPage />} />
         <Route path="/menu" element={<MenuPage />} />
 
-        {/* 🚀 NUEVAS RUTAS PROTEGIDAS DEL PERFIL */}
+        {/* RUTAS PROTEGIDAS DEL PERFIL Y CONFIGURACIÓN */}
         <Route path="/perfil" element={<ProfilePage />} />
         <Route path="/perfil/informacion-personal" element={<PersonalInfoPage />} />
+        <Route path="/cambiar-contrasena" element={<ChangePasswordPage />} />
       </Route>
     </Routes>
   );

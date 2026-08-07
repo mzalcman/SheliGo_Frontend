@@ -61,7 +61,7 @@
   border: none;
   outline: none;
   background: transparent;
-  font-family: "Poppins";
+  font-family: "poppins";
   font-size: 18px;
   font-weight: 400;
   color: #666;
@@ -223,7 +223,7 @@
 
 .filters_date_group label {
   font-size: 14px;
-  font-family: "Poppins";
+  font-family: "poppins";
   font-weight: 600;
   color: #1E3A5F;
 }
@@ -233,7 +233,7 @@
   border-radius: 14px;
   border: 2px solid #ECECEC;
   padding: 0 14px;
-  font-family: "Poppins";
+  font-family: "poppins";
   font-size: 15px;
   transition: .2s;
 }
@@ -255,7 +255,7 @@
   background: transparent;
   border: none;
   color: #6D6D6D;
-  font-family: "Poppins";
+  font-family: "poppins";
   font-weight: 600;
   font-size: 15px;
   cursor: pointer;
@@ -269,7 +269,7 @@
   border: none;
   background: #FF6F00;
   color: white;
-  font-family: "Poppins";
+  font-family: "poppins";
   font-size: 15px;
   font-weight: 600;
   padding: 12px 28px;

@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  font-family: "Poppins";
+  font-family: "poppins";
   overflow-x: hidden;
 }
 
@@ -35,7 +35,7 @@
 }
 
 .landing_logo {
-  font-family: "Poppins";
+  font-family: "poppins";
   color: #ff6f00;
   font-size: 3.2rem;
   font-weight: 600;
@@ -44,7 +44,7 @@
 }
 
 .landing_title {
-  font-family: "Poppins";
+  font-family: "poppins";
   margin-top: 16px;
   font-size: 2.5rem;
   font-weight: 500; 
@@ -59,7 +59,7 @@
 }
 
 .landing_subtitle {
-  font-family: "Poppins";
+  font-family: "poppins";
   margin-top: 20px;
   color: #a0a0a0;
   font-size: 1rem;

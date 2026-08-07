@@ -64,7 +64,7 @@
 }
 
 .profile_user_display_name {
-  font-family: "Poppins", sans-serif;
+  font-family: "poppins";
   font-size: 20px;
   font-weight: 700;
   color: #1A1A1A;
@@ -90,7 +90,7 @@
 }
 
 .profile_stat_number {
-  font-family: "Poppins", sans-serif;
+  font-family: "poppins";
   font-size: 22px;
   font-weight: 700;
   color: #ff6f00;
@@ -98,7 +98,7 @@
 }
 
 .profile_stat_label {
-  font-family: "Poppins", sans-serif;
+  font-family: "poppins";
   font-size: 11px;
   font-weight: 700;
   color: #1A1A1A;
@@ -125,7 +125,7 @@
 }
 
 .profile_block_section h2 {
-  font-family: "Poppins", sans-serif;
+  font-family: "poppins";
   font-size: 18px;
   font-weight: 700;
   color: #1A1A1A;
@@ -136,7 +136,7 @@
   background: none;
   border: none;
   color: #ff6f00;
-  font-family: "Poppins", sans-serif;
+  font-family: "poppins";
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -179,7 +179,7 @@
 }
 
 .profile_item_info h3 {
-  font-family: "Poppins", sans-serif;
+  font-family: "poppins";
   font-size: 15px;
   font-weight: 600;
   color: #1A1A1A;
@@ -187,7 +187,7 @@
 }
 
 .profile_item_info p {
-  font-family: "louis_george", sans-serif;
+  font-family: "louis_george";
   font-weight: 600;
   font-size: 12px;
   color: #8c8c8c;
@@ -195,7 +195,7 @@
 }
 
 .profile_item_badge {
-  font-family: "Poppins", sans-serif;
+  font-family: "poppins";
   font-size: 9px;
   font-weight: 700;
   padding: 6px 10px;
@@ -249,7 +249,7 @@
 }
 
 .profile_history_info h3 {
-  font-family: "Poppins", sans-serif;
+  font-family: "poppins";
   font-size: 14px;
   font-weight: 600;
   color: #1A1A1A;
@@ -257,7 +257,7 @@
 }
 
 .profile_history_info p {
-  font-family: "louis_george", sans-serif;
+  font-family: "louis_george";
   font-weight: 600;
   font-size: 12px;
   color: #8c8c8c;
@@ -296,14 +296,14 @@
 }
 
 .profile_config_left span {
-  font-family: "louis_george", sans-serif;
+  font-family: "louis_george";
   font-weight: 600;
   font-size: 14px;
   color: #1A1A1A;
 }
 
 .profile_config_bold_text {
-  font-family: "Poppins", sans-serif !important;
+  font-family: "poppins" !important;
   font-weight: 700 !important;
 }
 
@@ -318,7 +318,7 @@
   gap: 14px;
   padding: 16px 0 8px 0;
   cursor: pointer;
-  font-family: "Poppins", sans-serif;
+  font-family: "poppins";
   font-weight: 600;
   font-size: 14px;
   color: #ff6f00;

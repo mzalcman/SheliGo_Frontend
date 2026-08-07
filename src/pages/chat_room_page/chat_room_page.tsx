@@ -27,7 +27,6 @@ const ChatRoomPage = () => {
   const [cargandoHistorial, setCargandoHistorial] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // 🚨 NUEVOS ESTADOS PARA CONTROLAR EL MODAL 🚨
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mensajeAEliminar, setMensajeAEliminar] = useState<string | null>(null);
 
@@ -61,7 +60,6 @@ const ChatRoomPage = () => {
 
     cargarHistorial();
 
-    // ESCUCHAR EN TIEMPO REAL (INSERTs, UPDATEs y DELETEs)
     const canal = supabase
       .channel(`sala_${salaId}`)
       .on(
@@ -76,7 +74,6 @@ const ChatRoomPage = () => {
           const nuevoMensaje = payload.new as Message;
           console.log("Nuevo mensaje en tiempo real:", nuevoMensaje);
 
-          // 🎯 ACTUALIZACIÓN DE HISTORIAL LOCAL EN TIEMPO REAL:
           // Si el mensaje entrante no es tuyo, marcamos que el último emisor es el "otro"
           if (nuevoMensaje.emisor_id !== user?.id) {
             localStorage.setItem(`ultimo_emisor_${salaId}`, "otro");
@@ -152,8 +149,7 @@ const ChatRoomPage = () => {
       });
 
       if (response.ok) {
-        // 🎯 FIJAMOS EL CONTROL DE LOS TICS:
-        // Como mandaste vos el mensaje con éxito, dejamos grabado que el último emisor fue "yo"
+        // Como mandaste vos el mensaje con éxito, dejamos que el último emisor fue "yo"
         localStorage.setItem(`ultimo_emisor_${salaId}`, "yo");
       } else {
         console.error("Error enviando el mensaje al servidor de Node");
@@ -163,14 +159,14 @@ const ChatRoomPage = () => {
     }
   };
 
-  // 🚨 PASO 1: Dispara la apertura del modal en vez de borrar directamente
+  // PASO 1: Dispara la apertura del modal en vez de borrar directamente
   const abrirModalConfirmacion = (mensajeId: string, emisorId: string) => {
     if (emisorId !== user?.id) return; // Seguridad: Evitar que intentes borrar un mensaje ajeno
     setMensajeAEliminar(mensajeId);
     setMostrarModal(true);
   };
 
-  // 🚨 PASO 2: Se ejecuta al hacer clic en "Eliminar" dentro del modal
+  // PASO 2: Se ejecuta al hacer clic en "Eliminar" dentro del modal
   const handleBorrarMensajeConfirmado = async () => {
     if (!mensajeAEliminar) return;
 

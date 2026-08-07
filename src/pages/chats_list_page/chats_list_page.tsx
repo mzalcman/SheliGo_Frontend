@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search } from "lucide-react";
+import { Search, ArrowLeft } from "lucide-react";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import { useAuth } from "../../hooks/use_auth"; 
@@ -108,7 +108,17 @@ const ChatsListPage = () => {
       <Header />
 
       <main className="chats_content">
-        <h1 className="chats_main_title">Mensajes</h1>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+          <button 
+            type="button" 
+            className="room_back_btn" 
+            onClick={() => navigate(-1)}
+            style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}
+          >
+            <ArrowLeft size={26} color="#ff6f00" strokeWidth={2.5} />
+          </button>
+          <h1 className="chats_main_title" style={{ margin: 0 }}>Mensajes</h1>
+        </div>
 
         <div className="chats_search_wrapper">
           <Search className="chats_search_icon" size={20} color="#9e9e9e" />

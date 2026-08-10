@@ -100,6 +100,7 @@ const SearchPage = () => {
                 title={object.nombre}
                 location={object.lugar_institucion}
                 status={object.tipo}
+                createdAt={object.fecha_evento}
               />
             ))
           )}

@@ -6,18 +6,17 @@ import Footer from "../../components/footer/footer";
 import ObjectCard from "../../components/object_card/object_card";
 import "./my_publications_page.css";
 
-// 🚀 Interface exacta igual al JSON que me pasaste de tu backend
 interface BackendPublication {
     id: string;
     nombre?: string;
     descripcion?: string;
-    tipo?: string; // "perdido" o "encontrado"
-    estado?: string; // "activa", etc.
+    tipo?: string; 
+    estado?: string; 
     lugar_institucion?: string;
     categoria_nombre?: string;
     institucion_nombre?: string;
     institucion_direccion?: string;
-    foto_principal_url?: string; // 📸 Usamos el campo directo del back
+    foto_principal_url?: string;
     foto_principal_mime_type?: string | null;
     fecha_evento?: string;
 }
@@ -27,7 +26,6 @@ const MyPublicationsPage = () => {
     const [publications, setPublications] = useState<BackendPublication[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Mapeamos la ubicación combinando el lugar interno y el nombre del lugar (ej: "Comedor - ORT Argentina")
     const parseLocation = (pub: BackendPublication): string => {
         if (!pub) return "Ubicación no especificada";
         const lugar = pub.lugar_institucion || "";
@@ -41,7 +39,6 @@ const MyPublicationsPage = () => {
             try {
                 const token = localStorage.getItem("token");
 
-                // 🚀 Cambiamos la ruta a la de tu controlador de publicaciones:
                 const response = await fetch("http://localhost:3000/publicaciones/mias", {
                     method: "GET",
                     headers: {
@@ -53,7 +50,6 @@ const MyPublicationsPage = () => {
                 if (response.ok) {
                     const resBody = await response.json();
                     
-                    // 🎯 Extraemos el array del formato: resBody.data.publicaciones
                     const listaRaw = resBody?.data?.publicaciones || [];
                     setPublications(listaRaw);
                 } else {
@@ -136,6 +132,7 @@ const MyPublicationsPage = () => {
                                         status={pub.tipo || "perdido"}     
                                         location={parseLocation(pub)}   
                                         image={pub.foto_principal_url || ""}
+                                        createdAt={pub.fecha_evento}
                                     />
                                 );
                             })}

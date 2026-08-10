@@ -1,5 +1,5 @@
 import "./object_card.css";
-import { MapPin } from "lucide-react";
+import { MapPin, Calendar } from "lucide-react";
 import PublicationStatus from "../publication_status/publication_status";
 import { useNavigate } from "react-router-dom";
 
@@ -9,6 +9,7 @@ interface ObjectCardProps {
   title: string;
   location: string;
   status: string;
+  createdAt?: string | Date; 
 }
 
 const ObjectCard = ({
@@ -17,19 +18,32 @@ const ObjectCard = ({
   title,
   location,
   status,
+  createdAt,
 }: ObjectCardProps) => {
   const navigate = useNavigate();
 
-  // Filtro inteligente: si la imagen viene con el link roto "placeholder-bege.jpg" o vacía,
-  // la cambiamos al vuelo por tu propia imagen local para que no tire error en la consola.
-  const finalImage = 
-    !image || image.includes("placeholder-bege.jpg") 
-      ? "/obj_predeterminada.png" 
+  const finalImage =
+    !image || image.includes("placeholder-bege.jpg")
+      ? "/obj_predeterminada.png"
       : image;
+
+  const formatDate = (dateValue?: string | Date) => {
+    if (!dateValue) return null;
+    
+    const date = new Date(dateValue);
+    if (isNaN(date.getTime())) return null;
+
+    return new Intl.DateTimeFormat("es-ES", {
+      day: "numeric",
+      month: "long",
+    }).format(date);
+  };
+
+  const formattedDate = formatDate(createdAt);
 
   return (
     <div
-      className="object_card" 
+      className="object_card"
       onClick={() => navigate(`/publicacion/${id}`)}
     >
       <div className="object_card_image_container">
@@ -49,14 +63,21 @@ const ObjectCard = ({
       </div>
 
       <div className="object_card_content">
-        <h3 className="object_card_title">
-          {title}
-        </h3>
+        <h3 className="object_card_title">{title}</h3>
 
+        {/* Ubicación */}
         <div className="object_card_location">
           <MapPin size={14} />
           <span>{location}</span>
         </div>
+
+        {/* Fecha de Publicación (debajo del lugar) */}
+        {formattedDate && (
+          <div className="object_card_date">
+            <Calendar size={14} />
+            <span>{formattedDate}</span>
+          </div>
+        )}
       </div>
     </div>
   );

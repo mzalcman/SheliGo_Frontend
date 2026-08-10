@@ -7,6 +7,7 @@ interface ObjectType {
   lugar_institucion: string;
   tipo: string;
   foto_principal_url: string;
+  fecha_evento:string;
 }
 
 interface RecentObjectsCarouselProps {
@@ -38,6 +39,7 @@ const RecentObjectsCarousel = ({
           title={object.nombre}
           location={object.lugar_institucion}
           status={object.tipo}
+          createdAt={object.fecha_evento}
         />
       ))}
     </div>

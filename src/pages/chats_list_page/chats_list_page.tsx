@@ -16,6 +16,32 @@ interface ChatRoom {
   leido: boolean;
 }
 
+const formatMensajeTiempo = (fechaRaw?: string) => {
+  if (!fechaRaw) return "";
+  const fechaMensaje = new Date(fechaRaw);
+  
+  if (isNaN(fechaMensaje.getTime())) return "";
+
+  const hoy = new Date();
+
+  const esHoy =
+    fechaMensaje.getDate() === hoy.getDate() &&
+    fechaMensaje.getMonth() === hoy.getMonth() &&
+    fechaMensaje.getFullYear() === hoy.getFullYear();
+
+  if (esHoy) {
+    return fechaMensaje.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  } else {
+    const dia = fechaMensaje.getDate();
+    const mes = fechaMensaje.getMonth() + 1;
+    return `${dia}/${mes}`;
+  }
+};
+
 const ChatsListPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth(); 
@@ -62,12 +88,7 @@ const ChatsListPage = () => {
               }
             }
 
-            let tiempoFormateado = "";
-            if (sala.ultimo_mensaje_fecha) {
-              const fecha = new Date(sala.ultimo_mensaje_fecha);
-              tiempoFormateado = fecha.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-            }
-
+            const tiempoFormateado = formatMensajeTiempo(sala.ultimo_mensaje_fecha);
             const sinLeerCount = parseInt(sala.mensajes_sin_leer || "0", 10);
 
             return {

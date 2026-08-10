@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Key, Eye, EyeOff, CheckCircle2, AlertCircle } from "lucide-react";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
-import Modal from "../../components/modal/modal"; // Ajusta la ruta a tu modal si es diferente
+import Modal from "../../components/modal/modal"; 
 import "./change_password_page.css";
 
 const ChangePasswordPage = () => {
@@ -150,7 +150,7 @@ const ChangePasswordPage = () => {
                 onClick={() => setShowCurrent(!showCurrent)}
                 disabled={loading}
               >
-                {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showCurrent ? <Eye size={18} /> : <EyeOff size={18} />}
               </button>
             </div>
           </div>

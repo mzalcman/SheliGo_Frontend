@@ -98,14 +98,12 @@ const PublishPage = () => {
   const handlePublish = async () => {
     if (isSubmitting) return;
 
-    // Reiniciamos estados de error
     setFormErrors({});
     setBackendErrors([]);
 
     const errors: Record<string, boolean> = {};
     const messages: string[] = [];
 
-    // 1. Validaciones del lado del Cliente basadas en tu Zod Schema (Crear de una vez el mapa de errores completo)
     if (!nombre.trim() || nombre.trim().length < 3) {
       errors.nombre = true;
       messages.push("El nombre debe tener al menos 3 caracteres.");
@@ -125,14 +123,21 @@ const PublishPage = () => {
       messages.push("La categoría es inválida o no ha sido seleccionada.");
     }
 
+    // VALIDACIÓN DE FECHA (Sin permitir fechas futuras)
     if (!fechaEvento) {
       errors.fechaEvento = true;
       messages.push("La fecha ingresada no es válida.");
     } else {
-      const parsedDate = Date.parse(`${fechaEvento}T00:00:00`);
-      if (isNaN(parsedDate)) {
+      const selectedDate = new Date(`${fechaEvento}T00:00:00`);
+      const today = new Date();
+      today.setHours(23, 59, 59, 999); 
+
+      if (isNaN(selectedDate.getTime())) {
         errors.fechaEvento = true;
         messages.push("La fecha ingresada no es válida.");
+      } else if (selectedDate > today) {
+        errors.fechaEvento = true;
+        messages.push("La fecha del evento no puede ser posterior al día de hoy.");
       }
     }
 
@@ -155,7 +160,6 @@ const PublishPage = () => {
       messages.push("La institución es inválida o no ha sido seleccionada de la lista.");
     }
 
-    // Si hay algún error, interrumpimos la petición y marcamos TODO en naranja
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       setBackendErrors(messages);

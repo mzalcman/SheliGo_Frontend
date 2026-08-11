@@ -102,7 +102,6 @@ const EditPublicationPage = () => {
                 ? urlFoto
                 : `http://localhost:3000/uploads/${urlFoto}`;
 
-              // Mapea la clave primaria de la foto (priorizando IDs sobre rutas de archivo)
               const realId = String(
                 img.id ?? img._id ?? img.foto_id ?? img.archivo_id ?? img.id_archivo ?? img.ruta ?? img.nombre_servidor ?? ""
               );
@@ -174,14 +173,22 @@ const EditPublicationPage = () => {
       errors.categoriaId = true;
       messages.push("La categoría es inválida o no ha sido seleccionada.");
     }
+
+    // VALIDACIÓN DE FECHA (Evitar fechas futuras)
     if (!fechaEvento) {
       errors.fechaEvento = true;
       messages.push("La fecha ingresada no es válida.");
     } else {
-      const parsedDate = Date.parse(`${fechaEvento}T00:00:00`);
-      if (isNaN(parsedDate)) {
+      const selectedDate = new Date(`${fechaEvento}T00:00:00`);
+      const today = new Date();
+      today.setHours(23, 59, 59, 999); // Incluir todo el día actual
+
+      if (isNaN(selectedDate.getTime())) {
         errors.fechaEvento = true;
         messages.push("La fecha ingresada no es válida.");
+      } else if (selectedDate > today) {
+        errors.fechaEvento = true;
+        messages.push("La fecha del evento no puede ser posterior al día de hoy.");
       }
     }
 

@@ -72,7 +72,6 @@
   display: flex;
   flex-direction: column;
   max-width: 75%;
-  /* Evita selección de texto/menú flotante nativo al mantener presionado */
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;

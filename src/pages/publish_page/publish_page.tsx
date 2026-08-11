@@ -38,7 +38,7 @@ const PublishPage = () => {
   const autocompleteRef = useRef<HTMLDivElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [saving, setSaving] = useState(false);
+  const [saving] = useState(false);
 
   const todayStr = new Date().toISOString().split("T")[0];
 

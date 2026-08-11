@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./header.css";
 import { Bell, MessageCircle } from "lucide-react";
 import { useAuth } from "../../hooks/use_auth";

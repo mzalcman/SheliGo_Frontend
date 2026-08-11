@@ -132,13 +132,12 @@ const SearchFilters = ({
 
   };
 
-  // 🔴 FUNCIÓN MODIFICADA: Ahora devuelve "Fecha: DD/MM - DD/MM"
   const fechasSeleccionadasTexto = () => {
     if (!fechaDesde && !fechaHasta) return "Fecha";
 
     const formatearFechaCorta = (fechaStr: string) => {
       if (!fechaStr) return "";
-      const [anio, mes, dia] = fechaStr.split("-");
+      const [_anio, mes, dia] = fechaStr.split("-");
       return `${dia}/${mes}`;
     };
 

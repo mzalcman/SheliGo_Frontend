@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, ArrowLeft } from "lucide-react";
+import { Search, ArrowLeft, Camera } from "lucide-react";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import { useAuth } from "../../hooks/use_auth"; 
@@ -14,7 +14,20 @@ interface ChatRoom {
   ultimo_mensaje: string;
   ultimo_mensaje_tiempo: string;
   leido: boolean;
+  es_foto: boolean;
 }
+
+const esRutaImagen = (texto?: string): boolean => {
+  if (!texto) return false;
+  const t = texto.toLowerCase();
+  return (
+    t.startsWith("chats/") ||
+    t.endsWith(".jpg") ||
+    t.endsWith(".jpeg") ||
+    t.endsWith(".png") ||
+    t.endsWith(".webp")
+  );
+};
 
 const formatMensajeTiempo = (fechaRaw?: string) => {
   if (!fechaRaw) return "";
@@ -90,14 +103,16 @@ const ChatsListPage = () => {
 
             const tiempoFormateado = formatMensajeTiempo(sala.ultimo_mensaje_fecha);
             const sinLeerCount = parseInt(sala.mensajes_sin_leer || "0", 10);
+            const msgTexto = sala.ultimo_mensaje || "Sin mensajes";
 
             return {
               sala_id: sala.sala_id,
               usuario_nombre: nombreCompleto,
               usuario_avatar: avatarUrl,
-              ultimo_mensaje: sala.ultimo_mensaje || "Sin mensajes",
+              ultimo_mensaje: msgTexto,
               ultimo_mensaje_tiempo: tiempoFormateado,
-              leido: sinLeerCount === 0
+              leido: sinLeerCount === 0,
+              es_foto: esRutaImagen(msgTexto)
             };
           });
 
@@ -195,7 +210,15 @@ const ChatsListPage = () => {
                 <div className="chats_card_info">
                   <div className="chats_card_left_content">
                     <span className="chats_user_name">{chat.usuario_nombre}</span>
-                    <span className="chats_preview_message">{chat.ultimo_mensaje}</span>
+                    <span className="chats_preview_message">
+                      {chat.es_foto ? (
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                          <Camera size={16} color="#757575" /> Foto
+                        </span>
+                      ) : (
+                        chat.ultimo_mensaje
+                      )}
+                    </span>
                   </div>
 
                   <div className="chats_card_right_content">

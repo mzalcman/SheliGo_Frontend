@@ -4,6 +4,7 @@ import { ArrowLeft, Key, Eye, EyeOff, CheckCircle2, AlertCircle } from "lucide-r
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import Modal from "../../components/modal/modal"; 
+import { api } from "../../services/api";
 import "./change_password_page.css";
 
 const ChangePasswordPage = () => {
@@ -70,46 +71,33 @@ const ChangePasswordPage = () => {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-
-      const response = await fetch("http://localhost:3000/usuarios/cambiar-contrasena", {
-        method: "PUT",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contrasenaActual: currentPassword,
-          nuevaContrasena: newPassword,
-        }),
+      // Axios con la instancia 'api' envía la petición a Render y el token Bearer automáticamente
+      await api.put("/usuarios/cambiar-contrasena", {
+        contrasenaActual: currentPassword,
+        nuevaContrasena: newPassword,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setModalConfig({
-          isOpen: true,
-          title: "¡Contraseña actualizada!",
-          description: "Tu contraseña ha sido cambiada exitosamente.",
-          variant: "success",
-          icon: <CheckCircle2 size={36} color="#2e7d32" />,
-          onConfirm: () => {
-            closeModal();
-            setCurrentPassword("");
-            setNewPassword("");
-            setConfirmPassword("");
-            navigate("/perfil");
-          },
-        });
-      } else {
-        showModalError(
-          "No se pudo cambiar",
-          data?.message || "Ocurrió un problema al cambiar la contraseña. Revisa tus datos."
-        );
-      }
-    } catch (err) {
+      setModalConfig({
+        isOpen: true,
+        title: "¡Contraseña actualizada!",
+        description: "Tu contraseña ha sido cambiada exitosamente.",
+        variant: "success",
+        icon: <CheckCircle2 size={36} color="#2e7d32" />,
+        onConfirm: () => {
+          closeModal();
+          setCurrentPassword("");
+          setNewPassword("");
+          setConfirmPassword("");
+          navigate("/perfil");
+        },
+      });
+    } catch (err: any) {
       console.error("Error cambiando contraseña:", err);
-      showModalError("Error de conexión", "No fue posible conectar con el servidor. Inténtalo más tarde.");
+      const errorMessage =
+        err.response?.data?.message ||
+        "No fue posible conectar con el servidor. Inténtalo más tarde.";
+      
+      showModalError("No se pudo cambiar", errorMessage);
     } finally {
       setLoading(false);
     }

@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import type { User } from "../types/user";
 import { supabase } from "../services/supabase";
+import { api } from "../services/api";
 
 interface AuthContextType {
   user: User | null;
@@ -26,15 +27,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (!miTokenPropio) {
           setLoading(true); 
           try {
-            const response = await fetch("http://localhost:3000/auth/google", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${session.access_token}`
+            const response = await api.post(
+              "/auth/google",
+              {},
+              {
+                headers: {
+                  Authorization: `Bearer ${session.access_token}`,
+                },
               }
-            });
+            );
 
-            const resBody = await response.json();
+            const resBody = response.data;
 
             if (resBody?.data?.token) {
               localStorage.setItem("token", resBody.data.token);
@@ -48,13 +51,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               
               setLoading(false);
 
-              // 🔴 CORRECCIÓN AQUÍ: Revisar si el usuario venía por un enlace compartido antes de forzar /home
+              // Revisar si el usuario venía por un enlace compartido antes de forzar /home
               const redirectUrl = localStorage.getItem("redirect_after_login");
               if (redirectUrl) {
-                localStorage.removeItem("redirect_after_login"); // Limpiar
-                window.location.href = redirectUrl; // Llevar a la publicación
+                localStorage.removeItem("redirect_after_login");
+                window.location.href = redirectUrl;
               } else {
-                window.location.href = "/home"; // Comportamiento por defecto
+                window.location.href = "/home";
               }
               return;
             }

@@ -14,6 +14,7 @@ import {
   get_publication_photos
 } from "../../services/publication_service";
 import "./edit_publication_page.css";
+import { getImageUrl } from "../../utils/get_image_url";
 
 interface BackendItem {
   id: string;
@@ -94,13 +95,11 @@ const EditPublicationPage = () => {
               console.log("📸 Objeto foto crudo del Backend:", img);
 
               if (typeof img === "string") {
-                return { id: img, url: img };
+                return { id: img, url: getImageUrl(img) };
               }
 
               const urlFoto = img.url || img.ruta || img.nombre_servidor || "";
-              const urlCompleta = urlFoto.startsWith("http")
-                ? urlFoto
-                : `http://localhost:3000/uploads/${urlFoto}`;
+              const urlCompleta = getImageUrl(urlFoto);
 
               const realId = String(
                 img.id ?? img._id ?? img.foto_id ?? img.archivo_id ?? img.id_archivo ?? img.ruta ?? img.nombre_servidor ?? ""

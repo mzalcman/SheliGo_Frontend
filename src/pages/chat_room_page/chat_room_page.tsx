@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Paperclip, Send, AlertCircle, Trash2 } from "lucide-react";
 import { useAuthContext } from "../../contexts/auth_context";
 import { supabase } from "../../services/supabase";
+import { api } from "../../services/api";
 import Modal from "../../components/modal/modal";
 import "./chat_room_page.css";
 import { getImageUrl } from "../../utils/get_image_url";
@@ -56,18 +57,11 @@ const ChatRoomPage = () => {
     const cargarHistorial = async () => {
       try {
         setCargandoHistorial(true);
-        const token = localStorage.getItem("token");
+        const response = await api.get(`/chat/salas/${salaId}/mensajes`);
+        const resJson = response.data;
 
-        const response = await fetch(`http://localhost:3000/chat/salas/${salaId}/mensajes`, {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
-        });
-        if (response.ok) {
-          const resJson = await response.json();
-          if (resJson && resJson.status === "success" && Array.isArray(resJson.data)) {
-            setMessages(resJson.data);
-          }
+        if (resJson && resJson.status === "success" && Array.isArray(resJson.data)) {
+          setMessages(resJson.data);
         }
       } catch (error) {
         console.error("Error al cargar el historial:", error);
@@ -169,25 +163,13 @@ const ChatRoomPage = () => {
     setEnviando(true);
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3000/chat/mensaje", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          sala_id: salaId,
-          contenido: contenidoMensaje
-        })
+      await api.post("/chat/mensaje", {
+        sala_id: salaId,
+        contenido: contenidoMensaje
       });
-
-      if (!response.ok) {
-        const errJson = await response.json().catch(() => ({}));
-        showErrorModal(errJson.message || "No se pudo enviar el mensaje.");
-      }
-    } catch (error) {
-      showErrorModal("Error de conexión al enviar el mensaje.");
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || "No se pudo enviar el mensaje.";
+      showErrorModal(errorMsg);
     } finally {
       setEnviando(false);
     }
@@ -206,21 +188,14 @@ const ChatRoomPage = () => {
     setEnviando(true);
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3000/chat/mensaje", {
-        method: "POST",
+      await api.post("/chat/mensaje", formData, {
         headers: {
-          "Authorization": `Bearer ${token}`
+          "Content-Type": "multipart/form-data",
         },
-        body: formData
       });
-
-      if (!response.ok) {
-        const errJson = await response.json().catch(() => ({}));
-        showErrorModal(errJson.message || "Error al subir la imagen.");
-      }
-    } catch (error) {
-      showErrorModal("Ocurrió un error de red al adjuntar la imagen.");
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || "Error al subir la imagen.";
+      showErrorModal(errorMsg);
     } finally {
       setEnviando(false);
     }
@@ -236,22 +211,11 @@ const ChatRoomPage = () => {
     if (!mensajeAEliminar) return;
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:3000/chat/mensaje/${mensajeAEliminar}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        setMessages((prev) => prev.filter((msg) => msg.id !== mensajeAEliminar));
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        showErrorModal(errorData.message || "No se pudo eliminar el mensaje.");
-      }
-    } catch (error) {
-      showErrorModal("Error de conexión al eliminar el mensaje.");
+      await api.delete(`/chat/mensaje/${mensajeAEliminar}`);
+      setMessages((prev) => prev.filter((msg) => msg.id !== mensajeAEliminar));
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || "No se pudo eliminar el mensaje.";
+      showErrorModal(errorMsg);
     } finally {
       setMostrarModalEliminar(false);
       setMensajeAEliminar(null);

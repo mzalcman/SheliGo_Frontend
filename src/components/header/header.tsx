@@ -4,6 +4,7 @@ import { Bell, MessageCircle } from "lucide-react";
 import { useAuth } from "../../hooks/use_auth";
 import { useNavigate } from "react-router-dom";
 import { getImageUrl } from "../../utils/get_image_url";
+import { api } from "../../services/api";
 
 const Header = () => {
   const { user } = useAuth();
@@ -19,36 +20,27 @@ const Header = () => {
           return;
         }
 
-        const response = await fetch("http://localhost:3000/chat/salas", {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
-        });
+        const response = await api.get("/chat/salas");
+        const resJson = response.data;
 
-        if (response.ok) {
-          const resJson = await response.json();
-          console.log("📨 [HEADER] Respuesta de salas recibida:", resJson);
+        console.log("📨 [HEADER] Respuesta de salas recibida:", resJson);
 
-          const rawSalas = resJson && Array.isArray(resJson.data) ? resJson.data : [];
+        const rawSalas = resJson && Array.isArray(resJson.data) ? resJson.data : [];
 
-          // Buscamos dinámicamente cualquier campo que suene a "sin leer"
-          const totalSinLeer = rawSalas.reduce((acumulado: number, sala: any) => {
-            const sinLeerCount = parseInt(
-              sala.mensajes_sin_leer ?? 
-              sala.mensajes_no_leidos ?? 
-              sala.sin_leer ?? 
-              sala.unread_count ?? 
-              "0", 
-              10
-            );
-            return acumulado + (isNaN(sinLeerCount) ? 0 : sinLeerCount);
-          }, 0);
+        const totalSinLeer = rawSalas.reduce((acumulado: number, sala: any) => {
+          const sinLeerCount = parseInt(
+            sala.mensajes_sin_leer ?? 
+            sala.mensajes_no_leidos ?? 
+            sala.sin_leer ?? 
+            sala.unread_count ?? 
+            "0", 
+            10
+          );
+          return acumulado + (isNaN(sinLeerCount) ? 0 : sinLeerCount);
+        }, 0);
 
-          console.log("🔴 [HEADER] Total de mensajes sin leer calculado:", totalSinLeer);
-          setMensajesSinLeer(totalSinLeer);
-        } else {
-          console.error("❌ [HEADER] Error en la petición HTTP:", response.status);
-        }
+        console.log("🔴 [HEADER] Total de mensajes sin leer calculado:", totalSinLeer);
+        setMensajesSinLeer(totalSinLeer);
       } catch (error) {
         console.error("❌ [HEADER] Error de red al traer mensajes sin leer:", error);
       }
@@ -56,7 +48,6 @@ const Header = () => {
 
     fetchMensajesSinLeer();
     
-    // Consultamos cada 8 segundos para mantenerlo actualizado
     const interval = setInterval(fetchMensajesSinLeer, 8000);
     return () => clearInterval(interval);
   }, []);
@@ -82,7 +73,6 @@ const Header = () => {
       </button>
 
       <div className="header_icons">
-        {/* Usamos un wrapper relativo para que el badge se posicione perfecto */}
         <div className="header_chat_button_wrapper">
           <button 
             className="header_icon_button" 
@@ -94,7 +84,6 @@ const Header = () => {
             />
           </button>
           
-          {/* Globo rojo sobre el icono si el contador es mayor a cero */}
           {mensajesSinLeer > 0 && (
             <span className="header_unread_badge">
               {mensajesSinLeer}

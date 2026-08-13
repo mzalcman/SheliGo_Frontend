@@ -6,6 +6,7 @@ import Footer from "../../components/footer/footer";
 import LogoutButton from "../../components/logout_button/logout_button";
 import { useAuth } from "../../hooks/use_auth";
 import { getImageUrl } from "../../utils/get_image_url"; 
+import { get_my_publications } from "../../services/publication_service";
 import "./profile_page.css";
 
 interface BackendPublication {
@@ -42,40 +43,24 @@ const ProfilePage = () => {
     return `Reportado hace ${dias} días`;
   };
 
-  // Traer publicaciones reales del servidor
+  // Traer publicaciones reales del servidor usando el servicio centralizado
   useEffect(() => {
     const fetchMisPublicaciones = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const resBody = await get_my_publications();
+        const listaRaw: BackendPublication[] = resBody?.data?.publicaciones || resBody?.publicaciones || (Array.isArray(resBody) ? resBody : []);
+        setPublications(listaRaw);
 
-        const response = await fetch("http://localhost:3000/publicaciones/mias", {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
-        });
+        // 🎯 LÓGICA DE RECUPERADOS:
+        // Contamos las publicaciones que ya no están activas (desactivadas, resueltas, recuperadas, etc.)
+        const recuperadas = listaRaw.filter((pub) => {
+          const est = (pub.estado || "").toLowerCase();
+          return est === "inactiva" || est === "resuelto" || est === "recuperado" || est === "cerrado";
+        }).length;
 
-        if (response.ok) {
-          const resBody = await response.json();
-          const listaRaw: BackendPublication[] = resBody?.data?.publicaciones || [];
-          setPublications(listaRaw);
-
-          // 🎯 LÓGICA DE RECUPERADOS:
-          // Contamos las publicaciones que ya no están activas (desactivadas, resueltas, recuperadas, etc.)
-          const recuperadas = listaRaw.filter((pub) => {
-            const est = (pub.estado || "").toLowerCase();
-            return est === "inactiva" || est === "resuelto" || est === "recuperado" || est === "cerrado";
-          }).length;
-
-          setRecuperadosCount(recuperadas);
-        } else {
-          console.error("Error al traer publicaciones del perfil:", response.status);
-          setPublications([]);
-          setRecuperadosCount(0);
-        }
+        setRecuperadosCount(recuperadas);
       } catch (error) {
-        console.error("Error de red al conectar con el backend:", error);
+        console.error("Error al traer publicaciones del perfil:", error);
         setPublications([]);
         setRecuperadosCount(0);
       } finally {
@@ -168,7 +153,9 @@ const ProfilePage = () => {
                 if (!pub || !pub.id) return null;
 
                 const estadoTexto = (pub.tipo || "BUSCANDO").toUpperCase();
-                const imagenFinal = pub.foto_principal_url || "/obj_predeterminada.png";
+                const imagenFinal = pub.foto_principal_url 
+                  ? getImageUrl(pub.foto_principal_url) 
+                  : "/obj_predeterminada.png";
                 const textoFecha = calcularHaceCuanto(pub.created_at || pub.fecha_evento);
 
                 return (

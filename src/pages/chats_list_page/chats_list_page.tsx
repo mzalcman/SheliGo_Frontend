@@ -4,6 +4,7 @@ import { Search, ArrowLeft, Camera } from "lucide-react";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import { useAuth } from "../../hooks/use_auth"; 
+import { api } from "../../services/api";
 import "./chats_list_page.css";
 import { getImageUrl } from "../../utils/get_image_url";
 
@@ -67,60 +68,49 @@ const ChatsListPage = () => {
     const fetchSalas = async () => {
       try {
         setCargando(true);
-        const token = localStorage.getItem("token");
 
-        let url = "http://localhost:3000/chat/salas";
+        let url = "/chat/salas";
         if (filter === "no_leidos") {
           url += "?filtro=no_leidas";
         } else if (filter === "leidos") {
           url += "?filtro=leidas";
         }
 
-        const response = await fetch(url, {
-          headers: {
-            "Authorization": `Bearer ${token}`
+        const response = await api.get(url);
+        const resJson = response.data;
+        const rawSalas = resJson && Array.isArray(resJson.data) ? resJson.data : [];
+
+        const salasMapeadas: ChatRoom[] = rawSalas.map((sala: any) => {
+          const nombre = sala.otro_usuario_nombre || "";
+          const apellido = sala.otro_usuario_apellido || "";
+          const nombreCompleto = `${nombre} ${apellido}`.trim() || "Usuario";
+
+          const avatarPath = sala.otro_usuario_foto;
+          let avatarUrl = "/user_predeterminada.png";
+          if (avatarPath) {
+            if (avatarPath.startsWith("http://") || avatarPath.startsWith("https://")) {
+              avatarUrl = avatarPath;
+            } else {
+              avatarUrl = getImageUrl(avatarPath);
+            }
           }
+
+          const tiempoFormateado = formatMensajeTiempo(sala.ultimo_mensaje_fecha);
+          const sinLeerCount = parseInt(sala.mensajes_sin_leer || "0", 10);
+          const msgTexto = sala.ultimo_mensaje || "Sin mensajes";
+
+          return {
+            sala_id: sala.sala_id,
+            usuario_nombre: nombreCompleto,
+            usuario_avatar: avatarUrl,
+            ultimo_mensaje: msgTexto,
+            ultimo_mensaje_tiempo: tiempoFormateado,
+            leido: sinLeerCount === 0,
+            es_foto: esRutaImagen(msgTexto)
+          };
         });
 
-        if (response.ok) {
-          const resJson = await response.json();
-          const rawSalas = resJson && Array.isArray(resJson.data) ? resJson.data : [];
-
-          const salasMapeadas: ChatRoom[] = rawSalas.map((sala: any) => {
-            const nombre = sala.otro_usuario_nombre || "";
-            const apellido = sala.otro_usuario_apellido || "";
-            const nombreCompleto = `${nombre} ${apellido}`.trim() || "Usuario";
-
-            const avatarPath = sala.otro_usuario_foto;
-            let avatarUrl = "/user_predeterminada.png";
-            if (avatarPath) {
-              if (avatarPath.startsWith("http://") || avatarPath.startsWith("https://")) {
-                avatarUrl = avatarPath;
-              } else {
-                avatarUrl = getImageUrl(avatarPath);
-              }
-            }
-
-            const tiempoFormateado = formatMensajeTiempo(sala.ultimo_mensaje_fecha);
-            const sinLeerCount = parseInt(sala.mensajes_sin_leer || "0", 10);
-            const msgTexto = sala.ultimo_mensaje || "Sin mensajes";
-
-            return {
-              sala_id: sala.sala_id,
-              usuario_nombre: nombreCompleto,
-              usuario_avatar: avatarUrl,
-              ultimo_mensaje: msgTexto,
-              ultimo_mensaje_tiempo: tiempoFormateado,
-              leido: sinLeerCount === 0,
-              es_foto: esRutaImagen(msgTexto)
-            };
-          });
-
-          setChats(salasMapeadas);
-        } else {
-          console.error("Error al traer salas:", response.status);
-          setChats([]);
-        }
+        setChats(salasMapeadas);
       } catch (error) {
         console.error("Error al conectar con la API de salas:", error);
         setChats([]);

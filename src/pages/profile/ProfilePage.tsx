@@ -192,7 +192,7 @@ const ProfilePage = () => {
           </div>
         </section>
 
-        {/* Sección Historial */}
+        {/* Sección Historial 
         <section className="profile_block_section">
           <div className="profile_section_header">
             <h2>Historial</h2>
@@ -220,7 +220,7 @@ const ProfilePage = () => {
             ))}
           </div>
         </section>
-
+        */}
         {/* Sección Configuración */}
         <section className="profile_block_section profile_config_block">
           <h2>Configuración</h2>

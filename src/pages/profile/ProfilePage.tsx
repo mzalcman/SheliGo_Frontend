@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, User, Shield, Edit2, CheckCircle2, History, Key } from "lucide-react";
+import { ArrowRight, User, Shield, Edit2, /*CheckCircle2, History,*/ Key } from "lucide-react";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import LogoutButton from "../../components/logout_button/logout_button";
@@ -72,7 +72,7 @@ const ProfilePage = () => {
   }, []);
 
   // Datos de prueba para la sección Historial
-  const historial = [
+  /*const historial = [
     {
       id: "h1",
       titulo: "Cámara Sony Alpha",
@@ -85,7 +85,7 @@ const ProfilePage = () => {
       detalle: "Reporte cerrado • 05 Oct",
       tipo: "cerrado",
     },
-  ];
+  ];*/
 
   return (
     <div className="profile_layout_page">

@@ -5,7 +5,7 @@ import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import LogoutButton from "../../components/logout_button/logout_button";
 import { useAuth } from "../../hooks/use_auth";
-import { getImageUrl } from "../../utils/get_image_url"; 
+import { getImageUrl } from "../../utils/get_image_url";
 import "./profile_page.css";
 
 interface BackendPublication {
@@ -109,21 +109,21 @@ const ProfilePage = () => {
       <main className="profile_scroll_container">
         {/* Cabecera del Usuario */}
         <section className="profile_hero_section">
-          <div 
+          <div
             className="profile_avatar_wrapper"
-            onClick={() => navigate("/perfil/informacion-personal")} 
+            onClick={() => navigate("/perfil/informacion-personal")}
             style={{ cursor: "pointer" }}
           >
-            <img 
+            <img
               src={
                 user?.profile_image
                   ? getImageUrl(user.profile_image)
                   : "/default-user.png"
-              } 
-              alt={userFullName} 
-              className="profile_main_avatar" 
+              }
+              alt={userFullName}
+              className="profile_main_avatar"
             />
-            <button 
+            <button
               className="profile_edit_avatar_badge"
               title="Editar Perfil"
               type="button"
@@ -172,20 +172,20 @@ const ProfilePage = () => {
                 const textoFecha = calcularHaceCuanto(pub.created_at || pub.fecha_evento);
 
                 return (
-                  <div 
-                    key={pub.id} 
+                  <div
+                    key={pub.id}
                     className="profile_item_card"
                     onClick={() => navigate(`/publicacion/${pub.id}`)}
                     style={{ cursor: "pointer" }}
                   >
-                    <img 
-                      src={imagenFinal} 
-                      alt={pub.nombre || "Objeto"} 
+                    <img
+                      src={imagenFinal}
+                      alt={pub.nombre || "Objeto"}
                       className="profile_item_thumbnail"
                       onError={(e) => {
                         e.currentTarget.onerror = null;
                         e.currentTarget.src = "/obj_predeterminada.png";
-                      }} 
+                      }}
                     />
                     <div className="profile_item_info">
                       <h3>{pub.nombre || "Sin título"}</h3>
@@ -238,10 +238,10 @@ const ProfilePage = () => {
         <section className="profile_block_section profile_config_block">
           <h2>Configuración</h2>
           <div className="profile_config_menu_card">
-            
+
             {/* 1. Información Personal */}
-            <button 
-              className="profile_config_row_btn" 
+            <button
+              className="profile_config_row_btn"
               onClick={() => navigate("/perfil/informacion-personal")}
             >
               <div className="profile_config_left">
@@ -252,8 +252,8 @@ const ProfilePage = () => {
             </button>
 
             {/* 2. Cambiar Contraseña */}
-            <button 
-              className="profile_config_row_btn" 
+            <button
+              className="profile_config_row_btn"
               onClick={() => navigate("/cambiar-contrasena")}
             >
               <div className="profile_config_left">
@@ -264,7 +264,11 @@ const ProfilePage = () => {
             </button>
 
             {/* 3. Privacidad y Seguridad */}
-            <button className="profile_config_row_btn" type="button">
+            <button
+              className="profile_config_row_btn"
+              type="button"
+              onClick={() => navigate("/privacidad-y-seguridad")} 
+            >
               <div className="profile_config_left">
                 <Shield size={18} color="#1A1A1A" />
                 <span>Privacidad y seguridad</span>

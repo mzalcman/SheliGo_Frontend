@@ -15,6 +15,7 @@ import { Routes, Route } from "react-router-dom";
 import ChatsListPage from "./pages/chats_list_page/chats_list_page"; 
 import ChatRoomPage from "./pages/chat_room_page/chat_room_page";
 import MyPublicatiosPage from "./pages/my_publications_page/my_publications_page";
+import PrivacySecurityPage from "./pages/PrivacySecurityPage/PrivacySecurityPage"; 
 
 // Pantalla de contáctanos
 import ContactPage from "./pages/contact_page/ContactPage";
@@ -42,6 +43,7 @@ function App() {
       <Route path="/buscar" element={<SearchPage />} />
       <Route path="/ayuda" element={<HelpPage />} />
       <Route path="/contactanos" element={<ContactPage />} />
+      <Route path="/privacidad-y-seguridad" element={<PrivacySecurityPage />} />
 
       <Route element={<ProtectedRoute />}>
         <Route path="/home" element={<HomePage />} />
@@ -52,7 +54,6 @@ function App() {
         <Route path="/chat/:salaId" element={<ChatRoomPage />} />
         <Route path="/mispublicaciones" element={<MyPublicatiosPage />} />
         <Route path="/menu" element={<MenuPage />} />
-
         {/* RUTAS PROTEGIDAS DEL PERFIL Y CONFIGURACIÓN */}
         <Route path="/perfil" element={<ProfilePage />} />
         <Route path="/perfil/informacion-personal" element={<PersonalInfoPage />} />

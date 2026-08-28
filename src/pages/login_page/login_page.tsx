@@ -1,13 +1,15 @@
 import "./login_page.css";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { login } from "../../services/auth_service";
 import Loader from "../../components/loader/loader";
 import { useAuth } from "../../hooks/use_auth";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Lock } from "lucide-react";
+import Modal from "../../components/modal/modal";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login: loginContext, loginWithGoogle, user } = useAuth();
 
   const [email, setEmail] = useState("");
@@ -15,8 +17,16 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showExpiredModal, setShowExpiredModal] = useState(false);
 
-  // 🔴 COORDINA LA REDIRECCIÓN CUANDO EL USUARIO YA EXISTE (Login tradicional y OAuth)
+  // DETECTA SI LA SESIÓN EXPIRÓ (Viene del Interceptor de Axios)
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    if (queryParams.get("expired") === "true") {
+      setShowExpiredModal(true);
+    }
+  }, [location]);
+
   useEffect(() => {
     if (user) {
       const redirectUrl = localStorage.getItem("redirect_after_login");
@@ -52,10 +62,8 @@ const LoginPage = () => {
         throw new Error("Respuesta inválida del servidor");
       }
 
-      // 1. Guardamos el token primero
       localStorage.setItem("token", token);
 
-      // 2. Seteamos el usuario en el contexto (Esto va a disparar el useEffect de arriba automáticamente)
       loginContext(usuario);
 
     } catch (error: any) {
@@ -63,6 +71,12 @@ const LoginPage = () => {
       setLoading(false);
       setError("Correo o contraseña incorrectos.");
     }
+  };
+
+  const handleCloseExpiredModal = () => {
+    setShowExpiredModal(false);
+    // Limpia el parámetro ?expired=true de la URL sin recargar la página
+    navigate("/login", { replace: true });
   };
 
   if (loading) {
@@ -140,6 +154,18 @@ const LoginPage = () => {
           </button>
         </div>
       </div>
+
+      {/* MODAL DE SESIÓN EXPIRADA */}
+      <Modal
+        isOpen={showExpiredModal}
+        onClose={handleCloseExpiredModal}
+        title="Sesión Expirada"
+        description="Tu sesión ha caducado por inactividad o seguridad. Por favor, vuelve a iniciar sesión para continuar."
+        variant="error"
+        icon={<Lock size={36} color="#FF6F00" />}
+        confirmText="Entendido"
+        onConfirm={handleCloseExpiredModal}
+      />
     </main>
   );
 };

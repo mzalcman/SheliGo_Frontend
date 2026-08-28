@@ -23,17 +23,17 @@ api.interceptors.request.use(
   }
 );
 
+// En src/services/api.ts
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    // Si el servidor responde 401 (Sesión Expirada / Token Inválido)
     if (error.response && error.response.status === 401) {
-      // 1. Limpiamos datos caducados del almacenamiento
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      const currentPath = window.location.pathname;
 
-      // 2. Redirigimos al Login
-      if (!window.location.pathname.includes("/login")) {
+      // 🚀 SOLO redirigimos si NO estamos en registro ni en login
+      if (!currentPath.includes("/login") && !currentPath.includes("/register")) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
         window.location.href = "/login?expired=true";
       }
     }

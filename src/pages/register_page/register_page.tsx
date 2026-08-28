@@ -1,10 +1,11 @@
 import "./register_page.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, CheckCircle } from "lucide-react"; // 🔴 Importamos CheckCircle para el tic
+import { Eye, EyeOff, CheckCircle, X } from "lucide-react";
 import ImageUploader from "../../components/image_uploader/image_uploader";
 import Loader from "../../components/loader/loader";
 import { register } from "../../services/auth_service";
+import { get_home_institutions } from "../../services/home_service"; // 👈 Usamos el servicio existente
 import { useAuth } from "../../hooks/use_auth";
 
 const RegisterPage = () => {
@@ -15,6 +16,13 @@ const RegisterPage = () => {
   const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  
+  // 🏫 Lista de instituciones de la BD y selección del usuario
+  const [availableInstitutions, setAvailableInstitutions] = useState<any[]>([]);
+  const [selectedInstitutions, setSelectedInstitutions] = useState<any[]>([]);
+  const [institutionQuery, setInstitutionQuery] = useState("");
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [images, setImages] = useState<File[]>([]);
@@ -31,23 +39,67 @@ const RegisterPage = () => {
     }
   }, [user, navigate]);
 
+  // 🏫 Cargar instituciones reales desde la base de datos al montar la página
+  useEffect(() => {
+    const fetchInstitutions = async () => {
+      try {
+        const data = await get_home_institutions();
+        const instList = data?.instituciones || data?.data?.instituciones || data || [];
+        setAvailableInstitutions(instList);
+      } catch (err) {
+        console.error("Error al obtener instituciones:", err);
+      }
+    };
+
+    fetchInstitutions();
+  }, []);
+
   const is_valid_email = (value: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   };
 
   const formatPhone = (value: string) => {
     const numbers = value.replace(/\D/g, "");
-    if (numbers.length <= 2) {
-      return numbers;
-    }
-    if (numbers.length <= 6) {
-      return `${numbers.slice(0, 2)} ${numbers.slice(2)}`;
-    }
+    if (numbers.length <= 2) return numbers;
+    if (numbers.length <= 6) return `${numbers.slice(0, 2)} ${numbers.slice(2)}`;
     return `${numbers.slice(0, 2)} ${numbers.slice(2, 6)}-${numbers.slice(6, 10)}`;
   };
 
   const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPhone(formatPhone(event.target.value));
+  };
+
+  const handleInstitutionQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setInstitutionQuery(value);
+
+    if (value.trim().length > 0) {
+      const filtered = availableInstitutions.filter((inst) => {
+        const instName = typeof inst === "string" ? inst : inst.nombre || inst.name;
+        const alreadySelected = selectedInstitutions.some(
+          (selected) => (typeof selected === "string" ? selected : selected.id) === (typeof inst === "string" ? inst : inst.id)
+        );
+
+        return instName.toLowerCase().includes(value.toLowerCase()) && !alreadySelected;
+      });
+      setSuggestions(filtered);
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handleSelectInstitution = (inst: any) => {
+    setSelectedInstitutions([...selectedInstitutions, inst]);
+    setInstitutionQuery("");
+    setSuggestions([]);
+  };
+
+  const handleRemoveInstitution = (instToRemove: any) => {
+    setSelectedInstitutions(
+      selectedInstitutions.filter(
+        (inst) => (inst.id || inst) !== (instToRemove.id || instToRemove)
+      )
+    );
   };
 
   const handleRegister = async () => {
@@ -71,37 +123,39 @@ const RegisterPage = () => {
 
     const capitalizeWords = (str: string) => {
       return str
-        .trim() 
-        .toLowerCase() 
-        .split(/\s+/) 
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1)) 
+        .trim()
+        .toLowerCase()
+        .split(/\s+/)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(" ");
     };
 
     try {
       const formData = new FormData();
-      
+
       formData.append("nombre", capitalizeWords(name));
       formData.append("apellido", capitalizeWords(lastname));
-      
       formData.append("email", email);
       formData.append("telefono", phone.replace(/\D/g, ""));
+
+      const instPayload = selectedInstitutions.map((inst) => inst.id || inst);
+      formData.append("instituciones", JSON.stringify(instPayload));
+
       formData.append("password", password);
       formData.append("confirmPassword", confirmPassword);
-      
+
       if (images.length > 0) {
         formData.append("foto", images[0]);
       }
 
       await register(formData);
-      
+
       setLoading(false);
       setShowSuccessModal(true);
 
       setTimeout(() => {
         navigate("/login");
       }, 3000);
-
     } catch (error: any) {
       setLoading(false);
       setError(
@@ -127,7 +181,7 @@ const RegisterPage = () => {
         <div className="register_card">
           <h2>Crear Cuenta</h2>
 
-          <ImageUploader images={images} setImages={setImages} maxFiles={1}/>
+          <ImageUploader images={images} setImages={setImages} maxFiles={1} />
 
           <label>Nombre</label>
           <input
@@ -161,6 +215,46 @@ const RegisterPage = () => {
             onChange={handlePhoneChange}
             maxLength={13}
           />
+
+          {/* 🏫 SECCIÓN DE INSTITUCIONES REALES */}
+          <label>Instituciones asociadas</label>
+
+          {selectedInstitutions.length > 0 && (
+            <div className="institutions_chips_container">
+              {selectedInstitutions.map((inst) => {
+                const labelName = typeof inst === "string" ? inst : inst.nombre || inst.name;
+                return (
+                  <div className="institution_chip" key={inst.id || inst}>
+                    <span>{labelName}</span>
+                    <button type="button" onClick={() => handleRemoveInstitution(inst)}>
+                      <X size={14} />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          <div className="institution_input_wrapper">
+            <input
+              type="text"
+              placeholder="Escribe y selecciona tu institución..."
+              value={institutionQuery}
+              onChange={handleInstitutionQueryChange}
+            />
+            {suggestions.length > 0 && (
+              <ul className="institution_dropdown">
+                {suggestions.map((item) => {
+                  const labelName = typeof item === "string" ? item : item.nombre || item.name;
+                  return (
+                    <li key={item.id || item} onClick={() => handleSelectInstitution(item)}>
+                      {labelName}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
 
           <label>Contraseña</label>
           <div className="password_input_container">
@@ -230,7 +324,6 @@ const RegisterPage = () => {
         </div>
       </div>
 
-      {/* 🔴 MODAL DE CONFIRMACIÓN DE REGISTRO EXITOSO */}
       {showSuccessModal && (
         <div className="success_modal_overlay">
           <div className="success_modal_card">

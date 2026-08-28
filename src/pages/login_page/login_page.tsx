@@ -19,13 +19,14 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [showExpiredModal, setShowExpiredModal] = useState(false);
 
-  // DETECTA SI LA SESIÓN EXPIRÓ (Viene del Interceptor de Axios)
+  // DETECTA SI LA SESIÓN EXPIRÓ (Y limpia el query param inmediatamente para no propagarlo)
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     if (queryParams.get("expired") === "true") {
       setShowExpiredModal(true);
+      navigate("/login", { replace: true });
     }
-  }, [location]);
+  }, [location, navigate]);
 
   useEffect(() => {
     if (user) {
@@ -63,7 +64,6 @@ const LoginPage = () => {
       }
 
       localStorage.setItem("token", token);
-
       loginContext(usuario);
 
     } catch (error: any) {
@@ -75,8 +75,11 @@ const LoginPage = () => {
 
   const handleCloseExpiredModal = () => {
     setShowExpiredModal(false);
-    // Limpia el parámetro ?expired=true de la URL sin recargar la página
-    navigate("/login", { replace: true });
+  };
+
+  const handleGoToRegister = () => {
+    setShowExpiredModal(false);
+    navigate("/register", { replace: true });
   };
 
   if (loading) {
@@ -148,7 +151,7 @@ const LoginPage = () => {
           <span>¿No tienes una cuenta?</span>
           <button
             className="register_link"
-            onClick={() => navigate("/register")}
+            onClick={handleGoToRegister}
           >
             Regístrate gratis
           </button>

@@ -205,35 +205,6 @@ const ProfilePage = () => {
           </div>
         </section>
 
-        {/* Sección Historial */}
-        <section className="profile_block_section">
-          <div className="profile_section_header">
-            <h2>Historial</h2>
-            <button className="profile_see_all_btn" onClick={() => navigate("/historial")}>
-              VER TODO
-            </button>
-          </div>
-
-          <div className="profile_cards_stack">
-            {historial.map((hist) => (
-              <div key={hist.id} className="profile_history_card">
-                <div className="profile_history_icon_container">
-                  {hist.tipo === "entregado" ? (
-                    <CheckCircle2 size={18} color="#757575" />
-                  ) : (
-                    <History size={18} color="#757575" />
-                  )}
-                </div>
-                <div className="profile_history_info">
-                  <h3>{hist.titulo}</h3>
-                  <p>{hist.detalle}</p>
-                </div>
-                <ArrowRight size={16} color="#B0B0B0" className="profile_row_arrow" />
-              </div>
-            ))}
-          </div>
-        </section>
-
         {/* Sección Configuración */}
         <section className="profile_block_section profile_config_block">
           <h2>Configuración</h2>

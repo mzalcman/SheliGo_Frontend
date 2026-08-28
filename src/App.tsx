@@ -16,11 +16,8 @@ import ChatsListPage from "./pages/chats_list_page/chats_list_page";
 import ChatRoomPage from "./pages/chat_room_page/chat_room_page";
 import MyPublicatiosPage from "./pages/my_publications_page/my_publications_page";
 import PrivacySecurityPage from "./pages/PrivacySecurityPage/PrivacySecurityPage"; 
-
-// Pantalla de contáctanos
 import ContactPage from "./pages/contact_page/ContactPage";
-
-// IMPORTS DE RUTAS DE PERFIL Y CONFIGURACIÓN
+import NotificationsPage from "./pages/notifications_page/notifications_page";
 import ProfilePage from "./pages/profile/ProfilePage";
 import PersonalInfoPage from "./pages/personal_info/PersonalInfoPage";
 import ChangePasswordPage from "./pages/change_password_page/change_password_page";
@@ -54,10 +51,11 @@ function App() {
         <Route path="/chat/:salaId" element={<ChatRoomPage />} />
         <Route path="/mispublicaciones" element={<MyPublicatiosPage />} />
         <Route path="/menu" element={<MenuPage />} />
-        {/* RUTAS PROTEGIDAS DEL PERFIL Y CONFIGURACIÓN */}
         <Route path="/perfil" element={<ProfilePage />} />
         <Route path="/perfil/informacion-personal" element={<PersonalInfoPage />} />
         <Route path="/cambiar-contrasena" element={<ChangePasswordPage />} />
+        <Route path="/notificaciones" element={<NotificationsPage />}
+  />
       </Route>
     </Routes>
   );

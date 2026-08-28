@@ -91,7 +91,10 @@ const Header = () => {
           )}
         </div>
 
-        <button className="header_icon_button">
+        <button 
+          className="header_icon_button"
+          onClick={() => navigate('/notificaciones')}
+        >
           <Bell
             size={34}
             strokeWidth={2.2}

@@ -39,7 +39,7 @@
   color: #ff6f00;
   font-size: 3.2rem;
   font-weight: 600;
-  margin: 0;
+  margin-top: 45px;
   letter-spacing: -0.5px;
 }
 
@@ -48,6 +48,7 @@
   margin-top: 16px;
   font-size: 2.5rem;
   font-weight: 500; 
+  margin-top: 0px;
   line-height: 1.2;
   color: #000000;
 }
@@ -59,17 +60,17 @@
 }
 
 .landing_subtitle {
-  font-family: "poppins";
+  font-family: "louis_george";
   margin-top: 20px;
   color: #a0a0a0;
   font-size: 1rem;
-  font-weight: 400; 
+  font-weight: 600; 
   line-height: 1.4;
   max-width: 85%;
 }
 
 .landing_buttons {
-  margin-top: 40px;
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
   gap: 14px;

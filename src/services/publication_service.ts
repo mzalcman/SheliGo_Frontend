@@ -5,6 +5,11 @@ export const get_publication_by_id = async (id: string) => {
   return response.data.data.publicacion;
 };
 
+export const get_my_publications = async () => {
+  const response = await api.get("/publicaciones/mias");
+  return response.data;
+};
+
 export const getCategories = async () => {
   const response = await api.get("/categorias");
   return response.data;
@@ -24,41 +29,21 @@ export const create_publication = async (formData: FormData) => {
   return response.data.data.publicacion;
 };
 
+export const update_publication = async (id: string, formData: FormData) => {
+  const response = await api.put(`/publicaciones/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
+
 export const delete_publication = async (id: string) => {
   const response = await api.delete(`/publicaciones/${id}`);
   return response.data;
 };
 
-export const update_publication = async (id: string, formData: FormData) => {
-  // 1. Obtenemos el token de autenticación
-  const token = localStorage.getItem("token") || "";
-
-  // 2. Realizamos la petición directa a la URL limpia de publicaciones
-  const response = await fetch(`http://localhost:3000/publicaciones/${id}`, {
-    method: "PUT",
-    headers: {
-      "Authorization": `Bearer ${token}`
-      // IMPORTANTE: Al enviar FormData NO hay que definir "Content-Type" manualmente.
-      // El navegador se encarga de ponerlo junto con el boundary correcto.
-    },
-    body: formData,
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw {
-      response: {
-        status: response.status,
-        data: errorData
-      }
-    };
-  }
-
-  return response.json();
-};
-
 export const get_publication_photos = async (id: string) => {
   const response = await api.get(`/publicaciones/${id}/archivos`);
-  // Segun tu backend devuelve: { status: 'success', data: { archivos } }
   return response.data?.data?.archivos || response.data?.archivos || [];
 };

@@ -10,6 +10,7 @@ interface AuthContextType {
   login: (usuario: any) => void;
   loginWithGoogle: () => Promise<void>;
   logout: () => void;
+  refetchUser: () => Promise<void>; // 🚀 Agregamos refetch por si actualizan perfil
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -18,83 +19,89 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true); 
 
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      
-      if (session?.user) {
-        const miTokenPropio = localStorage.getItem("token");
-
-        if (!miTokenPropio) {
-          setLoading(true); 
-          try {
-            const response = await api.post(
-              "/auth/google",
-              {},
-              {
-                headers: {
-                  Authorization: `Bearer ${session.access_token}`,
-                },
-              }
-            );
-
-            const resBody = response.data;
-
-            if (resBody?.data?.token) {
-              localStorage.setItem("token", resBody.data.token);
-              localStorage.setItem("user", JSON.stringify(resBody.data.usuario));
-              
-              setUser({
-                id: resBody.data.usuario.id,
-                name: resBody.data.usuario.nombre,
-                profile_image: resBody.data.usuario.foto,
-              });
-              
-              setLoading(false);
-
-              // Revisar si el usuario venía por un enlace compartido antes de forzar /home
-              const redirectUrl = localStorage.getItem("redirect_after_login");
-              if (redirectUrl) {
-                localStorage.removeItem("redirect_after_login");
-                window.location.href = redirectUrl;
-              } else {
-                window.location.href = "/home";
-              }
-              return;
-            }
-          } catch (error) {
-            console.error("Error al sincronizar Google con tu backend:", error);
-          }
-        } else {
-          const storedUser = localStorage.getItem("user");
-          if (storedUser) {
-            const usuario = JSON.parse(storedUser);
-            setUser({ id: usuario.id, name: usuario.nombre, profile_image: usuario.foto });
-          }
-          setLoading(false);
-          return;
-        }
-      }
-
-      const storedUser = localStorage.getItem("user");
-      if (storedUser && !user) {
-        try {
-          const usuario = JSON.parse(storedUser);
-          setUser({ id: usuario.id, name: usuario.nombre, profile_image: usuario.foto });
-        } catch (e) {
-          console.error("Error al parsear el usuario del localStorage", e);
-        }
-      }
-      setLoading(false); 
-    });
-
-    return () => {
-      subscription.unsubscribe();
+  // Mapeo seguro del objeto usuario
+  const mapUserResponse = (usuarioRaw: any): User => {
+    return {
+      id: usuarioRaw.id,
+      nombre: usuarioRaw.nombre || usuarioRaw.name || "",
+      apellido: usuarioRaw.apellido || "",
+      email: usuarioRaw.email || "",
+      telefono: usuarioRaw.telefono || "",
+      foto: usuarioRaw.foto || usuarioRaw.profile_image || "",
+      instituciones: usuarioRaw.instituciones || [],
+      name: usuarioRaw.nombre || usuarioRaw.name || "",
+      profile_image: usuarioRaw.foto || usuarioRaw.profile_image || ""
     };
-  }, []);
+  };
 
-  const login = (usuario: any) => {
-    localStorage.setItem("user", JSON.stringify(usuario));
-    setUser({ id: usuario.id, name: usuario.nombre, profile_image: usuario.foto });
+  // 🔄 Guarda localmente e incrementa el estado global
+  const saveAndSetUser = (uData: any) => {
+    localStorage.setItem("user", JSON.stringify(uData));
+    setUser(mapUserResponse(uData));
+  };
+
+  useEffect(() => {
+  // 1. Cargar inmediatamente el usuario que ya teníamos guardado al arrancar la app
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    try {
+      const usuario = JSON.parse(storedUser);
+      setUser(mapUserResponse(usuario));
+    } catch (e) {
+      console.error("Error al parsear el usuario del localStorage", e);
+    }
+  }
+  setLoading(false);
+
+  // 2. Escuchar cambios SOLO para el flujo con Google / Supabase
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    if (session?.user) {
+      const miTokenPropio = localStorage.getItem("token");
+
+      if (!miTokenPropio) {
+        setLoading(true); 
+        try {
+          const response = await api.post(
+            "/auth/google",
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${session.access_token}`,
+              },
+            }
+          );
+
+          const resBody = response.data;
+
+          if (resBody?.data?.token) {
+            const uData = resBody.data.usuario;
+            localStorage.setItem("token", resBody.data.token);
+            saveAndSetUser(uData); // Guarda las instituciones de Google
+            setLoading(false);
+
+            const redirectUrl = localStorage.getItem("redirect_after_login");
+            if (redirectUrl) {
+              localStorage.removeItem("redirect_after_login");
+              window.location.href = redirectUrl;
+            } else {
+              window.location.href = "/home";
+            }
+          }
+        } catch (error) {
+          console.error("Error al sincronizar Google con tu backend:", error);
+          setLoading(false);
+        }
+      }
+    }
+  });
+
+  return () => {
+    subscription.unsubscribe();
+  };
+}, []);
+
+  const login = (uData: any) => {
+    saveAndSetUser(uData);
   };
 
   const loginWithGoogle = async () => {
@@ -122,8 +129,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     window.location.href = "/login";
   };
 
+  const refetchUser = async () => {
+    // Opcional: si tienes un endpoint como /auth/me o /usuarios/perfil
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, loginWithGoogle, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, loginWithGoogle, logout, refetchUser }}>
       {children}
     </AuthContext.Provider>
   );

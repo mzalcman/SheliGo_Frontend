@@ -41,3 +41,13 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const getMe = async () => {
+  const response = await api.get("/usuarios/me");
+  return response.data.data.usuario;
+};
+
+export const getInstitucionesUsuario = async (usuarioId: string) => {
+  const response = await api.get(`/usuarios/${usuarioId}/instituciones`);
+  return response.data.data;
+};

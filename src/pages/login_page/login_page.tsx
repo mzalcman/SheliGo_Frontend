@@ -55,7 +55,10 @@ const LoginPage = () => {
     try {
       setLoading(true);
       const response = await login(email, password);
-
+      console.group("🧪 DIAGNÓSTICO DE RESPUESTA DE AUTH_SERVICE");
+      console.log("Respuesta completa de login():", response);
+      console.log("Objeto usuario capturado:", response?.usuario || response?.data?.usuario);
+      console.groupEnd();
       const token = response?.token || response?.data?.token;
       const usuario = response?.usuario || response?.data?.usuario;
 
@@ -63,8 +66,20 @@ const LoginPage = () => {
         throw new Error("Respuesta inválida del servidor");
       }
 
+      // 1. Guardar token
       localStorage.setItem("token", token);
+
+      // 2. Actualizar contexto con el usuario que trae las instituciones
       loginContext(usuario);
+
+      // 3. Redireccionar directamente
+      const redirectUrl = localStorage.getItem("redirect_after_login");
+      if (redirectUrl) {
+        localStorage.removeItem("redirect_after_login");
+        navigate(redirectUrl, { replace: true });
+      } else {
+        navigate("/home", { replace: true });
+      }
 
     } catch (error: any) {
       console.error(error);

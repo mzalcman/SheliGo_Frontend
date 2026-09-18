@@ -17,7 +17,6 @@ const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   
-  // 🏫 Lista de instituciones de la BD y selección del usuario
   const [availableInstitutions, setAvailableInstitutions] = useState<any[]>([]);
   const [selectedInstitutions, setSelectedInstitutions] = useState<any[]>([]);
   const [institutionQuery, setInstitutionQuery] = useState("");
@@ -70,7 +69,7 @@ const RegisterPage = () => {
     setPhone(formatPhone(event.target.value));
   };
 
-const handleInstitutionQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInstitutionQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setInstitutionQuery(value);
 
@@ -81,9 +80,9 @@ const handleInstitutionQueryChange = (e: React.ChangeEvent<HTMLInputElement>) =>
         const rawName = typeof inst === "string" ? inst : inst.nombre || inst.name || "";
         const cleanName = rawName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-        const instId = typeof inst === "string" ? inst : inst.id;
+        const instId = typeof inst === "string" ? inst : inst.id || inst.institucion_id;
         const alreadySelected = selectedInstitutions.some(
-          (selected) => (typeof selected === "string" ? selected : selected.id) === instId
+          (selected) => (typeof selected === "string" ? selected : selected.id || selected.institucion_id) === instId
         );
 
         return cleanName.includes(cleanQuery) && !alreadySelected;
@@ -102,9 +101,10 @@ const handleInstitutionQueryChange = (e: React.ChangeEvent<HTMLInputElement>) =>
   };
 
   const handleRemoveInstitution = (instToRemove: any) => {
+    const targetId = instToRemove.id || instToRemove.institucion_id || instToRemove;
     setSelectedInstitutions(
       selectedInstitutions.filter(
-        (inst) => (inst.id || inst) !== (instToRemove.id || instToRemove)
+        (inst) => (inst.id || inst.institucion_id || inst) !== targetId
       )
     );
   };
@@ -144,12 +144,20 @@ const handleInstitutionQueryChange = (e: React.ChangeEvent<HTMLInputElement>) =>
       formData.append("apellido", capitalizeWords(lastname));
       formData.append("email", email);
       formData.append("telefono", phone.replace(/\D/g, ""));
-
-      const instPayload = selectedInstitutions.map((inst) => inst.id || inst);
-      formData.append("instituciones", JSON.stringify(instPayload));
-
       formData.append("password", password);
       formData.append("confirmPassword", confirmPassword);
+
+      // 1. Extraer los IDs reales de cada institución
+      const instIds = selectedInstitutions
+        .map((inst) => (typeof inst === "object" ? inst.id || inst.institucion_id : inst))
+        .filter(Boolean);
+
+      // 2. Enviar con el nombre 'instituciones_ids' que espera el servicio del backend
+      if (instIds.length > 0) {
+        instIds.forEach((id) => {
+          formData.append("instituciones_ids", String(id));
+        });
+      }
 
       if (images.length > 0) {
         formData.append("foto", images[0]);
@@ -230,8 +238,9 @@ const handleInstitutionQueryChange = (e: React.ChangeEvent<HTMLInputElement>) =>
             <div className="institutions_chips_container">
               {selectedInstitutions.map((inst) => {
                 const labelName = typeof inst === "string" ? inst : inst.nombre || inst.name;
+                const instId = inst.id || inst.institucion_id || inst;
                 return (
-                  <div className="institution_chip" key={inst.id || inst}>
+                  <div className="institution_chip" key={instId}>
                     <span>{labelName}</span>
                     <button type="button" onClick={() => handleRemoveInstitution(inst)}>
                       <X size={14} />
@@ -253,8 +262,9 @@ const handleInstitutionQueryChange = (e: React.ChangeEvent<HTMLInputElement>) =>
               <ul className="institution_dropdown">
                 {suggestions.map((item) => {
                   const labelName = typeof item === "string" ? item : item.nombre || item.name;
+                  const itemId = item.id || item.institucion_id || item;
                   return (
-                    <li key={item.id || item} onClick={() => handleSelectInstitution(item)}>
+                    <li key={itemId} onClick={() => handleSelectInstitution(item)}>
                       {labelName}
                     </li>
                   );

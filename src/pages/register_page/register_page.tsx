@@ -1,29 +1,60 @@
 import "./register_page.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, CheckCircle } from "lucide-react"; // 🔴 Importamos CheckCircle para el tic
+import { useForm, Controller } from "react-hook-form";
+import { Eye, EyeOff, CheckCircle } from "lucide-react";
 import ImageUploader from "../../components/image_uploader/image_uploader";
 import Loader from "../../components/loader/loader";
 import { register } from "../../services/auth_service";
 import { useAuth } from "../../hooks/use_auth";
 
+// Interfaz que define los campos del formulario administrados por React Hook Form
+export interface RegisterFormValues {
+  nombre: string;
+  apellido: string;
+  email: string;
+  telefono: string;
+  password: string;
+  confirmPassword: string;
+  terminos: boolean;
+}
+
 const RegisterPage = () => {
   const navigate = useNavigate();
   const { loginWithGoogle, user } = useAuth();
 
-  const [name, setName] = useState("");
-  const [lastname, setLastname] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [images, setImages] = useState<File[]>([]);
-  const [error, setError] = useState("");
+  const [serverError, setServerError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Inicialización de React Hook Form
+  const {
+    register: registerField,
+    handleSubmit,
+    control,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm<RegisterFormValues>({
+    mode: "onTouched",
+    defaultValues: {
+      nombre: "",
+      apellido: "",
+      email: "",
+      telefono: "",
+      password: "",
+      confirmPassword: "",
+      terminos: false,
+    },
+  });
+
+  // Suscripción al valor de password para la validación cruzada con confirmPassword
+  const passwordValue = watch("password");
 
   useEffect(() => {
     if (user) {
@@ -31,81 +62,64 @@ const RegisterPage = () => {
     }
   }, [user, navigate]);
 
-  const is_valid_email = (value: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-  };
+  // Limpieza del temporizador y reinicio del formulario al desmontar
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current);
+      }
+      reset(); // Punto 8: Limpieza del formulario y reseteo de estados/errores
+    };
+  }, [reset]);
 
   const formatPhone = (value: string) => {
     const numbers = value.replace(/\D/g, "");
-    if (numbers.length <= 2) {
-      return numbers;
-    }
-    if (numbers.length <= 6) {
-      return `${numbers.slice(0, 2)} ${numbers.slice(2)}`;
-    }
+    if (numbers.length <= 2) return numbers;
+    if (numbers.length <= 6) return `${numbers.slice(0, 2)} ${numbers.slice(2)}`;
     return `${numbers.slice(0, 2)} ${numbers.slice(2, 6)}-${numbers.slice(6, 10)}`;
   };
 
-  const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPhone(formatPhone(event.target.value));
+  const capitalizeWords = (str: string) => {
+    return str
+      .trim()
+      .toLowerCase()
+      .split(/\s+/)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   };
 
-  const handleRegister = async () => {
-    setError("");
-    if (!name || !lastname || !email || !password || !confirmPassword) {
-      setError("Completa todos los campos obligatorios.");
-      return;
-    }
-
-    if (!is_valid_email(email)) {
-      setError("Ingresa un correo válido.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError("Las contraseñas no coinciden.");
-      return;
-    }
-
+  // Función ejecutada únicamente cuando el formulario supera todas las validaciones de RHF
+  const onSubmit = async (data: RegisterFormValues) => {
+    setServerError("");
     setLoading(true);
-
-    const capitalizeWords = (str: string) => {
-      return str
-        .trim() 
-        .toLowerCase() 
-        .split(/\s+/) 
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1)) 
-        .join(" ");
-    };
 
     try {
       const formData = new FormData();
-      
-      formData.append("nombre", capitalizeWords(name));
-      formData.append("apellido", capitalizeWords(lastname));
-      
-      formData.append("email", email);
-      formData.append("telefono", phone.replace(/\D/g, ""));
-      formData.append("password", password);
-      formData.append("confirmPassword", confirmPassword);
-      
+      formData.append("nombre", capitalizeWords(data.nombre));
+      formData.append("apellido", capitalizeWords(data.apellido));
+      formData.append("email", data.email);
+      formData.append("telefono", data.telefono.replace(/\D/g, ""));
+      formData.append("password", data.password);
+      formData.append("confirmPassword", data.confirmPassword);
+
       if (images.length > 0) {
         formData.append("foto", images[0]);
       }
 
+      // Envío de datos al servicio backend / Supabase
       await register(formData);
-      
+
       setLoading(false);
       setShowSuccessModal(true);
 
-      setTimeout(() => {
+      redirectTimerRef.current = setTimeout(() => {
+        reset();
         navigate("/login");
       }, 3000);
-
-    } catch (error: any) {
+    } catch (err: any) {
       setLoading(false);
-      setError(
-        error.response?.data?.message || "Ocurrió un error al registrarte."
+      setServerError(
+        err.response?.data?.message || "Ocurrió un error al registrarte en el servidor."
       );
     }
   };
@@ -124,51 +138,85 @@ const RegisterPage = () => {
           Crea tu cuenta para comenzar a encontrar y devolver objetos.
         </p>
 
-        <div className="register_card">
+        <form className="register_card" onSubmit={handleSubmit(onSubmit)} noValidate>
           <h2>Crear Cuenta</h2>
 
-          <ImageUploader images={images} setImages={setImages} maxFiles={1}/>
+          <ImageUploader images={images} setImages={setImages} maxFiles={1} />
 
-          <label>Nombre</label>
+          {/* Nombre */}
+          <label>Nombre *</label>
           <input
             type="text"
             placeholder="Nombre"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
+            {...registerField("nombre", {
+              required: "El nombre es obligatorio",
+              minLength: {
+                value: 3,
+                message: "El nombre debe tener al menos 3 caracteres",
+              },
+            })}
           />
+          {errors.nombre && <p className="register_error">{errors.nombre.message}</p>}
 
-          <label>Apellido</label>
+          {/* Apellido */}
+          <label>Apellido *</label>
           <input
             type="text"
             placeholder="Apellido"
-            value={lastname}
-            onChange={(event) => setLastname(event.target.value)}
+            {...registerField("apellido", {
+              required: "El apellido es obligatorio",
+              minLength: {
+                value: 2,
+                message: "El apellido debe tener al menos 2 caracteres",
+              },
+            })}
           />
+          {errors.apellido && <p className="register_error">{errors.apellido.message}</p>}
 
-          <label>Correo electrónico</label>
+          {/* Email */}
+          <label>Correo electrónico *</label>
           <input
             type="email"
             placeholder="nombre@ejemplo.com"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            {...registerField("email", {
+              required: "El email es obligatorio",
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Ingresá un email válido",
+              },
+            })}
           />
+          {errors.email && <p className="register_error">{errors.email.message}</p>}
 
+          {/* Teléfono (Con Controller para gestionar la máscara de formateo) */}
           <label>Teléfono</label>
-          <input
-            type="text"
-            placeholder="11 1234-5678"
-            value={phone}
-            onChange={handlePhoneChange}
-            maxLength={13}
+          <Controller
+            name="telefono"
+            control={control}
+            render={({ field: { onChange, value } }) => (
+              <input
+                type="text"
+                placeholder="11 1234-5678"
+                value={value}
+                onChange={(e) => onChange(formatPhone(e.target.value))}
+                maxLength={13}
+              />
+            )}
           />
 
-          <label>Contraseña</label>
+          {/* Contraseña */}
+          <label>Contraseña *</label>
           <div className="password_input_container">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="••••••••"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
+              {...registerField("password", {
+                required: "La contraseña es obligatoria",
+                minLength: {
+                  value: 8,
+                  message: "La contraseña debe tener al menos 8 caracteres",
+                },
+              })}
             />
             <button
               type="button"
@@ -178,14 +226,19 @@ const RegisterPage = () => {
               {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
             </button>
           </div>
+          {errors.password && <p className="register_error">{errors.password.message}</p>}
 
-          <label>Confirmar contraseña</label>
+          {/* Confirmar Contraseña */}
+          <label>Confirmar contraseña *</label>
           <div className="password_input_container">
             <input
               type={showConfirmPassword ? "text" : "password"}
               placeholder="••••••••"
-              value={confirmPassword}
-              onChange={(event) => setConfirmPassword(event.target.value)}
+              {...registerField("confirmPassword", {
+                required: "Debes confirmar la contraseña",
+                validate: (value) =>
+                  value === passwordValue || "Las contraseñas no coinciden",
+              })}
             />
             <button
               type="button"
@@ -195,10 +248,28 @@ const RegisterPage = () => {
               {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
             </button>
           </div>
+          {errors.confirmPassword && (
+            <p className="register_error">{errors.confirmPassword.message}</p>
+          )}
 
-          {error && <p className="register_error">{error}</p>}
+          {/* Términos y Condiciones */}
+          <div className="terms_checkbox_container" style={{ margin: "15px 0" }}>
+            <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                {...registerField("terminos", {
+                  required: "Debés aceptar los términos y condiciones",
+                })}
+              />
+              <span style={{ fontSize: "14px" }}>Acepto los términos y condiciones *</span>
+            </label>
+            {errors.terminos && <p className="register_error">{errors.terminos.message}</p>}
+          </div>
 
-          <button className="register_button" onClick={handleRegister}>
+          {/* Error del servidor/API backend */}
+          {serverError && <p className="register_error">{serverError}</p>}
+
+          <button type="submit" className="register_button">
             Registrarme
           </button>
 
@@ -217,11 +288,12 @@ const RegisterPage = () => {
             />
             Sign in with Google
           </button>
-        </div>
+        </form>
 
         <div className="register_container">
           <span>¿Ya tienes una cuenta?</span>
           <button
+            type="button"
             className="register_link"
             onClick={() => navigate("/login")}
           >
@@ -230,7 +302,6 @@ const RegisterPage = () => {
         </div>
       </div>
 
-      {/* 🔴 MODAL DE CONFIRMACIÓN DE REGISTRO EXITOSO */}
       {showSuccessModal && (
         <div className="success_modal_overlay">
           <div className="success_modal_card">

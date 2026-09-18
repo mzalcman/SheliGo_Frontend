@@ -5,7 +5,7 @@ import { Eye, EyeOff, CheckCircle, X } from "lucide-react";
 import ImageUploader from "../../components/image_uploader/image_uploader";
 import Loader from "../../components/loader/loader";
 import { register } from "../../services/auth_service";
-import { get_home_institutions } from "../../services/home_service"; // 👈 Usamos el servicio existente
+import { get_all_institutions } from "../../services/home_service"; 
 import { useAuth } from "../../hooks/use_auth";
 
 const RegisterPage = () => {
@@ -39,15 +39,16 @@ const RegisterPage = () => {
     }
   }, [user, navigate]);
 
-  // 🏫 Cargar instituciones reales desde la base de datos al montar la página
   useEffect(() => {
     const fetchInstitutions = async () => {
       try {
-        const data = await get_home_institutions();
-        const instList = data?.instituciones || data?.data?.instituciones || data || [];
+        const response = await get_all_institutions();
+        // El backend responde { status: 'success', data: { instituciones: [...] } }
+        const instList = response?.data?.instituciones || [];
         setAvailableInstitutions(instList);
       } catch (err) {
         console.error("Error al obtener instituciones:", err);
+        setAvailableInstitutions([]);
       }
     };
 
@@ -69,19 +70,25 @@ const RegisterPage = () => {
     setPhone(formatPhone(event.target.value));
   };
 
-  const handleInstitutionQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+const handleInstitutionQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setInstitutionQuery(value);
 
     if (value.trim().length > 0) {
+      const cleanQuery = value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
       const filtered = availableInstitutions.filter((inst) => {
-        const instName = typeof inst === "string" ? inst : inst.nombre || inst.name;
+        const rawName = typeof inst === "string" ? inst : inst.nombre || inst.name || "";
+        const cleanName = rawName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+        const instId = typeof inst === "string" ? inst : inst.id;
         const alreadySelected = selectedInstitutions.some(
-          (selected) => (typeof selected === "string" ? selected : selected.id) === (typeof inst === "string" ? inst : inst.id)
+          (selected) => (typeof selected === "string" ? selected : selected.id) === instId
         );
 
-        return instName.toLowerCase().includes(value.toLowerCase()) && !alreadySelected;
+        return cleanName.includes(cleanQuery) && !alreadySelected;
       });
+
       setSuggestions(filtered);
     } else {
       setSuggestions([]);

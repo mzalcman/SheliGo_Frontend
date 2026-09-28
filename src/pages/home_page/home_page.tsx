@@ -20,7 +20,11 @@ const HomePage = () => {
 
   useEffect(() => {
     let isMounted = true;
-
+console.group("🔍 DIAGNÓSTICO DE USUARIO EN HOMEPAGE");
+  console.log("Objeto User completo:", user);
+  console.log("Instituciones en user:", user?.instituciones);
+  console.log("LocalStorage 'user':", JSON.parse(localStorage.getItem("user") || "{}"));
+  console.groupEnd();
     if (!user) {
       return;
     }

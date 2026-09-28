@@ -6,6 +6,7 @@ import Loader from "../../components/loader/loader";
 import { useAuth } from "../../hooks/use_auth";
 import { Eye, EyeOff, Lock } from "lucide-react";
 import Modal from "../../components/modal/modal";
+import { api } from "../../services/api"; 
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -44,49 +45,53 @@ const LoginPage = () => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   };
 
-  const handle_login = async () => {
-    setError("");
+const handle_login = async () => {
+  setError("");
 
-    if (!is_valid_email(email)) {
-      setError("Ingresa un correo válido.");
-      return;
+  if (!is_valid_email(email)) {
+    setError("Ingresa un correo válido.");
+    return;
+  }
+
+  try {
+    setLoading(true);
+    const resData = await login(email, password);
+    
+    // 🚀 Extracción robusta de token y usuario sin importar cómo responda el backend
+    const token = resData?.token || resData?.data?.token;
+    const usuario = resData?.usuario || resData?.data?.usuario || resData;
+
+    console.group("🧪 DIAGNÓSTICO DE LOGIN");
+    console.log("Token recibido:", token);
+    console.log("Usuario e Instituciones recibidas:", usuario);
+    console.groupEnd();
+
+    if (!token || !usuario) {
+      throw new Error("Respuesta inválida del servidor");
     }
 
-    try {
-      setLoading(true);
-      const response = await login(email, password);
-      console.group("🧪 DIAGNÓSTICO DE RESPUESTA DE AUTH_SERVICE");
-      console.log("Respuesta completa de login():", response);
-      console.log("Objeto usuario capturado:", response?.usuario || response?.data?.usuario);
-      console.groupEnd();
-      const token = response?.token || response?.data?.token;
-      const usuario = response?.usuario || response?.data?.usuario;
+    // 1. Configurar axios
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    localStorage.setItem("token", token);
 
-      if (!token || !usuario) {
-        throw new Error("Respuesta inválida del servidor");
-      }
+    // 2. Guardar en contexto
+    loginContext(usuario);
 
-      // 1. Guardar token
-      localStorage.setItem("token", token);
-
-      // 2. Actualizar contexto con el usuario que trae las instituciones
-      loginContext(usuario);
-
-      // 3. Redireccionar directamente
-      const redirectUrl = localStorage.getItem("redirect_after_login");
-      if (redirectUrl) {
-        localStorage.removeItem("redirect_after_login");
-        navigate(redirectUrl, { replace: true });
-      } else {
-        navigate("/home", { replace: true });
-      }
-
-    } catch (error: any) {
-      console.error(error);
-      setLoading(false);
-      setError("Correo o contraseña incorrectos.");
+    // 3. Navegar
+    const redirectUrl = localStorage.getItem("redirect_after_login");
+    if (redirectUrl) {
+      localStorage.removeItem("redirect_after_login");
+      navigate(redirectUrl, { replace: true });
+    } else {
+      navigate("/home", { replace: true });
     }
-  };
+
+  } catch (error: any) {
+    console.error(error);
+    setLoading(false);
+    setError("Correo o contraseña incorrectos.");
+  }
+};
 
   const handleCloseExpiredModal = () => {
     setShowExpiredModal(false);

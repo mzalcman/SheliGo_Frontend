@@ -6,7 +6,7 @@ import { api } from "../services/api";
 
 interface AuthContextType {
   user: User | null;
-  loading: boolean; 
+  loading: boolean;
   login: (usuario: any) => void;
   loginWithGoogle: () => Promise<void>;
   logout: () => void;
@@ -17,88 +17,103 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true); 
+  const [loading, setLoading] = useState<boolean>(true);
 
   // Mapeo seguro del objeto usuario
-  const mapUserResponse = (usuarioRaw: any): User => {
-    return {
-      id: usuarioRaw.id,
-      nombre: usuarioRaw.nombre || usuarioRaw.name || "",
-      apellido: usuarioRaw.apellido || "",
-      email: usuarioRaw.email || "",
-      telefono: usuarioRaw.telefono || "",
-      foto: usuarioRaw.foto || usuarioRaw.profile_image || "",
-      instituciones: usuarioRaw.instituciones || [],
-      name: usuarioRaw.nombre || usuarioRaw.name || "",
-      profile_image: usuarioRaw.foto || usuarioRaw.profile_image || ""
-    };
-  };
+  // En AuthContext.tsx
 
-  // 🔄 Guarda localmente e incrementa el estado global
-  const saveAndSetUser = (uData: any) => {
+// En AuthContext.tsx
+
+const mapUserResponse = (usuarioRaw: any): User => {
+  // Buscamos las instituciones probando todos los nombres posibles que suele enviar el backend
+  const insts = 
+    usuarioRaw.instituciones || 
+    usuarioRaw.instituciones_ids || 
+    usuarioRaw.user_institutions || 
+    usuarioRaw.institucion || 
+    [];
+
+  return {
+    id: usuarioRaw.id,
+    nombre: usuarioRaw.nombre || usuarioRaw.name || "",
+    apellido: usuarioRaw.apellido || "",
+    email: usuarioRaw.email || "",
+    telefono: usuarioRaw.telefono || "",
+    foto: usuarioRaw.foto || usuarioRaw.profile_image || "",
+    instituciones: Array.isArray(insts) ? insts : [insts], // Nos aseguramos de que siempre sea un Array
+    name: usuarioRaw.nombre || usuarioRaw.name || "",
+    profile_image: usuarioRaw.foto || usuarioRaw.profile_image || ""
+  };
+};
+
+  const saveAndSetUser = (uData: any, token?: string) => {
+    if (token) {
+      localStorage.setItem("token", token);
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    }
     localStorage.setItem("user", JSON.stringify(uData));
     setUser(mapUserResponse(uData));
   };
 
   useEffect(() => {
-  // 1. Cargar inmediatamente el usuario que ya teníamos guardado al arrancar la app
-  const storedUser = localStorage.getItem("user");
-  if (storedUser) {
-    try {
-      const usuario = JSON.parse(storedUser);
-      setUser(mapUserResponse(usuario));
-    } catch (e) {
-      console.error("Error al parsear el usuario del localStorage", e);
-    }
-  }
-  setLoading(false);
-
-  // 2. Escuchar cambios SOLO para el flujo con Google / Supabase
-  const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-    if (session?.user) {
-      const miTokenPropio = localStorage.getItem("token");
-
-      if (!miTokenPropio) {
-        setLoading(true); 
-        try {
-          const response = await api.post(
-            "/auth/google",
-            {},
-            {
-              headers: {
-                Authorization: `Bearer ${session.access_token}`,
-              },
-            }
-          );
-
-          const resBody = response.data;
-
-          if (resBody?.data?.token) {
-            const uData = resBody.data.usuario;
-            localStorage.setItem("token", resBody.data.token);
-            saveAndSetUser(uData); // Guarda las instituciones de Google
-            setLoading(false);
-
-            const redirectUrl = localStorage.getItem("redirect_after_login");
-            if (redirectUrl) {
-              localStorage.removeItem("redirect_after_login");
-              window.location.href = redirectUrl;
-            } else {
-              window.location.href = "/home";
-            }
-          }
-        } catch (error) {
-          console.error("Error al sincronizar Google con tu backend:", error);
-          setLoading(false);
-        }
+    // 1. Cargar inmediatamente el usuario que ya teníamos guardado al arrancar la app
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const usuario = JSON.parse(storedUser);
+        setUser(mapUserResponse(usuario));
+      } catch (e) {
+        console.error("Error al parsear el usuario del localStorage", e);
       }
     }
-  });
+    setLoading(false);
 
-  return () => {
-    subscription.unsubscribe();
-  };
-}, []);
+    // 2. Escuchar cambios SOLO para el flujo con Google / Supabase
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        const miTokenPropio = localStorage.getItem("token");
+
+        if (!miTokenPropio) {
+          setLoading(true);
+          try {
+            const response = await api.post(
+              "/auth/google",
+              {},
+              {
+                headers: {
+                  Authorization: `Bearer ${session.access_token}`,
+                },
+              }
+            );
+
+            const resBody = response.data;
+
+            if (resBody?.data?.token) {
+              const uData = resBody.data.usuario;
+              localStorage.setItem("token", resBody.data.token);
+              saveAndSetUser(uData); // Guarda las instituciones de Google
+              setLoading(false);
+
+              const redirectUrl = localStorage.getItem("redirect_after_login");
+              if (redirectUrl) {
+                localStorage.removeItem("redirect_after_login");
+                window.location.href = redirectUrl;
+              } else {
+                window.location.href = "/home";
+              }
+            }
+          } catch (error) {
+            console.error("Error al sincronizar Google con tu backend:", error);
+            setLoading(false);
+          }
+        }
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const login = (uData: any) => {
     saveAndSetUser(uData);
@@ -109,9 +124,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/login`, 
+          redirectTo: `${window.location.origin}/login`,
           queryParams: {
-            prompt: 'select_account consent', 
+            prompt: 'select_account consent',
             access_type: 'offline',
           },
         },

@@ -5,7 +5,7 @@ import { Eye, EyeOff, CheckCircle, X } from "lucide-react";
 import ImageUploader from "../../components/image_uploader/image_uploader";
 import Loader from "../../components/loader/loader";
 import { register } from "../../services/auth_service";
-import { get_all_institutions } from "../../services/home_service"; 
+import { get_all_institutions } from "../../services/home_service";
 import { useAuth } from "../../hooks/use_auth";
 
 const RegisterPage = () => {
@@ -16,7 +16,7 @@ const RegisterPage = () => {
   const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  
+
   const [availableInstitutions, setAvailableInstitutions] = useState<any[]>([]);
   const [selectedInstitutions, setSelectedInstitutions] = useState<any[]>([]);
   const [institutionQuery, setInstitutionQuery] = useState("");
@@ -29,7 +29,7 @@ const RegisterPage = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
@@ -182,7 +182,28 @@ const RegisterPage = () => {
   if (loading) {
     return <Loader />;
   }
+  const handleGoogleClick = async () => {
+    try {
+      setError("");
+      setLoading(true);
 
+      // Ejecuta la función de tu context
+      const res: any = await loginWithGoogle();
+
+      // Si la API devuelve que debe completar perfil
+      if (res?.data?.requiereCompletarPerfil || res?.requiereCompletarPerfil) {
+        navigate("/completar-perfil");
+      } else {
+        navigate("/home");
+      }
+    } catch (err: any) {
+      setError(
+        err?.response?.data?.message || "Ocurrió un error al iniciar sesión con Google."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <main className="register_page">
       <div className="register_top" />
@@ -319,7 +340,7 @@ const RegisterPage = () => {
 
           <button
             type="button"
-            onClick={loginWithGoogle}
+            onClick={handleGoogleClick}
             className="google_pill_button"
           >
             <img

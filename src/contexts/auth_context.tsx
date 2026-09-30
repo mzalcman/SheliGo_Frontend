@@ -22,29 +22,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Mapeo seguro del objeto usuario
   // En AuthContext.tsx
 
-// En AuthContext.tsx
+  // En AuthContext.tsx
 
-const mapUserResponse = (usuarioRaw: any): User => {
-  // Buscamos las instituciones probando todos los nombres posibles que suele enviar el backend
-  const insts = 
-    usuarioRaw.instituciones || 
-    usuarioRaw.instituciones_ids || 
-    usuarioRaw.user_institutions || 
-    usuarioRaw.institucion || 
-    [];
+  const mapUserResponse = (usuarioRaw: any): User => {
+    // Buscamos las instituciones probando todos los nombres posibles que suele enviar el backend
+    const insts =
+      usuarioRaw.instituciones ||
+      usuarioRaw.instituciones_ids ||
+      usuarioRaw.user_institutions ||
+      usuarioRaw.institucion ||
+      [];
 
-  return {
-    id: usuarioRaw.id,
-    nombre: usuarioRaw.nombre || usuarioRaw.name || "",
-    apellido: usuarioRaw.apellido || "",
-    email: usuarioRaw.email || "",
-    telefono: usuarioRaw.telefono || "",
-    foto: usuarioRaw.foto || usuarioRaw.profile_image || "",
-    instituciones: Array.isArray(insts) ? insts : [insts], // Nos aseguramos de que siempre sea un Array
-    name: usuarioRaw.nombre || usuarioRaw.name || "",
-    profile_image: usuarioRaw.foto || usuarioRaw.profile_image || ""
+    return {
+      id: usuarioRaw.id,
+      nombre: usuarioRaw.nombre || usuarioRaw.name || "",
+      apellido: usuarioRaw.apellido || "",
+      email: usuarioRaw.email || "",
+      telefono: usuarioRaw.telefono || "",
+      foto: usuarioRaw.foto || usuarioRaw.profile_image || "",
+      instituciones: Array.isArray(insts) ? insts : [insts], // Nos aseguramos de que siempre sea un Array
+      name: usuarioRaw.nombre || usuarioRaw.name || "",
+      profile_image: usuarioRaw.foto || usuarioRaw.profile_image || ""
+    };
   };
-};
 
   const saveAndSetUser = (uData: any, token?: string) => {
     if (token) {
@@ -56,7 +56,7 @@ const mapUserResponse = (usuarioRaw: any): User => {
   };
 
   useEffect(() => {
-    // 1. Cargar inmediatamente el usuario que ya teníamos guardado al arrancar la app
+    // Cargar inmediatamente el usuario que ya teníamos guardado al arrancar la app
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       try {
@@ -68,7 +68,7 @@ const mapUserResponse = (usuarioRaw: any): User => {
     }
     setLoading(false);
 
-    // 2. Escuchar cambios SOLO para el flujo con Google / Supabase
+    // Escuchar cambios SOLO para el flujo con Google / Supabase
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         const miTokenPropio = localStorage.getItem("token");
@@ -90,10 +90,18 @@ const mapUserResponse = (usuarioRaw: any): User => {
 
             if (resBody?.data?.token) {
               const uData = resBody.data.usuario;
-              localStorage.setItem("token", resBody.data.token);
-              saveAndSetUser(uData); // Guarda las instituciones de Google
+
+              // Guardamos token y datos del usuario
+              saveAndSetUser(uData, resBody.data.token);
               setLoading(false);
 
+              // EVALUAMOS SI REQUIERE COMPLETAR PERFIL (INSTITUCIONES)
+              if (resBody.requiereCompletarPerfil || resBody.data?.requiereCompletarPerfil) {
+                window.location.href = "/completar-perfil";
+                return;
+              }
+
+              // Si ya tiene instituciones, va a su destino o /home
               const redirectUrl = localStorage.getItem("redirect_after_login");
               if (redirectUrl) {
                 localStorage.removeItem("redirect_after_login");

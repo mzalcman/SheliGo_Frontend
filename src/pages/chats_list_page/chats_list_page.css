@@ -14,9 +14,9 @@
 
 .chats_main_title {
   font-family: "poppins";
-  font-size: 38px;
+  font-size: 30px;
   font-weight: 400;
-  color: #1c1c1c;
+  color: black;
   margin-bottom: 24px;
 }
 
@@ -157,9 +157,8 @@
   min-width: 24px;
 }
 
-/* Forzado absoluto de visualización de los tics */
 .chats_list_double_check {
-  font-family: Arial, sans-serif !important; 
+  font-family: Arial, !important; 
   font-size: 16px !important;
   font-weight: bold !important;
   letter-spacing: -1px;

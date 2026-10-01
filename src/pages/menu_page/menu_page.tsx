@@ -1,5 +1,5 @@
 import "./menu_page.css";
-import { User, Package, Wallet, Headphones, ArrowLeft } from "lucide-react";
+import { User, Package, Phone, Headphones, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/use_auth";
 import { getImageUrl } from "../../utils/get_image_url";
@@ -64,9 +64,12 @@ const MenuPage = () => {
             <span>Mis publicaciones</span>
           </button>
 
-          <button className="menu_option">
-            <Wallet size={20} />
-            <span>Movimientos</span>
+          <button 
+            className="menu_option"
+            onClick={() => navigate("/contactanos")}
+          >
+            <Phone size={20} />
+            <span>Contactanos</span>
           </button>
 
           <button

@@ -46,3 +46,10 @@ export const logout = async () => {
 
   return response.data;
 };
+
+export const completarInstituciones = async (institucionesIds: string[]) => {
+  const response = await api.post("/auth/completar-instituciones", {
+    instituciones_ids: institucionesIds,
+  });
+  return response.data;
+};

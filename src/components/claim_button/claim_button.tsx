@@ -1,11 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./claim_button.css";
+import { api } from "../../services/api";
 
 interface ClaimButtonProps {
-  otroUsuarioId: string;     
+  otroUsuarioId: string;    
   usuarioNombre?: string;    
-  usuarioAvatar?: string;     
+  usuarioAvatar?: string;    
 }
 
 const ClaimButton: React.FC<ClaimButtonProps> = ({ 
@@ -17,42 +18,29 @@ const ClaimButton: React.FC<ClaimButtonProps> = ({
 
   const handleReclamar = async () => {
     try {
-      const token = localStorage.getItem("token");
-      
-      const response = await fetch("http://localhost:3000/chat/salas", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          otroUsuarioId: otroUsuarioId 
-        })
+      const response = await api.post("/chat/salas", {
+        otroUsuarioId: otroUsuarioId
       });
 
-      if (response.ok) {
-        const jsonResponse = await response.json();
-        
-        if (jsonResponse && jsonResponse.status === "success" && jsonResponse.data?.sala_id) {
-          const salaId = jsonResponse.data.sala_id;
+      const jsonResponse = response.data;
+      
+      if (jsonResponse && jsonResponse.status === "success" && jsonResponse.data?.sala_id) {
+        const salaId = jsonResponse.data.sala_id;
 
-          navigate(`/chat/${salaId}`, {
-            state: {
-              usuario: {
-                sala_id: salaId,
-                usuario_nombre: usuarioNombre,
-                usuario_avatar: usuarioAvatar
-              }
+        navigate(`/chat/${salaId}`, {
+          state: {
+            usuario: {
+              sala_id: salaId,
+              usuario_nombre: usuarioNombre,
+              usuario_avatar: usuarioAvatar
             }
-          });
-        } else {
-          console.error("El backend no devolvió el ID de la sala esperado:", jsonResponse);
-        }
+          }
+        });
       } else {
-        console.error("Error al intentar abrir o crear la sala de chat (HTTP:", response.status, ")");
+        console.error("El backend no devolvió el ID de la sala esperado:", jsonResponse);
       }
     } catch (error) {
-      console.error("Error de red al intentar reclamar:", error);
+      console.error("Error al intentar abrir o crear la sala de chat:", error);
     }
   };
 

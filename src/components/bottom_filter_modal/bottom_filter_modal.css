@@ -35,7 +35,7 @@
 .bottom_filter_header h2{
   margin:0;
   font-size:24px;
-  font-family:"Poppins";
+  font-family: "poppins";
   font-weight:700;
   color:#FF6F00;
 }
@@ -78,7 +78,7 @@
   border:none;
   outline:none;
   background:transparent;
-  font-family:"Poppins";
+  font-family: "poppins";
   font-size:15px;
 }
 .bottom_filter_search input::placeholder{
@@ -124,7 +124,7 @@
 }
 
 .bottom_filter_option span {
-  font-family: "Poppins";
+  font-family: "poppins";
   font-size: 15px;
   font-weight: 500;
   color: #2d2d2d;
@@ -149,7 +149,7 @@
   border:none;
   background:none;
   color:#8A8A8A;
-  font-family:"Poppins";
+  font-family: "poppins";
   font-weight:600;
   cursor:pointer;
 }
@@ -224,7 +224,7 @@
 }
 
 .bottom_filter_option span {
-  font-family: "Poppins";
+  font-family: "poppins";
   font-size: 15px;
   font-weight: 500;
   color: #2d2d2d;

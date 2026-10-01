@@ -4,21 +4,27 @@
   src: url("../assets/fonts/lemonmilk_regular.otf");
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
+
 
 @font-face {
   font-family: "lemonmilk";
   src: url("../assets/fonts/lemonmilk_medium.otf");
   font-weight: 500;
   font-style: normal;
+  font-display: swap;
 }
+
 
 @font-face {
   font-family: "lemonmilk";
   src: url("../assets/fonts/lemonmilk_bold.otf");
   font-weight: 700;
   font-style: normal;
+  font-display: swap;
 }
+
 
 /* LOUIS GEORGE CAFE */
 @font-face {
@@ -26,21 +32,27 @@
   src: url("../assets/fonts/louis_george_cafe_regular.ttf");
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
+
 
 @font-face {
   font-family: "louis_george";
   src: url("../assets/fonts/louis_george_cafe_light.ttf");
   font-weight: 300;
   font-style: normal;
+  font-display: swap;
 }
+
 
 @font-face {
   font-family: "louis_george";
   src: url("../assets/fonts/louis_george_cafe_bold.ttf");
   font-weight: 700;
   font-style: normal;
+  font-display: swap;
 }
+
 
 /* POPPINS */
 @font-face {
@@ -48,18 +60,24 @@
   src: url("../assets/fonts/poppins_regular.ttf");
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
+
 
 @font-face {
   font-family: "poppins";
   src: url("../assets/fonts/poppins_medium.ttf");
   font-weight: 500;
   font-style: normal;
+  font-display: swap;
 }
+
 
 @font-face {
   font-family: "poppins";
   src: url("../assets/fonts/poppins_semibold.ttf");
   font-weight: 600;
   font-style: normal;
+  font-display: swap;
 }
+

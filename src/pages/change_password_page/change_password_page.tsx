@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Key, Eye, EyeOff, CheckCircle, AlertCircle } from "lucide-react";
+import { ArrowLeft, Key, Eye, EyeOff, CheckCircle2, AlertCircle } from "lucide-react";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
+import Modal from "../../components/modal/modal"; 
+import { api } from "../../services/api";
 import "./change_password_page.css";
 
 const ChangePasswordPage = () => {
@@ -17,64 +19,85 @@ const ChangePasswordPage = () => {
   const [showConfirm, setShowConfirm] = useState(false);
 
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    variant: "success" | "error";
+    icon: React.ReactNode;
+    onConfirm?: () => void;
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+    variant: "success",
+    icon: null,
+  });
+
+  const closeModal = () => {
+    setModalConfig((prev) => ({ ...prev, isOpen: false }));
+  };
+
+  const showModalError = (title: string, description: string) => {
+    setModalConfig({
+      isOpen: true,
+      title,
+      description,
+      variant: "error",
+      icon: <AlertCircle size={36} color="#d32f2f" />,
+      onConfirm: closeModal,
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg(null);
-    setSuccessMsg(null);
 
-    // Validaciones locales
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setErrorMsg("Por favor, completa todos los campos.");
+      showModalError("Campos incompletos", "Por favor, completa todos los campos del formulario.");
       return;
     }
 
     if (newPassword.length < 6) {
-      setErrorMsg("La nueva contraseña debe tener al menos 6 caracteres.");
+      showModalError("Contraseña muy corta", "La nueva contraseña debe tener al menos 6 caracteres.");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setErrorMsg("Las nuevas contraseñas no coinciden.");
+      showModalError("Las contraseñas no coinciden", "Revisa que la nueva contraseña y su confirmación sean idénticas.");
       return;
     }
 
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-
-      // Ajustá la URL si tu endpoint se llama distinto en el backend
-      const response = await fetch("http://localhost:3000/usuarios/cambiar-contrasena", {
-        method: "PUT",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contrasenaActual: currentPassword,
-          nuevaContrasena: newPassword,
-        }),
+      // Axios con la instancia 'api' envía la petición a Render y el token Bearer automáticamente
+      await api.put("/usuarios/cambiar-contrasena", {
+        contrasenaActual: currentPassword,
+        nuevaContrasena: newPassword,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccessMsg("¡Contraseña actualizada con éxito!");
-        setCurrentPassword("");
-        setNewPassword("");
-        setConfirmPassword("");
-        setTimeout(() => {
+      setModalConfig({
+        isOpen: true,
+        title: "¡Contraseña actualizada!",
+        description: "Tu contraseña ha sido cambiada exitosamente.",
+        variant: "success",
+        icon: <CheckCircle2 size={36} color="#2e7d32" />,
+        onConfirm: () => {
+          closeModal();
+          setCurrentPassword("");
+          setNewPassword("");
+          setConfirmPassword("");
           navigate("/perfil");
-        }, 1800);
-      } else {
-        setErrorMsg(data?.message || "No se pudo cambiar la contraseña. Revisa tus datos.");
-      }
-    } catch (err) {
+        },
+      });
+    } catch (err: any) {
       console.error("Error cambiando contraseña:", err);
-      setErrorMsg("Error al conectar con el servidor.");
+      const errorMessage =
+        err.response?.data?.message ||
+        "No fue posible conectar con el servidor. Inténtalo más tarde.";
+      
+      showModalError("No se pudo cambiar", errorMessage);
     } finally {
       setLoading(false);
     }
@@ -85,9 +108,8 @@ const ChangePasswordPage = () => {
       <Header />
 
       <main className="change_pw_container">
-        {/* Header de navegación */}
         <div className="change_pw_nav">
-          <button className="change_pw_back_btn" onClick={() => navigate(-1)}>
+          <button className="change_pw_back_btn" onClick={() => navigate(-1)} type="button">
             <ArrowLeft size={26} color="#ff6f00" strokeWidth={2.5} />
           </button>
           <h1 className="change_pw_title">Cambiar Contraseña</h1>
@@ -97,22 +119,6 @@ const ChangePasswordPage = () => {
           Crea una nueva contraseña segura para proteger tu cuenta de SheliGo.
         </p>
 
-        {/* Mensajes de Alerta */}
-        {errorMsg && (
-          <div className="change_pw_alert alert_error">
-            <AlertCircle size={18} />
-            <span>{errorMsg}</span>
-          </div>
-        )}
-
-        {successMsg && (
-          <div className="change_pw_alert alert_success">
-            <CheckCircle size={18} />
-            <span>{successMsg}</span>
-          </div>
-        )}
-
-        {/* Formulario */}
         <form onSubmit={handleSubmit} className="change_pw_form">
           {/* Contraseña Actual */}
           <div className="change_pw_field">
@@ -124,13 +130,15 @@ const ChangePasswordPage = () => {
                 placeholder="Ingresa tu contraseña actual"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
+                disabled={loading}
               />
               <button
                 type="button"
                 className="toggle_pwd_btn"
                 onClick={() => setShowCurrent(!showCurrent)}
+                disabled={loading}
               >
-                {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showCurrent ? <Eye size={18} /> : <EyeOff size={18} />}
               </button>
             </div>
           </div>
@@ -145,11 +153,13 @@ const ChangePasswordPage = () => {
                 placeholder="Mínimo 6 caracteres"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
+                disabled={loading}
               />
               <button
                 type="button"
                 className="toggle_pwd_btn"
                 onClick={() => setShowNew(!showNew)}
+                disabled={loading}
               >
                 {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -166,18 +176,19 @@ const ChangePasswordPage = () => {
                 placeholder="Repite la nueva contraseña"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={loading}
               />
               <button
                 type="button"
                 className="toggle_pwd_btn"
                 onClick={() => setShowConfirm(!showConfirm)}
+                disabled={loading}
               >
                 {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
 
-          {/* Botón de envío */}
           <button
             type="submit"
             className="change_pw_submit_btn"
@@ -189,6 +200,17 @@ const ChangePasswordPage = () => {
       </main>
 
       <Footer />
+
+      <Modal
+        isOpen={modalConfig.isOpen}
+        onClose={closeModal}
+        title={modalConfig.title}
+        description={modalConfig.description}
+        variant={modalConfig.variant}
+        icon={modalConfig.icon}
+        confirmText="Aceptar"
+        onConfirm={modalConfig.onConfirm || closeModal}
+      />
     </div>
   );
 };

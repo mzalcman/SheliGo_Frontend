@@ -1,11 +1,11 @@
 import "./register_page.css";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useForm, Controller } from "react-hook-form";
-import { Eye, EyeOff, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, CheckCircle } from "lucide-react"; // 🔴 Importamos CheckCircle para el tic
 import ImageUploader from "../../components/image_uploader/image_uploader";
 import Loader from "../../components/loader/loader";
 import { register } from "../../services/auth_service";
+import { get_all_institutions } from "../../services/home_service";
 import { useAuth } from "../../hooks/use_auth";
 
 // Interfaz que define los campos del formulario administrados por React Hook Form
@@ -23,11 +23,18 @@ const RegisterPage = () => {
   const navigate = useNavigate();
   const { loginWithGoogle, user } = useAuth();
 
+  const [name, setName] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [serverError, setServerError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -62,6 +69,22 @@ const RegisterPage = () => {
     }
   }, [user, navigate]);
 
+  useEffect(() => {
+    const fetchInstitutions = async () => {
+      try {
+        const response = await get_all_institutions();
+        // El backend responde { status: 'success', data: { instituciones: [...] } }
+        const instList = response?.data?.instituciones || [];
+        setAvailableInstitutions(instList);
+      } catch (err) {
+        console.error("Error al obtener instituciones:", err);
+        setAvailableInstitutions([]);
+      }
+    };
+
+    fetchInstitutions();
+  }, []);
+
   // Limpieza del temporizador y reinicio del formulario al desmontar
   useEffect(() => {
     return () => {
@@ -79,29 +102,49 @@ const RegisterPage = () => {
     return `${numbers.slice(0, 2)} ${numbers.slice(2, 6)}-${numbers.slice(6, 10)}`;
   };
 
-  const capitalizeWords = (str: string) => {
-    return str
-      .trim()
-      .toLowerCase()
-      .split(/\s+/)
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+  const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPhone(formatPhone(event.target.value));
   };
 
-  // Función ejecutada únicamente cuando el formulario supera todas las validaciones de RHF
-  const onSubmit = async (data: RegisterFormValues) => {
-    setServerError("");
+  const handleRegister = async () => {
+    setError("");
+    if (!name || !lastname || !email || !password || !confirmPassword) {
+      setError("Completa todos los campos obligatorios.");
+      return;
+    }
+
+    if (!is_valid_email(email)) {
+      setError("Ingresa un correo válido.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+
     setLoading(true);
+
+    const capitalizeWords = (str: string) => {
+      return str
+        .trim() 
+        .toLowerCase() 
+        .split(/\s+/) 
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1)) 
+        .join(" ");
+    };
 
     try {
       const formData = new FormData();
-      formData.append("nombre", capitalizeWords(data.nombre));
-      formData.append("apellido", capitalizeWords(data.apellido));
-      formData.append("email", data.email);
-      formData.append("telefono", data.telefono.replace(/\D/g, ""));
-      formData.append("password", data.password);
-      formData.append("confirmPassword", data.confirmPassword);
-
+      
+      formData.append("nombre", capitalizeWords(name));
+      formData.append("apellido", capitalizeWords(lastname));
+      
+      formData.append("email", email);
+      formData.append("telefono", phone.replace(/\D/g, ""));
+      formData.append("password", password);
+      formData.append("confirmPassword", confirmPassword);
+      
       if (images.length > 0) {
         formData.append("foto", images[0]);
       }
@@ -116,7 +159,8 @@ const RegisterPage = () => {
         reset();
         navigate("/login");
       }, 3000);
-    } catch (err: any) {
+
+    } catch (error: any) {
       setLoading(false);
       setServerError(
         err.response?.data?.message || "Ocurrió un error al registrarte en el servidor."
@@ -127,7 +171,28 @@ const RegisterPage = () => {
   if (loading) {
     return <Loader />;
   }
+  const handleGoogleClick = async () => {
+    try {
+      setError("");
+      setLoading(true);
 
+      // Ejecuta la función de tu context
+      const res: any = await loginWithGoogle();
+
+      // Si la API devuelve que debe completar perfil
+      if (res?.data?.requiereCompletarPerfil || res?.requiereCompletarPerfil) {
+        navigate("/completar-perfil");
+      } else {
+        navigate("/home");
+      }
+    } catch (err: any) {
+      setError(
+        err?.response?.data?.message || "Ocurrió un error al iniciar sesión con Google."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <main className="register_page">
       <div className="register_top" />
@@ -204,6 +269,48 @@ const RegisterPage = () => {
             )}
           />
 
+          {/* 🏫 SECCIÓN DE INSTITUCIONES REALES */}
+          <label>Instituciones asociadas</label>
+
+          {selectedInstitutions.length > 0 && (
+            <div className="institutions_chips_container">
+              {selectedInstitutions.map((inst) => {
+                const labelName = typeof inst === "string" ? inst : inst.nombre || inst.name;
+                const instId = inst.id || inst.institucion_id || inst;
+                return (
+                  <div className="institution_chip" key={instId}>
+                    <span>{labelName}</span>
+                    <button type="button" onClick={() => handleRemoveInstitution(inst)}>
+                      <X size={14} />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          <div className="institution_input_wrapper">
+            <input
+              type="text"
+              placeholder="Escribe y selecciona tu institución..."
+              value={institutionQuery}
+              onChange={handleInstitutionQueryChange}
+            />
+            {suggestions.length > 0 && (
+              <ul className="institution_dropdown">
+                {suggestions.map((item) => {
+                  const labelName = typeof item === "string" ? item : item.nombre || item.name;
+                  const itemId = item.id || item.institucion_id || item;
+                  return (
+                    <li key={itemId} onClick={() => handleSelectInstitution(item)}>
+                      {labelName}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+
           {/* Contraseña */}
           <label>Contraseña *</label>
           <div className="password_input_container">
@@ -279,7 +386,7 @@ const RegisterPage = () => {
 
           <button
             type="button"
-            onClick={loginWithGoogle}
+            onClick={handleGoogleClick}
             className="google_pill_button"
           >
             <img

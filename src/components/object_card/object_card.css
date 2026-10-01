@@ -51,3 +51,18 @@
   font-weight: 500;
   font-family: "louis_george";
 }
+.object_card_location,
+.object_card_date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #717171;
+  margin-top: 4px;
+  font-weight: 500;
+  font-family: "louis_george";
+}
+
+.object_card_date {
+  margin-top: 4px;
+}

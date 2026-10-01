@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AlertCircle, ShieldCheck, RefreshCw, Lock, ChevronDown, ChevronUp, ArrowLeft, Send } from "lucide-react";
+import { AlertCircle, ShieldCheck, RefreshCw, Lock, ArrowLeft, Send } from "lucide-react";
 import "./help_page.css";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
+import HelpCategoryCard from "../../components/help_category_card/help_category_card";
+import FAQAccordionItem from "../../components/faq_accordion_item/faq_accordion_item";
+import SupportTeamBanner from "../../components/support_team_banner/support_team_banner";
 
 interface FAQItem {
   id: number;
@@ -16,10 +19,10 @@ const HelpPage = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const categories = [
-    { id: "reportes", title: "Publicaciones y Reportes", desc: "Cómo crear avisos efectivos de objetos perdidos o encontrados.", icon: <AlertCircle size={22} className="cat_icon_reportes" /> },
-    { id: "seguridad", title: "Seguridad de la Comunidad", desc: "Protocolos para encuentros seguros y verificación de usuarios.", icon: <ShieldCheck size={22} className="cat_icon_seguridad" /> },
-    { id: "devoluciones", title: "Envíos y Devoluciones", desc: "Logística de entregas y cómo funciona el servicio de SheliExpress.", icon: <RefreshCw size={22} className="cat_icon_devoluciones" /> },
-    { id: "privacidad", title: "Privacidad de tus Datos", desc: "Cómo protegemos tu dirección, ubicación en el mapa y tus chats.", icon: <Lock size={22} className="cat_icon_privacidad" /> },
+    { id: "reportes", title: "Publicaciones y Reportes", desc: "Cómo crear avisos efectivos de objetos perdidos o encontrados.", icon: <AlertCircle size={22} /> },
+    { id: "seguridad", title: "Seguridad de la Comunidad", desc: "Protocolos para encuentros seguros y verificación de usuarios.", icon: <ShieldCheck size={22} /> },
+    { id: "devoluciones", title: "Envíos y Devoluciones", desc: "Logística de entregas y cómo funciona el servicio de SheliExpress.", icon: <RefreshCw size={22} /> },
+    { id: "privacidad", title: "Privacidad de tus Datos", desc: "Cómo protegemos tu dirección, ubicación en el mapa y tus chats.", icon: <Lock size={22} /> },
   ];
 
   const faqs: FAQItem[] = [
@@ -65,13 +68,12 @@ const HelpPage = () => {
           <h2 className="section_main_title">Explora por categorías</h2>
           <div className="categories_grid">
             {categories.map((cat) => (
-              <div key={cat.id} className="category_card">
-                <div className="category_icon_wrapper">{cat.icon}</div>
-                <div className="category_info">
-                  <h3>{cat.title}</h3>
-                  <p>{cat.desc}</p>
-                </div>
-              </div>
+              <HelpCategoryCard
+                key={cat.id}
+                title={cat.title}
+                desc={cat.desc}
+                icon={cat.icon}
+              />
             ))}
           </div>
         </section>
@@ -80,35 +82,18 @@ const HelpPage = () => {
           <h2 className="section_main_title">Preguntas Frecuentes</h2>
           <p className="section_subtitle">Las respuestas más rápidas a las dudas más comunes de nuestra comunidad.</p>
 
-          <div className="support_team_pill">
-            <div className="avatar_group">
-              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100" alt="Soporte 1" />
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100" alt="Soporte 2" />
-              <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100" alt="Soporte 3" />
-            </div>
-            <div className="support_team_text">
-              <h4>¿No encontrás lo que buscás?</h4>
-              <p>Nuestro equipo de soporte está en línea ahora mismo.</p>
-            </div>
-          </div>
+          <SupportTeamBanner />
 
           <div className="faqs_accordion">
-            {faqs.map((faq) => {
-              const isOpen = openFaq === faq.id;
-              return (
-                <div key={faq.id} className={`faq_item ${isOpen ? "open" : ""}`}>
-                  <button className="faq_trigger" onClick={() => toggleFaq(faq.id)}>
-                    <span>{faq.question}</span>
-                    {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                  </button>
-                  <div className="faq_answer_wrapper">
-                    <div className="faq_answer_content">
-                      <p>{faq.answer}</p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {faqs.map((faq) => (
+              <FAQAccordionItem
+                key={faq.id}
+                question={faq.question}
+                answer={faq.answer}
+                isOpen={openFaq === faq.id}
+                onToggle={() => toggleFaq(faq.id)}
+              />
+            ))}
           </div>
         </section>
 

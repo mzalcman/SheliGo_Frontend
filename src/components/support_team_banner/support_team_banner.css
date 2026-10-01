@@ -1,0 +1,44 @@
+.support_team_pill {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background-color: #f5f5f5;
+  border-radius: 20px;
+  padding: 14px 18px;
+  margin-bottom: 18px;
+}
+
+.avatar_group {
+  display: flex;
+  align-items: center;
+}
+
+.avatar_group img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f5f5f5;
+  margin-right: -10px;
+}
+
+.avatar_group img:last-child {
+  margin-right: 0;
+}
+
+.support_team_text h4 {
+  margin: 0;
+  font-size: 15px;
+  font-family: "louis_george";
+  font-weight: 700;
+  color: #222222;
+  margin-bottom: 2px;
+}
+
+.support_team_text p {
+  margin: 0;
+  font-size: 13px;
+  color: #717171;
+  font-family: "louis_george";
+  font-weight: 600;
+}

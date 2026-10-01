@@ -2,20 +2,11 @@
 import "./notifications_page.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  MessageCircle,
-  MessageSquare,
-  ShieldCheck,
-  Sparkles,
-  CheckCheck,
-} from "lucide-react";
+import { MessageCircle, MessageSquare,ShieldCheck, Sparkles, CheckCheck,} from "lucide-react";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import Loader from "../../components/loader/loader";
-import {
-  get_notifications,
-  mark_as_read,
-} from "../../services/notifications_service";
+import {get_notifications,mark_as_read,} from "../../services/notifications_service";
 
 export type NotificationType =
   | "nueva_pregunta"
@@ -37,82 +28,36 @@ export interface NotificationItem {
   created_at: string;
   updated_at?: string;
 }
-
-const MOCK_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: "1",
-    usuario_id: "usr1",
-    publicacion_id: "pub123",
-    titulo: "¡Encontramos una coincidencia!",
-    contenido: "Hay un objeto publicado que coincide con tu reporte.",
-    tipo: "nueva_coincidencia",
-    leida: false,
-    created_at: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "2",
-    usuario_id: "usr1",
-    titulo: "Actualizamos nuestras políticas de seguridad",
-    contenido: "Revisa los nuevos términos de uso y protección de datos.",
-    tipo: "seguridad",
-    leida: false,
-    created_at: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "3",
-    usuario_id: "usr1",
-    publicacion_id: "pub456",
-    titulo: "Te preguntaron sobre un objeto que encontraste",
-    contenido: "Un usuario realizó una pregunta sobre tu publicación.",
-    tipo: "nueva_pregunta",
-    leida: true,
-    created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "4",
-    usuario_id: "usr1",
-    publicacion_id: "pub789",
-    titulo: "Nueva conversación",
-    contenido: "Un usuario se comunicó contigo por una de tus publicaciones.",
-    tipo: "nuevo_chat",
-    leida: true,
-    created_at: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
-  },
-];
-
 const NotificationsPage = () => {
   const navigate = useNavigate();
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        setLoading(true);
+ useEffect(() => {
+  const loadNotifications = async () => {
+    try {
+      setLoading(true);
+      const res = await get_notifications();
 
-        const res = await get_notifications();
+      // Tu backend devuelve res.data.notificaciones directamente o dentro de res.data.data.notificaciones
+      const notifsList =
+        res?.data?.notificaciones ||
+        res?.notificaciones ||
+        res?.data ||
+        (Array.isArray(res) ? res : []);
 
-        const notifsList: NotificationItem[] =
-          res?.data?.notificaciones ??
-          (Array.isArray(res) ? res : []);
+      setNotifications(Array.isArray(notifsList) ? notifsList : []);
+    } catch (error) {
+      console.error("Error al cargar las notificaciones:", error);
+      setNotifications([]);
+    } finally {
+      setLoading(false); // <--- IMPORTANTE: Desactiva el Loader
+    }
+  };
 
-        setNotifications(
-          notifsList.length > 0 ? notifsList : MOCK_NOTIFICATIONS
-        );
-      } catch (error) {
-        console.warn(
-          "Backend no disponible. Cargando notificaciones de prueba.",
-          error
-        );
-        setNotifications(MOCK_NOTIFICATIONS);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void fetchNotifications();
-  }, []);
+  loadNotifications();
+}, []);
 
   const handleNotificationClick = async (
     notification: NotificationItem

@@ -22,7 +22,6 @@ import ProfilePage from "./pages/profile/ProfilePage";
 import PersonalInfoPage from "./pages/personal_info/PersonalInfoPage";
 import ChangePasswordPage from "./pages/change_password_page/change_password_page";
 import CompleteProfilePage from "./pages/CompleteProfilePage/CompleteProfilePage";
-
 function App() {
 
   useEffect(() => {

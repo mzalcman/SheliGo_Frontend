@@ -27,11 +27,18 @@
   margin-bottom: 28px;
 }
 
+.notifications_title_row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
 .notifications_header h1 {
-  font-size: 34px;
-  font-weight: 600;
+  font-size: 38px;
+  font-weight: 400;
   color: #1a1a1a;
-  margin: 0 0 5px;
+  margin: 0;
   letter-spacing: -0.5px;
   font-family: "poppins";
   line-height: 1.2;
@@ -42,7 +49,65 @@
   color: #717171;
   margin: 0;
   font-weight: 500;
-  line-height: 1.4;
+}
+
+/* BOTÓN VOLVER */
+.notifications_back_btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.notifications_back_btn:focus-visible {
+  outline: 2px solid #ff6f00;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* BOTÓN MARCAR TODAS COMO LEÍDAS */
+.mark_all_read_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 16px 0 0 auto;
+  padding: 10px 16px;
+  background-color: #fff8f2;
+  color: #ff6f00;
+  border: 1px solid #ff6f00;
+  border-radius: 999px;
+  font-family: "louis_george";
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.mark_all_read_btn:hover:not(:disabled) {
+  background-color: #ff6f00;
+  color: #ffffff;
+}
+
+.mark_all_read_btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.mark_all_read_btn:focus-visible {
+  outline: 2px solid #1a1a1a;
+  outline-offset: 3px;
+}
+
+.mark_all_read_btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }
 
 /* GRUPOS */
@@ -121,10 +186,6 @@
   flex-shrink: 0;
   background-color: #fdeee5;
   color: #ff6f00;
-}
-
-.notification_card:has(.notification_icon svg) .notification_icon {
-  background-color: #fdeee5;
 }
 
 /* INFORMACIÓN */
@@ -220,7 +281,6 @@
 .notifications_empty p {
   font-size: 15px;
   margin: 0;
-  line-height: 1.4;
 }
 
 /* RESPONSIVE */
@@ -230,13 +290,12 @@
   }
 
   .notifications_header h1 {
-    font-size: 29px;
+    font-size: 32px;
   }
 
   .notification_card {
-    padding: 15px 12px;
     gap: 10px;
-    border-radius: 20px;
+    padding: 16px 12px;
   }
 
   .notification_icon {
@@ -248,20 +307,58 @@
     font-size: 14px;
   }
 
-  .notification_time {
-    font-size: 9px;
+  .notification_description {
+    font-size: 12px;
+  }
+
+  .mark_all_read_btn {
+    font-size: 12px;
+    padding: 9px 12px;
   }
 }
 
-@media (min-width: 481px) {
-  .notifications_page {
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.04);
-  }
-}
-
+/* ACCESIBILIDAD */
 @media (prefers-reduced-motion: reduce) {
   .notification_card,
-  .notification_action {
+  .notification_action,
+  .mark_all_read_btn {
     transition: none;
   }
+}
+.notification_actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+
+.notification_read_button {
+  align-self: flex-start;
+  background-color: transparent;
+  color: #ff6f00;
+  border: 1px solid #ff6f00;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: "louis_george";
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.notification_read_button:hover {
+  background-color: #fff1e6;
+}
+
+.notification_read_button:active {
+  transform: scale(0.97);
+}
+
+.notification_read_button:focus-visible {
+  outline: 2px solid #1a1a1a;
+  outline-offset: 2px;
 }

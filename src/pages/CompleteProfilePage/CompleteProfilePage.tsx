@@ -100,47 +100,123 @@ const CompleteProfilePage = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  e.preventDefault();
+  setError("");
 
-    if (selectedInstitutions.length === 0) {
+  if (selectedInstitutions.length === 0) {
+    setError(
+      "Por favor, selecciona al menos una institución para continuar."
+    );
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    // Obtener el token JWT de la sesión
+    const token = localStorage.getItem("token");
+
+    if (!token) {
       setError(
-        "Por favor, selecciona al menos una institución para continuar."
+        "No se encontró una sesión activa. Por favor, vuelve a iniciar sesión."
       );
       return;
     }
 
-    try {
-      setLoading(true);
+    // Obtener únicamente los IDs de las instituciones
+    const instituciones_ids = selectedInstitutions.map(
+      (inst) => inst.id || inst.institucion_id || inst
+    );
 
-      const instituciones_ids = selectedInstitutions.map(
-        (inst) => inst.id || inst.institucion_id || inst
-      );
+    console.log("Token encontrado:", !!token);
+    console.log(
+      "Instituciones que se enviarán:",
+      instituciones_ids
+    );
 
-      const response = await api.post(
-        "/auth/completar-instituciones",
-        {
-          instituciones_ids,
-        }
-      );
-
-      if (response.data?.status === "success") {
-        const updatedUser = response.data.data.usuario;
-
-        login(updatedUser);
-        navigate("/home");
+    // Guardar instituciones
+    const response = await api.post(
+      "/auth/completar-instituciones",
+      {
+        instituciones_ids,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    } catch (err: any) {
-      console.error(err);
+    );
 
+    console.log(
+      "Respuesta completar instituciones:",
+      response.data
+    );
+
+    if (response.data?.status !== "success") {
+      throw new Error(
+        response.data?.message ||
+          "No se pudieron guardar las instituciones."
+      );
+    }
+
+    // Obtener el usuario actualizado
+    const userResponse = await api.get("/usuarios/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log(
+      "Usuario actualizado:",
+      userResponse.data
+    );
+
+    const updatedUser =
+      userResponse.data?.data?.usuario;
+
+    if (!updatedUser) {
+      throw new Error(
+        "No se pudo obtener el usuario actualizado."
+      );
+    }
+
+    // Actualizar el contexto de autenticación
+    login(updatedUser);
+
+    // Mantener actualizado localStorage
+    localStorage.setItem(
+      "user",
+      JSON.stringify(updatedUser)
+    );
+
+    // Ir al home
+    navigate("/home");
+  } catch (err: any) {
+    console.error(
+      "Error al completar instituciones:",
+      err
+    );
+
+    console.error(
+      "Respuesta del servidor:",
+      err.response?.data
+    );
+
+    if (err.response?.status === 401) {
+      setError(
+        "Tu sesión expiró o no es válida. Por favor, vuelve a iniciar sesión."
+      );
+    } else {
       setError(
         err.response?.data?.message ||
+          err.message ||
           "Ocurrió un error al guardar tus instituciones."
       );
-    } finally {
-      setLoading(false);
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (loading) {
     return <Loader />;

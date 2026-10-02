@@ -4,16 +4,20 @@
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 .personal_info_container {
   flex: 1;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
   padding: 24px 20px 40px 20px;
   box-sizing: border-box;
 }
 
 .personal_info_back_btn {
-  background: none;
+  background: transparent;
   border: none;
   display: flex;
   align-items: center;
@@ -27,10 +31,14 @@
   font-family: "poppins";
   font-size: 30px;
   font-weight: 400;
-  color: #1A1A1A;
+  color: #1a1a1a;
 }
 
-/* --- Hero Cabecera Avatar --- */
+.personal_info_back_btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .personal_info_hero {
   display: flex;
   flex-direction: column;
@@ -52,6 +60,7 @@
   object-fit: cover;
   border: 3px solid #ffffff;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 }
 
 .personal_info_edit_avatar_badge {
@@ -70,95 +79,92 @@
   cursor: pointer;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s ease;
+  padding: 0;
 }
 
 .personal_info_edit_avatar_badge:hover {
   transform: scale(1.1);
 }
 
+.personal_info_edit_avatar_badge:disabled {
+  cursor: not-allowed;
+}
+
 .personal_info_user_name {
   font-family: "poppins";
   font-size: 20px;
   font-weight: 600;
-  color: #1A1A1A;
+  color: #1a1a1a;
   margin: 0;
   letter-spacing: -0.3px;
+  text-align: center;
 }
 
 .personal_info_form_section {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  box-sizing: border-box;
 }
 
 .personal_info_form_section h2 {
   font-family: "poppins";
   font-size: 18px;
   font-weight: 600;
-  color: #1A1A1A;
+  color: #1a1a1a;
   margin: 0 0 4px 0;
 }
 
 .personal_info_field_group {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  box-sizing: border-box;
 }
 
 .personal_info_field_group label {
   font-family: "poppins";
   font-size: 14px;
   font-weight: 600;
-  color: #1A1A1A;
+  color: #1a1a1a;
   padding-left: 4px;
+  box-sizing: border-box;
 }
 
 .personal_info_input_wrapper {
   position: relative;
   width: 100%;
+  min-height: 52px;
   background-color: #f4f4f4;
-  border-radius: 20px;
+  border: 1px solid transparent;
+  border-radius: 999px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   padding-right: 18px;
 }
 
+.personal_info_input_wrapper:focus-within {
+  border-color: #ff6a00;
+  background-color: #ffffff;
+}
+
 .personal_info_input_wrapper input {
   width: 100%;
+  height: 52px;
   background: transparent;
   border: none;
   outline: none;
-  padding: 16px 18px;
+  padding: 0 18px;
   font-family: "louis_george";
   font-weight: 600;
   font-size: 15px;
-  color: #1A1A1A;
+  color: #1a1a1a;
+  box-sizing: border-box;
 }
 
-.personal_info_field_edit_icon {
-  color: #8c8c8c;
-  cursor: pointer;
-}
-.personal_info_save_btn {
-  flex: 1;
-  background-color: #ff6f00;
-  color: #000000;
-  border: none;
-  border-radius: 50px;
-  padding: 16px 0;
-  font-family: "poppins";
-  font-weight: 700;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.personal_info_save_btn:disabled {
-  background-color: #b0b0b0;
-  color: #666666;
-  cursor: not-allowed;
-}
 .personal_info_input_wrapper input.input_user_initial {
   color: #717171;
 }
@@ -166,22 +172,50 @@
 .personal_info_input_wrapper input.input_user_edited {
   color: #000000;
 }
-institution_chip {
+
+.personal_info_field_edit_icon {
+  flex-shrink: 0;
+  color: #8c8c8c;
+}
+
+.personal_info_institutions_group {
+  position: relative;
+}
+
+.institutions_chips_container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  box-sizing: border-box;
+}
+.institution_chip {
+  max-width: 100%;
   background: #ffffff;
   border: 1px solid #ff6a00;
   color: #ff6a00;
   border-radius: 999px;
-  padding: 6px 14px;
+  padding: 7px 13px;
   font-size: 13px;
+  font-family: "louis_george";
   font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  gap: 7px;
+  box-sizing: border-box;
   animation: fadeIn 0.2s ease-in-out;
 }
 
+.institution_chip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .institution_chip button {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -196,43 +230,172 @@ institution_chip {
   color: #d32f2f;
 }
 
+.institution_chip button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .institution_input_wrapper {
   position: relative;
   width: 100%;
+  box-sizing: border-box;
 }
 
-.institution_input_wrapper input {
+.institution_search_input {
   width: 100%;
+  height: 52px;
+  background: #f4f4f4;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  outline: none;
+  padding: 0 20px;
+  box-sizing: border-box;
+  font-family: "louis_george";
+  font-size: 15px;
+  font-weight: 600;
+  color: #000000;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.institution_search_input::placeholder {
+  color: #b0b0b0;
+}
+
+.institution_search_input:focus {
+  border-color: #ff6a00;
+  background: #ffffff;
+}
+
+.institution_search_input:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .institution_dropdown {
   position: absolute;
-  top: 56px;
+  top: 58px;
   left: 0;
   right: 0;
+  width: 100%;
+  max-height: 180px;
   background: #ffffff;
   border: 1px solid #e0e0e0;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-height: 160px;
+  border-radius: 20px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
   z-index: 100;
   list-style: none;
   padding: 8px 0;
   margin: 0;
   text-align: left;
+  box-sizing: border-box;
 }
 
 .institution_dropdown li {
-  padding: 10px 18px;
+  padding: 12px 20px;
+  font-family: "louis_george";
   font-size: 14px;
-  color: #333;
+  font-weight: 600;
+  color: #333333;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .institution_dropdown li:hover {
-  background: #fff0e6;
+  background-color: #fff0e6;
   color: #ff6a00;
+}
+
+.institution_dropdown .institution_no_results {
+  color: #888888;
+  cursor: default;
+}
+
+.institution_dropdown .institution_no_results:hover {
+  background-color: #ffffff;
+  color: #888888;
+}
+
+.institution_dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.institution_dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.institution_dropdown::-webkit-scrollbar-thumb {
+  background: #cccccc;
+  border-radius: 10px;
+}
+
+.personal_info_save_btn {
+  width: 100%;
+  min-height: 54px;
+  background-color: #ff6f00;
+  color: #000000;
+  border: none;
+  border-radius: 999px;
+  padding: 0 24px;
+  font-family: "poppins";
   font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition:
+    background-color 0.2s ease,
+    opacity 0.2s ease;
+  margin-top: 4px;
+}
+
+.personal_info_save_btn:hover {
+  background-color: #e65f00;
+}
+
+.personal_info_save_btn:disabled {
+  background-color: #b0b0b0;
+  color: #666666;
+  cursor: not-allowed;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .personal_info_container {
+    padding: 20px 16px 32px 16px;
+  }
+
+  .personal_info_back_btn {
+    margin-bottom: 20px;
+  }
+
+  .personal_info_back_btn span {
+    font-size: 26px;
+  }
+
+  .personal_info_user_name {
+    font-size: 19px;
+  }
+
+  .personal_info_form_section {
+    gap: 14px;
+  }
+
+  .personal_info_save_btn {
+    font-size: 15px;
+  }
 }

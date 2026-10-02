@@ -1,10 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Edit2, CheckCircle2, AlertCircle, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Edit2,
+  CheckCircle2,
+  AlertCircle,
+  X,
+} from "lucide-react";
 import Header from "../../components/header/header";
-import { useAuth } from "../../hooks/use_auth"; 
-import { getImageUrl } from "../../utils/get_image_url"; 
-import { api } from "../../services/api"; 
+import { useAuth } from "../../hooks/use_auth";
+import { getImageUrl } from "../../utils/get_image_url";
+import { api } from "../../services/api";
 import Modal from "../../components/modal/modal";
 import "./personal_info_page.css";
 
@@ -17,14 +23,20 @@ interface Institucion {
 
 const PersonalInfoPage = () => {
   const navigate = useNavigate();
-  const { user: typedUser, updateProfile } = useAuth() as any; 
+  const { user: typedUser, updateProfile } = useAuth() as any;
+
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const tempUrlRef = useRef<string | null>(null);
 
   const user = typedUser as any;
   const defaultPlaceholder = "/user_predeterminada.png";
 
+  // Obtiene el usuario guardado localmente si todavía no está disponible
+  // en el contexto de autenticación.
   const getInitialUser = () => {
     const stored = localStorage.getItem("user");
+
     if (stored) {
       try {
         return JSON.parse(stored);
@@ -32,33 +44,47 @@ const PersonalInfoPage = () => {
         return null;
       }
     }
+
     return null;
   };
 
   const initialUser = getInitialUser();
   const currentUser = user || initialUser;
 
-  // Estados básicos
+  // Datos personales
   const [nombre, setNombre] = useState(currentUser?.nombre || "");
   const [apellido, setApellido] = useState(currentUser?.apellido || "");
   const [nombreChanged, setNombreChanged] = useState(false);
   const [apellidoChanged, setApellidoChanged] = useState(false);
 
-  // Estados de Instituciones con guardas defensivas de arrays
-  const [institucionesUsuario, setInstitucionesUsuario] = useState<Institucion[]>(
-    Array.isArray(currentUser?.instituciones) ? currentUser.instituciones : []
+  // Instituciones del usuario
+  const [institucionesUsuario, setInstitucionesUsuario] = useState<
+    Institucion[]
+  >(
+    Array.isArray(currentUser?.instituciones)
+      ? currentUser.instituciones
+      : []
   );
-  const [catalogoInstituciones, setCatalogoInstituciones] = useState<Institucion[]>([]);
-  
-  // Estado para el Input de búsqueda/autocompletado
+
+  // Catálogo completo de instituciones
+  const [catalogoInstituciones, setCatalogoInstituciones] = useState<
+    Institucion[]
+  >([]);
+
+  // Buscador
   const [searchTerm, setSearchTerm] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Foto y Carga
+  // Foto
   const [avatar, setAvatar] = useState(
-    currentUser?.foto ? getImageUrl(currentUser.foto) : defaultPlaceholder
+    currentUser?.foto
+      ? getImageUrl(currentUser.foto)
+      : defaultPlaceholder
   );
+
   const [newImageFile, setNewImageFile] = useState<File | null>(null);
+
+  // Estado de guardado
   const [saving, setSaving] = useState(false);
 
   // Modal
@@ -77,20 +103,19 @@ const PersonalInfoPage = () => {
     icon: null,
   });
 
-  const tempUrlRef = useRef<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  // =========================================================
+  // CARGAR CATÁLOGO DE INSTITUCIONES
+  // =========================================================
 
-  // 1. Cargar el catálogo global de instituciones con validaciones contra no-arrays
   useEffect(() => {
     const fetchInstituciones = async () => {
       try {
         const response = await api.get("/instituciones");
-        
-        // Extraemos los datos probando distintas estructuras de respuesta comunes
-        const rawData = 
-          response.data?.data?.instituciones || 
-          response.data?.data || 
-          response.data?.instituciones || 
+
+        const rawData =
+          response.data?.data?.instituciones ||
+          response.data?.data ||
+          response.data?.instituciones ||
           response.data;
 
         if (Array.isArray(rawData)) {
@@ -99,38 +124,69 @@ const PersonalInfoPage = () => {
           setCatalogoInstituciones([]);
         }
       } catch (error) {
-        console.error("Error al cargar la lista de instituciones:", error);
+        console.error(
+          "Error al cargar la lista de instituciones:",
+          error
+        );
+
         setCatalogoInstituciones([]);
       }
     };
+
     fetchInstituciones();
   }, []);
 
-  // 2. Sincronizar datos si cambia el contexto de usuario
+  // =========================================================
+  // SINCRONIZAR CON EL USUARIO DEL CONTEXTO
+  // =========================================================
+
   useEffect(() => {
-    if (currentUser) {
-      if (currentUser.nombre) setNombre(currentUser.nombre);
-      if (currentUser.apellido) setApellido(currentUser.apellido);
-      if (currentUser.foto) setAvatar(getImageUrl(currentUser.foto));
-      if (Array.isArray(currentUser.instituciones)) {
-        setInstitucionesUsuario(currentUser.instituciones);
-      }
+    if (!user) {
+      return;
+    }
+
+    if (user.nombre !== undefined) {
+      setNombre(user.nombre || "");
+    }
+
+    if (user.apellido !== undefined) {
+      setApellido(user.apellido || "");
+    }
+
+    if (user.foto) {
+      setAvatar(getImageUrl(user.foto));
+    }
+
+    if (Array.isArray(user.instituciones)) {
+      setInstitucionesUsuario(user.instituciones);
     }
   }, [user]);
 
-  // Clic fuera del Dropdown para cerrarlo
+  // =========================================================
+  // CERRAR DROPDOWN AL HACER CLICK AFUERA
+  // =========================================================
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsDropdownOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
+  // =========================================================
+  // LIMPIAR URL TEMPORAL DE IMAGEN
+  // =========================================================
+
   useEffect(() => {
     return () => {
       if (tempUrlRef.current) {
@@ -139,30 +195,51 @@ const PersonalInfoPage = () => {
     };
   }, []);
 
+  // =========================================================
+  // FOTO
+  // =========================================================
+
   const handleEditAvatarClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (tempUrlRef.current) {
-        URL.revokeObjectURL(tempUrlRef.current);
-      }
-      const newAvatarUrl = URL.createObjectURL(file);
-      tempUrlRef.current = newAvatarUrl;
-
-      setAvatar(newAvatarUrl);
-      setNewImageFile(file);
+    if (!saving) {
+      fileInputRef.current?.click();
     }
   };
 
-  // --- Manejo de Selección / Deselección de Instituciones ---
+  const handleAvatarChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (tempUrlRef.current) {
+      URL.revokeObjectURL(tempUrlRef.current);
+    }
+
+    const newAvatarUrl = URL.createObjectURL(file);
+
+    tempUrlRef.current = newAvatarUrl;
+
+    setAvatar(newAvatarUrl);
+    setNewImageFile(file);
+  };
+
+  // =========================================================
+  // SELECCIONAR INSTITUCIÓN
+  // =========================================================
+
   const handleSelectInstitucion = (inst: Institucion) => {
-    const currentList = Array.isArray(institucionesUsuario) ? institucionesUsuario : [];
-    
-    // Evitar duplicados
-    const existe = currentList.some((i) => String(i.id) === String(inst.id));
+    const currentList = Array.isArray(institucionesUsuario)
+      ? institucionesUsuario
+      : [];
+
+    // Evita agregar dos veces la misma institución.
+    const existe = currentList.some(
+      (item) => String(item.id) === String(inst.id)
+    );
+
     if (!existe) {
       setInstitucionesUsuario([...currentList, inst]);
     }
@@ -171,77 +248,190 @@ const PersonalInfoPage = () => {
     setIsDropdownOpen(false);
   };
 
-  const handleRemoveInstitucion = (idToRemove: string | number) => {
-    const currentList = Array.isArray(institucionesUsuario) ? institucionesUsuario : [];
+  // =========================================================
+  // ELIMINAR INSTITUCIÓN
+  // =========================================================
+
+  const handleRemoveInstitucion = (
+    idToRemove: string | number
+  ) => {
+    const currentList = Array.isArray(institucionesUsuario)
+      ? institucionesUsuario
+      : [];
+
     setInstitucionesUsuario(
-      currentList.filter((i) => String(i.id) !== String(idToRemove))
+      currentList.filter(
+        (inst) => String(inst.id) !== String(idToRemove)
+      )
     );
   };
 
+  // =========================================================
+  // CERRAR MODAL
+  // =========================================================
+
   const closeModal = () => {
-    setModalConfig((prev) => ({ ...prev, isOpen: false }));
+    setModalConfig((prev) => ({
+      ...prev,
+      isOpen: false,
+    }));
   };
 
-  // --- Guardar Formulario ---
-  const handleFormSubmit = async (e: React.FormEvent) => {
+  // =========================================================
+  // GUARDAR CAMBIOS
+  // =========================================================
+
+  const handleFormSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
+
+    if (saving) {
+      return;
+    }
+
     if (!nombre.trim() || !apellido.trim()) {
       setModalConfig({
         isOpen: true,
         title: "Campos incompletos",
-        description: "Por favor, completa el nombre y el apellido.",
+        description:
+          "Por favor, completa el nombre y el apellido.",
         variant: "error",
         icon: <AlertCircle size={36} color="#d32f2f" />,
+        onConfirm: closeModal,
       });
+
       return;
     }
 
     try {
       setSaving(true);
 
-      const formData = new FormData();
-      formData.append("nombre", nombre);
-      formData.append("apellido", apellido);
+      const currentList = Array.isArray(institucionesUsuario)
+        ? institucionesUsuario
+        : [];
 
-      // Enviamos el array de IDs de las instituciones elegidas
-      const currentList = Array.isArray(institucionesUsuario) ? institucionesUsuario : [];
-      const instIds = currentList.map((i) => i.id);
-      formData.append("instituciones_ids", JSON.stringify(instIds));
+      // Obtenemos solamente los IDs de las instituciones.
+      const instituciones_ids = currentList.map(
+        (institucion) => institucion.id
+      );
+
+      console.log(
+        "Instituciones que se van a guardar:",
+        instituciones_ids
+      );
+
+      // Se utiliza FormData porque también se permite actualizar
+      // la foto de perfil desde esta misma pantalla.
+      const formData = new FormData();
+
+      formData.append("nombre", nombre.trim());
+      formData.append("apellido", apellido.trim());
+
+      // El backend recibe los IDs como JSON dentro del FormData.
+      formData.append(
+        "instituciones_ids",
+        JSON.stringify(instituciones_ids)
+      );
 
       if (newImageFile) {
         formData.append("foto", newImageFile);
       }
 
-      const response = await api.put("/usuarios/me", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await api.put(
+        "/usuarios/me",
+        formData
+      );
 
-      if (response.data && response.data.status === "success") {
-        const usuarioActualizado = response.data.data.usuario;
+      console.log(
+        "Respuesta al guardar perfil:",
+        response.data
+      );
 
-        if (updateProfile) {
-          updateProfile(usuarioActualizado);
-        } else {
-          localStorage.setItem("user", JSON.stringify(usuarioActualizado));
-        }
+      // Intentamos obtener el usuario actualizado desde
+      // las estructuras posibles de respuesta del backend.
+      const usuarioActualizado =
+        response.data?.data?.usuario ||
+        response.data?.usuario ||
+        response.data?.data;
 
-        setModalConfig({
-          isOpen: true,
-          title: "¡Perfil actualizado!",
-          description: "Tus cambios se guardaron con éxito.",
-          variant: "success",
-          icon: <CheckCircle2 size={36} color="#2e7d32" />,
-          onConfirm: () => {
-            closeModal();
-            navigate("/perfil");
-          },
-        });
+      const status = response.data?.status;
+
+      if (
+        status !== "success" &&
+        !usuarioActualizado
+      ) {
+        throw new Error(
+          response.data?.message ||
+            "El servidor no devolvió el usuario actualizado."
+        );
       }
+
+      // Si el backend devolvió el usuario actualizado,
+      // usamos esos datos.
+      const usuarioFinal = usuarioActualizado || {
+        ...currentUser,
+        nombre: nombre.trim(),
+        apellido: apellido.trim(),
+        instituciones: currentList,
+      };
+
+      // Actualizamos siempre localStorage.
+      localStorage.setItem(
+        "user",
+        JSON.stringify(usuarioFinal)
+      );
+
+      // Actualizamos el contexto de autenticación.
+      if (typeof updateProfile === "function") {
+        updateProfile(usuarioFinal);
+      }
+
+      // Actualizamos también los estados locales.
+      setNombre(usuarioFinal.nombre || nombre);
+      setApellido(usuarioFinal.apellido || apellido);
+
+      if (Array.isArray(usuarioFinal.instituciones)) {
+        setInstitucionesUsuario(
+          usuarioFinal.instituciones
+        );
+      }
+
+      if (usuarioFinal.foto) {
+        setAvatar(getImageUrl(usuarioFinal.foto));
+      }
+
+      setNombreChanged(false);
+      setApellidoChanged(false);
+      setNewImageFile(null);
+
+      setModalConfig({
+        isOpen: true,
+        title: "¡Perfil actualizado!",
+        description:
+          "Tus instituciones y datos se guardaron con éxito.",
+        variant: "success",
+        icon: (
+          <CheckCircle2
+            size={36}
+            color="#2e7d32"
+          />
+        ),
+        onConfirm: () => {
+          closeModal();
+          navigate("/perfil");
+        },
+      });
     } catch (err: any) {
-      console.error("Error al guardar:", err);
+      console.error(
+        "Error al guardar los cambios:",
+        err
+      );
 
       const mensajeError =
         err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
         "Ocurrió un error al guardar tus cambios. Por favor, probá nuevamente.";
 
       setModalConfig({
@@ -249,7 +439,12 @@ const PersonalInfoPage = () => {
         title: "Ocurrió un error",
         description: mensajeError,
         variant: "error",
-        icon: <AlertCircle size={36} color="#d32f2f" />,
+        icon: (
+          <AlertCircle
+            size={36}
+            color="#d32f2f"
+          />
+        ),
         onConfirm: closeModal,
       });
     } finally {
@@ -257,17 +452,52 @@ const PersonalInfoPage = () => {
     }
   };
 
-  // Filtrar sugerencias para el desplegable (sólo las no agregadas aún y según búsqueda)
-  const safeCatalogo = Array.isArray(catalogoInstituciones) ? catalogoInstituciones : [];
-  const safeUsuario = Array.isArray(institucionesUsuario) ? institucionesUsuario : [];
+  // =========================================================
+  // LISTAS SEGURAS
+  // =========================================================
 
-  const institucionesSugeridas = safeCatalogo.filter((catInst) => {
-    const noAgregada = !safeUsuario.some((uInst) => String(uInst.id) === String(catInst.id));
-    const coincideConBusqueda = catInst.nombre
-      ?.toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    return noAgregada && coincideConBusqueda;
-  });
+  const safeCatalogo = Array.isArray(
+    catalogoInstituciones
+  )
+    ? catalogoInstituciones
+    : [];
+
+  const safeUsuario = Array.isArray(
+    institucionesUsuario
+  )
+    ? institucionesUsuario
+    : [];
+
+  // =========================================================
+  // FILTRAR INSTITUCIONES
+  // =========================================================
+
+  const institucionesSugeridas = safeCatalogo.filter(
+    (catInst) => {
+      const noAgregada = !safeUsuario.some(
+        (uInst) =>
+          String(uInst.id) === String(catInst.id)
+      );
+
+      const nombreInstitucion =
+        catInst.nombre?.toLowerCase() || "";
+
+      const busqueda =
+        searchTerm.toLowerCase().trim();
+
+      const coincideConBusqueda =
+        nombreInstitucion.includes(busqueda);
+
+      return (
+        noAgregada &&
+        coincideConBusqueda
+      );
+    }
+  );
+
+  // =========================================================
+  // RENDER
+  // =========================================================
 
   return (
     <div className="personal_info_layout_page">
@@ -280,7 +510,12 @@ const PersonalInfoPage = () => {
           disabled={saving}
           type="button"
         >
-          <ArrowLeft size={20} color="#ff6f00" strokeWidth={2.5} />
+          <ArrowLeft
+            size={20}
+            color="#ff6f00"
+            strokeWidth={2.5}
+          />
+
           <span>Mi Perfil</span>
         </button>
 
@@ -288,23 +523,33 @@ const PersonalInfoPage = () => {
           <div
             className="personal_info_avatar_wrapper"
             onClick={handleEditAvatarClick}
-            style={{ cursor: "pointer" }}
+            style={{
+              cursor: saving
+                ? "default"
+                : "pointer",
+            }}
           >
             <img
               src={avatar}
               alt="User Avatar"
               className="personal_info_main_avatar"
               onError={(e) => {
-                (e.target as HTMLImageElement).src = defaultPlaceholder;
+                (
+                  e.target as HTMLImageElement
+                ).src = defaultPlaceholder;
               }}
             />
+
             <button
               className="personal_info_edit_avatar_badge"
               title="Cambiar Foto"
               type="button"
               disabled={saving}
             >
-              <Edit2 size={12} strokeWidth={3} />
+              <Edit2
+                size={12}
+                strokeWidth={3}
+              />
             </button>
 
             <input
@@ -315,21 +560,31 @@ const PersonalInfoPage = () => {
               style={{ display: "none" }}
             />
           </div>
+
           <h1 className="personal_info_user_name">
             {nombre} {apellido}
           </h1>
         </section>
 
-        <form onSubmit={handleFormSubmit} className="personal_info_form_section">
+        <form
+          onSubmit={handleFormSubmit}
+          className="personal_info_form_section"
+        >
           <h2>Información Personal</h2>
 
+          {/* Nombre */}
           <div className="personal_info_field_group">
             <label>Nombre</label>
+
             <div className="personal_info_input_wrapper">
               <input
                 type="text"
                 value={nombre}
-                className={nombreChanged ? "input_user_edited" : "input_user_initial"}
+                className={
+                  nombreChanged
+                    ? "input_user_edited"
+                    : "input_user_initial"
+                }
                 onChange={(e) => {
                   setNombre(e.target.value);
                   setNombreChanged(true);
@@ -337,17 +592,27 @@ const PersonalInfoPage = () => {
                 disabled={saving}
                 required
               />
-              <Edit2 size={14} className="personal_info_field_edit_icon" />
+
+              <Edit2
+                size={14}
+                className="personal_info_field_edit_icon"
+              />
             </div>
           </div>
 
+          {/* Apellido */}
           <div className="personal_info_field_group">
             <label>Apellido</label>
+
             <div className="personal_info_input_wrapper">
               <input
                 type="text"
                 value={apellido}
-                className={apellidoChanged ? "input_user_edited" : "input_user_initial"}
+                className={
+                  apellidoChanged
+                    ? "input_user_edited"
+                    : "input_user_initial"
+                }
                 onChange={(e) => {
                   setApellido(e.target.value);
                   setApellidoChanged(true);
@@ -355,62 +620,89 @@ const PersonalInfoPage = () => {
                 disabled={saving}
                 required
               />
-              <Edit2 size={14} className="personal_info_field_edit_icon" />
+
+              <Edit2
+                size={14}
+                className="personal_info_field_edit_icon"
+              />
             </div>
           </div>
 
-          {/* --- SECCIÓN INSTITUCIONES --- */}
-          <div className="personal_info_field_group">
+          {/* =================================================
+              INSTITUCIONES
+          ================================================= */}
+
+          <div className="personal_info_field_group personal_info_institutions_group">
             <label>Instituciones</label>
 
-            {/* Chips de Instituciones Agregadas */}
-            <div className="institutions_chips_container">
-              {safeUsuario.map((inst) => (
-                <div key={inst.id} className="institution_chip">
-                  <span>{inst.nombre}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveInstitucion(inst.id)}
-                    disabled={saving}
-                    title="Eliminar institución"
+            {/* Chips de instituciones actuales */}
+            {safeUsuario.length > 0 && (
+              <div className="institutions_chips_container">
+                {safeUsuario.map((inst) => (
+                  <div
+                    key={inst.id}
+                    className="institution_chip"
                   >
-                    <X size={14} />
-                  </button>
-                </div>
-              ))}
-            </div>
+                    <span>{inst.nombre}</span>
 
-            {/* Autocompletado / Input Búsqueda */}
-            <div className="institution_input_wrapper" ref={dropdownRef}>
-              <div className="personal_info_input_wrapper">
-                <input
-                  type="text"
-                  placeholder="Buscar o agregar institución..."
-                  value={searchTerm}
-                  onFocus={() => setIsDropdownOpen(true)}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    setIsDropdownOpen(true);
-                  }}
-                  disabled={saving}
-                  className="input_user_initial"
-                />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleRemoveInstitucion(
+                          inst.id
+                        )
+                      }
+                      disabled={saving}
+                      title="Eliminar institución"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
               </div>
+            )}
 
-              {/* Menú Desplegable */}
+            {/* Buscador */}
+            <div
+              className="institution_input_wrapper"
+              ref={dropdownRef}
+            >
+              <input
+                type="text"
+                placeholder="Buscar o agregar institución..."
+                value={searchTerm}
+                onFocus={() =>
+                  setIsDropdownOpen(true)
+                }
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setIsDropdownOpen(true);
+                }}
+                disabled={saving}
+                className="institution_search_input"
+              />
+
+              {/* Dropdown */}
               {isDropdownOpen && (
                 <ul className="institution_dropdown">
-                  {institucionesSugeridas.length > 0 ? (
-                    institucionesSugeridas.map((inst) => (
-                      <li
-                        key={inst.id}
-                        onClick={() => handleSelectInstitucion(inst)}
-                      >
-                        {inst.nombre}
-                      </li>
-                    ))
+                  {institucionesSugeridas.length >
+                  0 ? (
+                    institucionesSugeridas.map(
+                      (inst) => (
+                        <li
+                          key={inst.id}
+                          onClick={() =>
+                            handleSelectInstitucion(
+                              inst
+                            )
+                          }
+                        >
+                          {inst.nombre}
+                        </li>
+                      )
+                    )
                   ) : (
-                    <li style={{ color: "#888", cursor: "default" }}>
+                    <li className="institution_no_results">
                       {searchTerm.trim()
                         ? "No se encontraron coincidencias"
                         : "No hay más instituciones disponibles"}
@@ -421,12 +713,15 @@ const PersonalInfoPage = () => {
             </div>
           </div>
 
+          {/* Botón guardar */}
           <button
             type="submit"
             className="personal_info_save_btn"
             disabled={saving}
           >
-            {saving ? "Guardando..." : "Guardar cambios"}
+            {saving
+              ? "Guardando..."
+              : "Guardar cambios"}
           </button>
         </form>
       </main>
@@ -439,7 +734,10 @@ const PersonalInfoPage = () => {
         variant={modalConfig.variant}
         icon={modalConfig.icon}
         confirmText="Aceptar"
-        onConfirm={modalConfig.onConfirm || closeModal}
+        onConfirm={
+          modalConfig.onConfirm ||
+          closeModal
+        }
       />
     </div>
   );

@@ -1,163 +1,173 @@
 import "./notifications_page.css";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  MessageCircle,
+  MessageSquare,
+  ShieldCheck,
+  Sparkles,
+  CheckCheck,
+  ArrowLeft,
+} from "lucide-react";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
-import { MessageSquarePlus, MessageCircle, HelpCircle, MessageSquare, ShieldCheck, Sparkles,CheckCheck} from "lucide-react";
 import Loader from "../../components/loader/loader";
-import { get_notifications, mark_as_read } from "../../services/notifications_service";
+import {
+  get_notifications,
+  mark_as_read,
+} from "../../services/notifications_service";
 
-interface NotificationItem {
+export type NotificationType =
+  | "nueva_pregunta"
+  | "nueva_respuesta"
+  | "nueva_coincidencia"
+  | "nuevo_mensaje"
+  | "nuevo_chat"
+  | "seguridad"
+  | string;
+
+export interface NotificationItem {
   id: string;
   usuario_id: string;
   publicacion_id?: string;
   titulo: string;
   contenido: string;
-  tipo: "NUEVA_CONVERSACION" | "NUEVO_MENSAJE" | "NUEVA_PREGUNTA" | "NUEVA_RESPUESTA" | "SEGURIDAD" | "COINCIDENCIA";
+  tipo: NotificationType;
   leida: boolean;
   created_at: string;
+  updated_at?: string;
 }
-
-const MOCK_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: "1",
-    usuario_id: "usr1",
-    publicacion_id: "pub123",
-    titulo: "¡Encontramos una coincidencia!",
-    contenido: "Hay un objeto publicado que coincide con tu reporte.",
-    tipo: "COINCIDENCIA",
-    leida: false,
-    created_at: new Date(Date.now() - 2 * 60 * 1000).toISOString(), // Hace 2 min
-  },
-  {
-    id: "2",
-    usuario_id: "usr1",
-    titulo: "Actualizamos nuestras políticas de seguridad",
-    contenido: "Revisa los nuevos términos de uso y protección de datos.",
-    tipo: "SEGURIDAD",
-    leida: false,
-    created_at: new Date(Date.now() - 15 * 60 * 1000).toISOString(), // Hace 15 min
-  },
-  {
-    id: "3",
-    usuario_id: "usr1",
-    publicacion_id: "pub456",
-    titulo: "Te preguntaron sobre un objeto que encontraste",
-    contenido: "Un usuario realizó una pregunta sobre tu publicación.",
-    tipo: "NUEVA_PREGUNTA",
-    leida: true,
-    created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // Ayer
-  },
-  {
-    id: "4",
-    usuario_id: "usr1",
-    publicacion_id: "pub789",
-    titulo: "Nueva conversación",
-    contenido: "Un usuario se comunicó contigo por una de tus publicaciones.",
-    tipo: "NUEVA_CONVERSACION",
-    leida: true,
-    created_at: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(), // Hace 2 días
-  }
-];
 
 const NotificationsPage = () => {
   const navigate = useNavigate();
+
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchNotifications();
+    const loadNotifications = async () => {
+      try {
+        setLoading(true);
+        const res = await get_notifications();
+
+        const notifsList =
+          res?.data?.notificaciones ||
+          res?.notificaciones ||
+          res?.data ||
+          (Array.isArray(res) ? res : []);
+
+        setNotifications(Array.isArray(notifsList) ? notifsList : []);
+      } catch (error) {
+        console.error("Error al cargar las notificaciones:", error);
+        setNotifications([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadNotifications();
   }, []);
 
-  const fetchNotifications = async () => {
-    try {
-      setLoading(true);
-      const data = await get_notifications();
-      setNotifications(data?.length ? data : MOCK_NOTIFICATIONS);
-    } catch (error) {
-      console.warn("Backend no disponible, cargando mock data de notificaciones.");
-      setNotifications(MOCK_NOTIFICATIONS);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleNotificationClick = async (notification: NotificationItem) => {
+  const handleNotificationClick = async (
+    notification: NotificationItem
+  ) => {
     if (!notification.leida) {
+      setNotifications((prev) =>
+        prev.map((item) =>
+          item.id === notification.id
+            ? { ...item, leida: true }
+            : item
+        )
+      );
+
       try {
         await mark_as_read(notification.id);
-      } catch (e) {
-        console.warn("No se pudo marcar como leída en backend.");
+      } catch (error) {
+        console.warn(
+          "No se pudo marcar la notificación como leída.",
+          error
+        );
       }
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === notification.id ? { ...n, leida: true } : n))
-      );
     }
 
-    if (notification.publicacion_id) {
-      if (notification.tipo === "NUEVA_CONVERSACION" || notification.tipo === "NUEVO_MENSAJE") {
-        navigate(`/chats?pub=${notification.publicacion_id}`);
-      } else {
-        navigate(`/publicacion/${notification.publicacion_id}`);
+    const tipoLower = notification.tipo?.toLowerCase();
+
+    if (tipoLower === "seguridad") {
+      navigate("/privacidad-y-seguridad");
+      return;
+    }
+
+    if (!notification.publicacion_id) {
+      if (
+        tipoLower === "nuevo_chat" ||
+        tipoLower === "nuevo_mensaje" ||
+        tipoLower === "nueva_conversacion"
+      ) {
+        navigate("/chats");
       }
+      return;
+    }
+
+    if (
+      tipoLower === "nuevo_chat" ||
+      tipoLower === "nuevo_mensaje" ||
+      tipoLower === "nueva_conversacion"
+    ) {
+      navigate(`/chats?pub=${encodeURIComponent(notification.publicacion_id)}`);
+    } else {
+      navigate(`/publicacion/${notification.publicacion_id}`);
     }
   };
 
-  const renderNotificationIcon = (tipo: NotificationItem["tipo"]) => {
-    switch (tipo) {
-      case "COINCIDENCIA":
-        return (
-          <div className="notif_icon_box icon_sparkles">
-            <Sparkles size={22} />
-          </div>
-        );
-      case "SEGURIDAD":
-        return (
-          <div className="notif_icon_box icon_security">
-            <ShieldCheck size={22} />
-          </div>
-        );
-      case "NUEVA_PREGUNTA":
-        return (
-          <div className="notif_icon_box icon_question">
-            <HelpCircle size={22} />
-          </div>
-        );
-      case "NUEVA_RESPUESTA":
-        return (
-          <div className="notif_icon_box icon_answer">
-            <MessageSquare size={22} />
-          </div>
-        );
-      case "NUEVA_CONVERSACION":
-        return (
-          <div className="notif_icon_box icon_chat">
-            <MessageSquarePlus size={22} />
-          </div>
-        );
-      case "NUEVO_MENSAJE":
+  const renderNotificationIcon = (tipo: string) => {
+    const tipoLower = tipo?.toLowerCase() || "";
+
+    switch (tipoLower) {
+      case "nueva_coincidencia":
+      case "coincidencia":
+        return <Sparkles size={23} color="#ff6f00" />;
+
+      case "seguridad":
+        return <ShieldCheck size={23} color="#ff6f00" />;
+
+      case "nueva_pregunta":
+        return <MessageSquare size={23} color="#ff6f00" />;
+
+      case "nueva_respuesta":
+        return <CheckCheck size={23} color="#ff6f00" />;
+
+      case "nuevo_chat":
+      case "nueva_conversacion":
+        return <MessageCircle size={23} color="#ff6f00" />;
+
+      case "nuevo_mensaje":
       default:
-        return (
-          <div className="notif_icon_box icon_message">
-            <MessageCircle size={22} />
-          </div>
-        );
+        return <MessageCircle size={23} color="#ff6f00" />;
     }
   };
 
-  const getActionButtonText = (tipo: NotificationItem["tipo"]) => {
-    switch (tipo) {
-      case "COINCIDENCIA":
+  const getActionButtonText = (tipo: string) => {
+    const tipoLower = tipo?.toLowerCase() || "";
+
+    switch (tipoLower) {
+      case "nueva_coincidencia":
+      case "coincidencia":
         return "Ver coincidencia";
-      case "SEGURIDAD":
+
+      case "seguridad":
         return "Ver políticas";
-      case "NUEVA_PREGUNTA":
+
+      case "nueva_pregunta":
         return "Responder";
-      case "NUEVA_RESPUESTA":
+
+      case "nueva_respuesta":
         return "Ver respuesta";
-      case "NUEVA_CONVERSACION":
-      case "NUEVO_MENSAJE":
+
+      case "nuevo_chat":
+      case "nueva_conversacion":
+      case "nuevo_mensaje":
         return "Ir al chat";
+
       default:
         return "Ver detalle";
     }
@@ -165,31 +175,58 @@ const NotificationsPage = () => {
 
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
+
+    if (Number.isNaN(date.getTime())) {
+      return "";
+    }
+
     const now = new Date();
     const diffInMs = now.getTime() - date.getTime();
+
+    if (diffInMs < 0) {
+      return "AHORA MISMO";
+    }
+
     const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
     const diffInHours = Math.floor(diffInMinutes / 60);
 
     if (diffInMinutes < 1) return "AHORA MISMO";
     if (diffInMinutes < 60) return `HACE ${diffInMinutes} MIN`;
-    if (diffInHours < 24 && date.getDate() === now.getDate()) return `HACE ${diffInHours} HS`;
-    
+
+    if (
+      diffInHours < 24 &&
+      date.toDateString() === now.toDateString()
+    ) {
+      return `HACE ${diffInHours} HS`;
+    }
+
     const yesterday = new Date(now);
     yesterday.setDate(now.getDate() - 1);
-    if (date.getDate() === yesterday.getDate() && date.getMonth() === yesterday.getMonth()) {
+
+    if (date.toDateString() === yesterday.toDateString()) {
       return "AYER";
     }
 
-    return date.toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit" });
+    return date.toLocaleDateString("es-AR", {
+      day: "2-digit",
+      month: "2-digit",
+    });
   };
 
-  const groupNotificationsByDate = (list: NotificationItem[]) => {
+  const groupNotificationsByDate = (
+    list: NotificationItem[]
+  ): Record<string, NotificationItem[]> => {
     const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const today = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+
     const yesterday = new Date(today);
     yesterday.setDate(today.getDate() - 1);
 
-    const groups: { [key: string]: NotificationItem[] } = {
+    const groups: Record<string, NotificationItem[]> = {
       HOY: [],
       AYER: [],
       ANTERIORES: [],
@@ -197,7 +234,10 @@ const NotificationsPage = () => {
 
     list.forEach((item) => {
       const itemDate = new Date(item.created_at);
-      if (itemDate >= today) {
+
+      if (Number.isNaN(itemDate.getTime())) {
+        groups.ANTERIORES.push(item);
+      } else if (itemDate >= today) {
         groups.HOY.push(item);
       } else if (itemDate >= yesterday) {
         groups.AYER.push(item);
@@ -216,73 +256,120 @@ const NotificationsPage = () => {
   const grouped = groupNotificationsByDate(notifications);
 
   return (
-    <main className="notifications_page">
-        <Header />
-      <header className="notifications_header">
-        <h1>Notificaciones</h1>
-        <p className="notifications_subtitle">Gestiona tus hallazgos y reportes</p>
-      </header>
+    <div className="notifications_page">
+      <Header />
 
-      <div className="notifications_content">
-        {Object.keys(grouped).map((groupKey) => {
-          const items = grouped[groupKey];
-          if (items.length === 0) return null;
+      <main className="notifications_content">
+        <div className="notifications_header">
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "4px" }}>
+            <button
+              type="button"
+              className="room_back_btn"
+              onClick={() => navigate(-1)}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <ArrowLeft size={26} color="#ff6f00" strokeWidth={2.5} />
+            </button>
+            <h1 style={{ margin: 0 }}>Notificaciones</h1>
+          </div>
+          <p>Gestiona tus hallazgos y reportes</p>
+        </div>
 
-          return (
-            <section key={groupKey} className="notification_group">
-              <h2 className="group_title">{groupKey}</h2>
-              <div className="notification_list">
+        <section className="notifications_list">
+          {Object.entries(grouped).map(([groupKey, items]) => {
+            if (items.length === 0) return null;
+
+            return (
+              <div
+                className="notifications_group"
+                key={groupKey}
+              >
+                <h2 className="notifications_group_title">
+                  {groupKey}
+                </h2>
+
                 {items.map((item) => (
                   <article
+                    className={`notification_card ${
+                      !item.leida ? "unread" : ""
+                    }`}
                     key={item.id}
-                    className={`notification_card ${!item.leida ? "unread" : ""}`}
-                    onClick={() => handleNotificationClick(item)}
+                    onClick={() => void handleNotificationClick(item)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(event) => {
+                      if (
+                        event.key === "Enter" ||
+                        event.key === " "
+                      ) {
+                        event.preventDefault();
+                        void handleNotificationClick(item);
+                      }
+                    }}
                   >
-                    {!item.leida && <span className="unread_badge_dot" />}
+                    {!item.leida && (
+                      <span
+                        className="notification_unread_dot"
+                        aria-label="No leída"
+                      />
+                    )}
 
-                    <div className="notification_card_body">
+                    <div className="notification_icon">
                       {renderNotificationIcon(item.tipo)}
+                    </div>
 
-                      <div className="notification_main_info">
-                        <div className="notification_top_row">
-                          <h3 className="notification_title">{item.titulo}</h3>
-                          <span className="notification_time">
-                            {formatTimeAgo(item.created_at)}
-                          </span>
-                        </div>
+                    <div className="notification_info">
+                      <div className="notification_top">
+                        <h3 className="notification_title">
+                          {item.titulo}
+                        </h3>
 
-                        {item.contenido && (
-                          <p className="notification_description">{item.contenido}</p>
-                        )}
-
-                        <button
-                          type="button"
-                          className="notification_action_btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleNotificationClick(item);
-                          }}
-                        >
-                          {getActionButtonText(item.tipo)}
-                        </button>
+                        <span className="notification_time">
+                          {formatTimeAgo(item.created_at)}
+                        </span>
                       </div>
+
+                      {item.contenido && (
+                        <p className="notification_description">
+                          {item.contenido}
+                        </p>
+                      )}
+
+                      <button
+                        type="button"
+                        className="notification_action"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          void handleNotificationClick(item);
+                        }}
+                      >
+                        {getActionButtonText(item.tipo)}
+                      </button>
                     </div>
                   </article>
                 ))}
               </div>
-            </section>
-          );
-        })}
+            );
+          })}
 
-        {notifications.length === 0 && (
-          <div className="notifications_empty">
-            <CheckCheck size={48} color="#b0b0b0" />
-            <p>No tienes notificaciones por el momento.</p>
-          </div>
-        )}
-      </div>
-    <Footer />
-    </main>
+          {notifications.length === 0 && (
+            <div className="notifications_empty">
+              <MessageSquare size={36} color="#a0a0a0" />
+              <p>No tienes notificaciones por el momento.</p>
+            </div>
+          )}
+        </section>
+      </main>
+
+      <Footer />
+    </div>
   );
 };
 

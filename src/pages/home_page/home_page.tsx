@@ -4,15 +4,16 @@ import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import ActionCard from "../../components/action_card/action_card";
 import InstitutionLogos from "../../components/institution_logos/institution_logos";
-import RecentObjectsCarousel, { type ObjectType } from "../../components/recent_objects_carousel/recent_objects_carousel";
+import RecentObjectsCarousel from "../../components/recent_objects_carousel/recent_objects_carousel";
 import { useNavigate } from "react-router-dom";
 import { get_home_publications, get_home_institutions } from "../../services/home_service";
 import Loader from "../../components/loader/loader";
 import { useAuth } from "../../hooks/use_auth";
 import { api } from "../../services/api";
+import type { Publication } from "../../types/publication";
 
 const HomePage = () => {
-  const [publications, set_publications] = useState<ObjectType[]>([]);
+  const [publications, set_publications] = useState<Publication[]>([]);
   const [institutions, set_institutions] = useState([]);
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -20,11 +21,7 @@ const HomePage = () => {
 
   useEffect(() => {
     let isMounted = true;
-console.group("🔍 DIAGNÓSTICO DE USUARIO EN HOMEPAGE");
-  console.log("Objeto User completo:", user);
-  console.log("Instituciones en user:", user?.instituciones);
-  console.log("LocalStorage 'user':", JSON.parse(localStorage.getItem("user") || "{}"));
-  console.groupEnd();
+
     if (!user) {
       return;
     }
@@ -46,7 +43,7 @@ console.group("🔍 DIAGNÓSTICO DE USUARIO EN HOMEPAGE");
         ]);
 
         if (isMounted) {
-          const pubsRaw: any[] =
+          const pubsRaw: Publication[] =
             publications_data?.publicaciones ||
             publications_data?.data?.publicaciones ||
             (Array.isArray(publications_data) ? publications_data : []);
@@ -56,44 +53,7 @@ console.group("🔍 DIAGNÓSTICO DE USUARIO EN HOMEPAGE");
             institutions_data?.data?.instituciones ||
             (Array.isArray(institutions_data) ? institutions_data : []);
 
-          // 1. Extraer los IDs de las instituciones del usuario de manera flexible
-          const misInstitucionesIds = (user?.instituciones || []).map(
-            (inst: any) => String(inst.id || inst.institucion_id || inst).trim().toLowerCase()
-          );
-
-          console.log("IDs de Mis Instituciones:", misInstitucionesIds);
-
-          // 2. Filtrar publicaciones tolerando diferentes nombres de propiedad en la API
-          const pubsFiltradas = pubsRaw.filter((pub: any) => {
-            const idInstPub = String(
-              pub.institucion_id || 
-              pub.id_institucion || 
-              pub.institucion?.id || 
-              pub.institucion
-            ).trim().toLowerCase();
-
-            return misInstitucionesIds.includes(idInstPub);
-          });
-
-          // 3. Mapear al tipo que necesita 'RecentObjectsCarousel'
-          const pubsMapeadas: ObjectType[] = pubsFiltradas.map((pub: any) => ({
-            id: String(pub.id),
-            nombre: pub.nombre || pub.titulo || "Sin título",
-            lugar_institucion:
-              pub.lugar_institucion ||
-              pub.institucion?.nombre ||
-              pub.lugar ||
-              "Ubicación no especificada",
-            tipo: pub.tipo || pub.estado || pub.categoria || "Perdido",
-            foto_principal_url:
-              pub.foto_principal_url ||
-              pub.foto ||
-              (pub.fotos && pub.fotos[0]) ||
-              "",
-            fecha_evento: pub.fecha_evento || pub.created_at || pub.fecha || "",
-          }));
-
-          set_publications(pubsMapeadas);
+          set_publications(pubsRaw);
           set_institutions(instsRaw);
         }
       } catch (error) {

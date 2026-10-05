@@ -1,0 +1,121 @@
+/* ==========================================================
+   SheliGo — Design tokens
+   "Porque lo tuyo vuelve."
+   Única fuente de verdad para colores, tipografía, radios,
+   sombras, espaciados y tiempos de animación.
+   ========================================================== */
+
+:root {
+  /* ---------- Paleta oficial ---------- */
+  --color-primary: #FF6F00;          /* Naranja SheliGo */
+  --color-secondary: #FFC107;        /* Amarillo SheliGo */
+  --color-gray-light: #EAE8E8;       /* Gris claro */
+  --color-gray-text: #717171;        /* Gris texto / iconos */
+  --color-white: #FFFFFF;
+  --color-gray-placeholder: #D9D9D9; /* Gris placeholder */
+  --color-black: #000000;
+
+  /* ---------- Roles semánticos ---------- */
+  --color-primary-hover: #F06800;
+  --color-primary-active: #E06100;
+  --color-primary-soft: #FFF3E8;     /* tinte muy suave del naranja */
+  --color-primary-ring: rgba(255, 111, 0, 0.22);
+
+  --color-secondary-hover: #F5B800;
+  --color-secondary-soft: #FFF8E1;   /* tinte muy suave del amarillo */
+
+  --color-background: var(--color-white);
+  --color-surface: var(--color-white);
+  --color-surface-muted: #F7F6F6;    /* gris muy claro para fondos de sección */
+  --color-surface-alt: var(--color-gray-light);
+  --color-border: var(--color-gray-light);
+  --color-border-strong: var(--color-gray-placeholder);
+
+  --color-text: var(--color-black);
+  --color-text-secondary: var(--color-gray-text);
+  --color-text-muted: rgba(113, 113, 113, 0.75);
+  --color-placeholder: var(--color-gray-placeholder);
+
+  --color-on-primary: var(--color-white);
+  --color-on-secondary: var(--color-black);
+
+  /* Solo para acciones destructivas / errores */
+  --color-danger: #D93025;
+  --color-danger-hover: #C2271D;
+  --color-danger-soft: #FDECEA;
+
+  --color-overlay: rgba(0, 0, 0, 0.45);
+
+  /* ---------- Tipografía ---------- */
+  --font-brand: "lemonmilk", "poppins", system-ui, sans-serif;
+  --font-sans: "poppins", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --text-xs: 0.75rem;    /* 12 */
+  --text-sm: 0.875rem;   /* 14 */
+  --text-base: 1rem;     /* 16 */
+  --text-lg: 1.125rem;   /* 18 */
+  --text-xl: 1.375rem;   /* 22 */
+  --text-2xl: 1.75rem;   /* 28 */
+  --text-3xl: 2.25rem;   /* 36 */
+  --text-4xl: 2.75rem;   /* 44 */
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+
+  /* ---------- Radios ---------- */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  /* ---------- Sombras (sutiles, en capas) ---------- */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.03), 0 8px 24px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.04), 0 20px 48px rgba(0, 0, 0, 0.12);
+  --shadow-primary: 0 6px 18px rgba(255, 111, 0, 0.28);
+  --shadow-secondary: 0 6px 18px rgba(255, 193, 7, 0.32);
+  --focus-ring: 0 0 0 3px var(--color-primary-ring);
+
+  /* ---------- Espaciado ---------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* ---------- Layout ---------- */
+  --container-max: 1120px;
+  --container-narrow: 720px;
+  --header-height: 64px;
+  --nav-height: 72px;
+  --page-gutter: 16px;
+
+  /* ---------- Movimiento ---------- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 0.15s;
+  --duration: 0.22s;
+
+  /* ---------- Capas ---------- */
+  --z-header: 900;
+  --z-nav: 950;
+  --z-sheet: 1000;
+  --z-modal: 1100;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --page-gutter: 24px;
+  }
+}

@@ -8,7 +8,7 @@ interface PublicationStatusProps {
 /* Si no llega, después le damos un valor por defecto.
   Lo usamos para reutilizar el mismo componente en distintos lugares:
   small = true
-  → versión chica (home)
+  → versión chica (cards)
   small = false
   → versión grande (detalle) */
 
@@ -16,7 +16,7 @@ const PublicationStatus = ({ status,
   small = false,
 }: PublicationStatusProps) => {
 
-  const normalized_status = status.toLowerCase(); 
+  const normalized_status = status.toLowerCase();
 
   /* Si el estado es:
   encontrado
@@ -36,15 +36,10 @@ const PublicationStatus = ({ status,
       : "publication_status_large";
 
   return (
-    <div
-      className={`
-        publication_status
-        ${status_class}
-        ${size_class}`}
-    >
+    <div className={`publication_status ${status_class} ${size_class}`}>
+      <span className="publication_status_dot" />
       {status}
     </div>
-
   );
 };
 

@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, ArrowLeft } from "lucide-react";
+import { Search, ArrowLeft, MessagesSquare } from "lucide-react";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import { useAuth } from "../../hooks/use_auth"; 
 import "./chats_list_page.css";
 import { getImageUrl } from "../../utils/get_image_url";
+import EmptyState from "../../components/empty_state/empty_state";
 
 interface ChatRoom {
   sala_id: string;
@@ -107,27 +108,27 @@ const ChatsListPage = () => {
     <div className="chats_container_page">
       <Header />
 
-      <main className="chats_content">
-        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-          <button 
-            type="button" 
-            className="room_back_btn" 
+      <main className="page_container narrow">
+        <div className="page_topbar">
+          <button
+            type="button"
+            className="icon_button"
             onClick={() => navigate(-1)}
-            style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}
+            aria-label="Volver"
           >
-            <ArrowLeft size={26} color="#ff6f00" strokeWidth={2.5} />
+            <ArrowLeft size={20} strokeWidth={2.2} />
           </button>
-          <h1 className="chats_main_title" style={{ margin: 0 }}>Mensajes</h1>
+          <h1 className="page_title">Mensajes</h1>
         </div>
 
         <div className="chats_search_wrapper">
-          <Search className="chats_search_icon" size={20} color="#9e9e9e" />
+          <Search className="chats_search_icon" size={18} />
           <input
             type="text"
             placeholder="Buscar chats..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="chats_search_input"
+            className="form_input chats_search_input"
           />
         </div>
 
@@ -154,12 +155,15 @@ const ChatsListPage = () => {
 
         <div className="chats_list">
           {cargando ? (
-            <p className="chats_empty_text">Cargando conversaciones...</p>
+            <div className="chats_loading">
+              <div className="spinner" />
+              <p>Cargando conversaciones...</p>
+            </div>
           ) : filteredChats.length > 0 ? (
             filteredChats.map((chat) => (
               <div
                 key={chat.sala_id}
-                className={`chats_item_card ${!chat.leido ? "unread_bg" : "read_bg"}`}
+                className={`chats_item_card ${!chat.leido ? "unread" : ""}`}
                 onClick={() => navigate(`/chat/${chat.sala_id}`, { state: { usuario: chat } })}
               >
                 <img
@@ -179,16 +183,17 @@ const ChatsListPage = () => {
 
                   <div className="chats_card_right_content">
                     <span className="chats_time_text">{chat.ultimo_mensaje_tiempo}</span>
-                    
-                    <div className="chats_status_wrapper">
-                      {!chat.leido && <div className="chats_unread_dot" />}
-                    </div>
+                    {!chat.leido && <span className="chats_unread_dot" />}
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            <p className="chats_empty_text">No tenés conversaciones en esta lista.</p>
+            <EmptyState
+              icon={MessagesSquare}
+              title="No tenés conversaciones en esta lista."
+              compact
+            />
           )}
         </div>
       </main>

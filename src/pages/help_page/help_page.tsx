@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AlertCircle, ShieldCheck, RefreshCw, Lock, ChevronDown, ChevronUp, ArrowLeft, Send } from "lucide-react";
+import { AlertCircle, ShieldCheck, RefreshCw, Lock, ChevronDown, ArrowLeft, Send } from "lucide-react";
 import "./help_page.css";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
@@ -16,10 +16,10 @@ const HelpPage = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const categories = [
-    { id: "reportes", title: "Publicaciones y Reportes", desc: "Cómo crear avisos efectivos de objetos perdidos o encontrados.", icon: <AlertCircle size={22} className="cat_icon_reportes" /> },
-    { id: "seguridad", title: "Seguridad de la Comunidad", desc: "Protocolos para encuentros seguros y verificación de usuarios.", icon: <ShieldCheck size={22} className="cat_icon_seguridad" /> },
-    { id: "devoluciones", title: "Envíos y Devoluciones", desc: "Logística de entregas y cómo funciona el servicio de SheliExpress.", icon: <RefreshCw size={22} className="cat_icon_devoluciones" /> },
-    { id: "privacidad", title: "Privacidad de tus Datos", desc: "Cómo protegemos tu dirección, ubicación en el mapa y tus chats.", icon: <Lock size={22} className="cat_icon_privacidad" /> },
+    { id: "reportes", title: "Publicaciones y Reportes", desc: "Cómo crear avisos efectivos de objetos perdidos o encontrados.", icon: <AlertCircle size={22} strokeWidth={2} /> },
+    { id: "seguridad", title: "Seguridad de la Comunidad", desc: "Protocolos para encuentros seguros y verificación de usuarios.", icon: <ShieldCheck size={22} strokeWidth={2} /> },
+    { id: "devoluciones", title: "Envíos y Devoluciones", desc: "Logística de entregas y cómo funciona el servicio de SheliExpress.", icon: <RefreshCw size={22} strokeWidth={2} /> },
+    { id: "privacidad", title: "Privacidad de tus Datos", desc: "Cómo protegemos tu dirección, ubicación en el mapa y tus chats.", icon: <Lock size={22} strokeWidth={2} /> },
   ];
 
   const faqs: FAQItem[] = [
@@ -50,19 +50,22 @@ const HelpPage = () => {
   };
 
   return (
-    <main className="help_page">
+    <div className="help_page">
       <Header />
 
-      <header className="help_header">
-        <button className="back_button" onClick={() => navigate(-1)}>
-          <ArrowLeft size={24} />
-        </button>
-        <h1>¿Cómo podemos ayudarte?</h1>
-      </header>
+      <main className="page_container help_content">
+        <header className="help_header">
+          <button className="icon_button" onClick={() => navigate(-1)} aria-label="Volver">
+            <ArrowLeft size={20} strokeWidth={2.2} />
+          </button>
+          <div>
+            <span className="eyebrow">Centro de ayuda</span>
+            <h1 className="page_title">¿Cómo podemos ayudarte?</h1>
+          </div>
+        </header>
 
-      <div className="help_content">
         <section className="help_section">
-          <h2 className="section_main_title">Explora por categorías</h2>
+          <h2 className="section_title">Explora por categorías</h2>
           <div className="categories_grid">
             {categories.map((cat) => (
               <div key={cat.id} className="category_card">
@@ -77,8 +80,10 @@ const HelpPage = () => {
         </section>
 
         <section className="help_section">
-          <h2 className="section_main_title">Preguntas Frecuentes</h2>
-          <p className="section_subtitle">Las respuestas más rápidas a las dudas más comunes de nuestra comunidad.</p>
+          <div>
+            <h2 className="section_title">Preguntas Frecuentes</h2>
+            <p className="section_subtitle">Las respuestas más rápidas a las dudas más comunes de nuestra comunidad.</p>
+          </div>
 
           <div className="support_team_pill">
             <div className="avatar_group">
@@ -97,9 +102,13 @@ const HelpPage = () => {
               const isOpen = openFaq === faq.id;
               return (
                 <div key={faq.id} className={`faq_item ${isOpen ? "open" : ""}`}>
-                  <button className="faq_trigger" onClick={() => toggleFaq(faq.id)}>
+                  <button
+                    className="faq_trigger"
+                    onClick={() => toggleFaq(faq.id)}
+                    aria-expanded={isOpen}
+                  >
                     <span>{faq.question}</span>
-                    {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                    <ChevronDown size={20} className="faq_chevron" />
                   </button>
                   <div className="faq_answer_wrapper">
                     <div className="faq_answer_content">
@@ -113,18 +122,20 @@ const HelpPage = () => {
         </section>
 
         <section className="human_contact_banner">
-          <h2>¿Preferís hablar con un humano?</h2>
-          <p>Nuestro equipo de conserjes digitales está disponible 24/7 para ayudarte a resolver cualquier inconveniente.</p>
-          <button 
-            className="submit_query_button" 
+          <div>
+            <h2>¿Preferís hablar con un humano?</h2>
+            <p>Nuestro equipo de conserjes digitales está disponible 24/7 para ayudarte a resolver cualquier inconveniente.</p>
+          </div>
+          <button
+            className="btn btn_secondary btn_lg"
             onClick={() => navigate("/contactanos")}
           >
-            Enviar consulta <Send size={18} style={{ marginLeft: '8px', display: 'inline' }} />
+            Enviar consulta <Send size={18} strokeWidth={2.2} />
           </button>
         </section>
-      </div>
+      </main>
       <Footer />
-    </main>
+    </div>
   );
 };
 

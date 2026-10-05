@@ -1,55 +1,51 @@
 import "./footer.css";
-import { House, Search, CirclePlus, UserRound } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { House, Search, Plus, UserRound } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Footer = () => {
   const navigate = useNavigate();
-  
+  const { pathname } = useLocation();
+
+  // Solo visual: marca el ítem de la sección actual
+  const is_active = (path: string) => pathname === path || pathname.startsWith(`${path}/`);
+
   return (
     <footer className="footer">
-      <button className="footer_item" onClick={() => navigate("/home")}>
-        <House
-          size={30}
-          strokeWidth={2.2}
-        />
-        <span className="footer_text">
-          INICIO
-        </span>
-      </button>
+      <nav className="footer_nav" aria-label="Navegación principal">
+        <button
+          className={`footer_item ${is_active("/home") ? "active" : ""}`}
+          onClick={() => navigate("/home")}
+        >
+          <House size={22} strokeWidth={2} />
+          <span className="footer_text">Inicio</span>
+        </button>
 
-      <button className="footer_item" onClick={() => navigate("/buscar")}>
-        <Search
-          size={30}
-          strokeWidth={2.2}
-        />
-        <span className="footer_text">
-          BUSCAR
-        </span>
-      </button>
+        <button
+          className={`footer_item ${is_active("/buscar") ? "active" : ""}`}
+          onClick={() => navigate("/buscar")}
+        >
+          <Search size={22} strokeWidth={2} />
+          <span className="footer_text">Buscar</span>
+        </button>
 
-      <button
-        className="footer_item"
-        onClick={() => navigate("/publicar")}
-      >
-        <CirclePlus
-          size={30}
-          strokeWidth={2.2}
-        />
-        <span className="footer_text">
-          PUBLICAR
-        </span>
-      </button>
+        <button
+          className={`footer_item footer_item_publish ${is_active("/publicar") ? "active" : ""}`}
+          onClick={() => navigate("/publicar")}
+        >
+          <span className="footer_publish_icon">
+            <Plus size={22} strokeWidth={2.4} />
+          </span>
+          <span className="footer_text">Publicar</span>
+        </button>
 
-      {/* 🚀 Botón Perfil: Ahora tiene el onClick que te redirige a tu pantalla de perfil */}
-      <button className="footer_item" onClick={() => navigate("/perfil")}>
-        <UserRound
-          size={30}
-          strokeWidth={2.2}
-        />
-        <span className="footer_text">
-          PERFIL
-        </span>
-      </button>
+        <button
+          className={`footer_item ${is_active("/perfil") ? "active" : ""}`}
+          onClick={() => navigate("/perfil")}
+        >
+          <UserRound size={22} strokeWidth={2} />
+          <span className="footer_text">Perfil</span>
+        </button>
+      </nav>
     </footer>
   );
 };

@@ -1,10 +1,10 @@
 import "./contact_page.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, Mail } from "lucide-react";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
-import { supabase } from "../../services/supabase"; // 🚀 Tu cliente de Supabase
+import { supabase } from "../../services/supabase";
 
 const ContactPage = () => {
   const navigate = useNavigate();
@@ -74,27 +74,36 @@ const ContactPage = () => {
   };
 
   return (
-    <main className="contact_page">
+    <div className="contact_page">
       <Header />
-      
-      <header className="contact_header">
-        <button className="back_button" onClick={() => navigate(-1)} disabled={loading}>
-          <ArrowLeft size={24} />
-        </button>
-      </header>
 
-      <div className="contact_content">
-        <h1>Contáctanos</h1>
-        <p className="contact_subtitle">
-          Cualquier cosa que necesites podes comunicarte con nosotros.
-        </p>
+      <main className="page_container narrow">
+        <div className="page_topbar">
+          <button className="icon_button" onClick={() => navigate(-1)} disabled={loading} aria-label="Volver">
+            <ArrowLeft size={20} strokeWidth={2.2} />
+          </button>
+          <span className="eyebrow">Soporte</span>
+        </div>
+
+        <header className="contact_header">
+          <span className="contact_header_icon">
+            <Mail size={22} strokeWidth={2.2} />
+          </span>
+          <div>
+            <h1 className="page_title">Contáctanos</h1>
+            <p className="page_subtitle">
+              Cualquier cosa que necesites podes comunicarte con nosotros.
+            </p>
+          </div>
+        </header>
 
         <form onSubmit={handleSendEmail} className="contact_card">
-          <div className="input_group">
-            <label>Email</label>
-            <input 
-              type="email" 
-              placeholder="nombre@gmail.com" 
+          <div className="form_field">
+            <label className="form_label">Email</label>
+            <input
+              type="email"
+              className="form_input"
+              placeholder="nombre@gmail.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -102,10 +111,11 @@ const ContactPage = () => {
             />
           </div>
 
-          <div className="input_group">
-            <label>Motivo</label>
-            <select 
-              value={motivo} 
+          <div className="form_field">
+            <label className="form_label">Motivo</label>
+            <select
+              className={`form_select ${!motivo ? "contact_select_placeholder" : ""}`}
+              value={motivo}
               onChange={(e) => setMotivo(e.target.value)}
               required
               disabled={loading}
@@ -119,10 +129,11 @@ const ContactPage = () => {
             </select>
           </div>
 
-          <div className="input_group">
-            <label>Consulta</label>
-            <textarea 
-              placeholder="Escribe su mensaje" 
+          <div className="form_field">
+            <label className="form_label">Consulta</label>
+            <textarea
+              className="form_textarea"
+              placeholder="Escribe su mensaje"
               value={consulta}
               onChange={(e) => setConsulta(e.target.value)}
               rows={5}
@@ -132,20 +143,20 @@ const ContactPage = () => {
           </div>
         </form>
 
-        <div className="button_container">
-          <button 
-            type="submit" 
-            onClick={handleSendEmail} 
-            className="send_query_button"
+        <div className="contact_actions">
+          <button
+            type="submit"
+            onClick={handleSendEmail}
+            className="btn btn_primary btn_lg btn_block"
             disabled={loading}
           >
-            {loading ? "Enviando..." : "Enviar consulta"} {!loading && <Send size={20} />}
+            {loading ? "Enviando..." : "Enviar consulta"} {loading ? <div className="spinner_small"></div> : <Send size={20} strokeWidth={2.2} />}
           </button>
         </div>
-      </div>
+      </main>
 
       <Footer />
-    </main>
+    </div>
   );
 };
 

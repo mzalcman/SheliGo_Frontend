@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, User, Shield, Edit2, CheckCircle2, History, Key } from "lucide-react";
+import { ChevronRight, User, Shield, Edit2, CheckCircle2, History, Key, Package } from "lucide-react";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import LogoutButton from "../../components/logout_button/logout_button";
 import { useAuth } from "../../hooks/use_auth";
-import { getImageUrl } from "../../utils/get_image_url"; 
+import { getImageUrl } from "../../utils/get_image_url";
+import PublicationStatus from "../../components/publication_status/publication_status";
+import EmptyState from "../../components/empty_state/empty_state";
 import "./profile_page.css";
 
 interface BackendPublication {
@@ -106,101 +108,102 @@ const ProfilePage = () => {
     <div className="profile_layout_page">
       <Header />
 
-      <main className="profile_scroll_container">
+      <main className="page_container narrow profile_scroll_container">
         {/* Cabecera del Usuario */}
         <section className="profile_hero_section">
-          <div 
+          <div
             className="profile_avatar_wrapper"
-            onClick={() => navigate("/perfil/informacion-personal")} 
-            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/perfil/informacion-personal")}
           >
-            <img 
+            <img
               src={
                 user?.profile_image
                   ? getImageUrl(user.profile_image)
-                  : "/default-user.png"
-              } 
-              alt={userFullName} 
-              className="profile_main_avatar" 
+                  : "/user_predeterminada.png"
+              }
+              alt={userFullName}
+              className="profile_main_avatar"
+              onError={(event) => {
+                event.currentTarget.src = "/user_predeterminada.png";
+              }}
             />
-            <button 
+            <button
               className="profile_edit_avatar_badge"
               title="Editar Perfil"
               type="button"
             >
-              <Edit2 size={12} strokeWidth={3} />
+              <Edit2 size={13} strokeWidth={2.6} />
             </button>
           </div>
           <h1 className="profile_user_display_name">
             {userFullName}
           </h1>
-        </section>
 
-        {/* Tarjeta de Estadísticas Reales */}
-        <section className="profile_stats_row">
-          <div className="profile_stat_item">
-            <span className="profile_stat_number">{publications.length}</span>
-            <span className="profile_stat_label">REPORTES</span>
-          </div>
-          <div className="profile_stat_divider" />
-          <div className="profile_stat_item">
-            <span className="profile_stat_number">{recuperadosCount}</span>
-            <span className="profile_stat_label">RECUPERADOS</span>
+          {/* Estadísticas */}
+          <div className="profile_stats_row">
+            <div className="profile_stat_item">
+              <span className="profile_stat_number">{publications.length}</span>
+              <span className="profile_stat_label">REPORTES</span>
+            </div>
+            <div className="profile_stat_divider" />
+            <div className="profile_stat_item">
+              <span className="profile_stat_number">{recuperadosCount}</span>
+              <span className="profile_stat_label">RECUPERADOS</span>
+            </div>
           </div>
         </section>
 
         {/* Sección Mis Objetos (Muestra hasta 3) */}
         <section className="profile_block_section">
           <div className="profile_section_header">
-            <h2>Mis objetos</h2>
-            <button className="profile_see_all_btn" onClick={() => navigate("/mispublicaciones")}>
-              VER TODOS
+            <h2 className="section_title">Mis objetos</h2>
+            <button className="btn_text" onClick={() => navigate("/mispublicaciones")}>
+              Ver todos
             </button>
           </div>
 
           <div className="profile_cards_stack">
             {loadingPubs ? (
-              <p style={{ textAlign: "center", color: "#6e6e6e", padding: "10px 0" }}>
-                Cargando objetos...
-              </p>
+              <div className="profile_loading">
+                <div className="spinner" />
+                <p>Cargando objetos...</p>
+              </div>
             ) : publications.length > 0 ? (
               publications.slice(0, 3).map((pub) => {
                 if (!pub || !pub.id) return null;
 
-                const estadoTexto = (pub.tipo || "BUSCANDO").toUpperCase();
                 const imagenFinal = pub.foto_principal_url || "/obj_predeterminada.png";
                 const textoFecha = calcularHaceCuanto(pub.created_at || pub.fecha_evento);
 
                 return (
-                  <div 
-                    key={pub.id} 
+                  <div
+                    key={pub.id}
                     className="profile_item_card"
                     onClick={() => navigate(`/publicacion/${pub.id}`)}
-                    style={{ cursor: "pointer" }}
                   >
-                    <img 
-                      src={imagenFinal} 
-                      alt={pub.nombre || "Objeto"} 
+                    <img
+                      src={imagenFinal}
+                      alt={pub.nombre || "Objeto"}
                       className="profile_item_thumbnail"
                       onError={(e) => {
                         e.currentTarget.onerror = null;
                         e.currentTarget.src = "/obj_predeterminada.png";
-                      }} 
+                      }}
                     />
                     <div className="profile_item_info">
                       <h3>{pub.nombre || "Sin título"}</h3>
                       <p>{textoFecha}</p>
                     </div>
-                    <span className={`profile_item_badge badge_${(pub.tipo || "buscando").toLowerCase()}`}>
-                      {estadoTexto}
-                    </span>
+                    <PublicationStatus status={pub.tipo || "buscando"} small />
                   </div>
                 );
               })
             ) : (
-              <p style={{ textAlign: "center", color: "#888", fontSize: "14px", padding: "12px 0" }}>
-                No tienes publicaciones activas aún.
-              </p>
+              <EmptyState
+                icon={Package}
+                title="No tienes publicaciones activas aún."
+                compact
+              />
             )}
           </div>
         </section>
@@ -208,68 +211,68 @@ const ProfilePage = () => {
         {/* Sección Historial */}
         <section className="profile_block_section">
           <div className="profile_section_header">
-            <h2>Historial</h2>
-            <button className="profile_see_all_btn" onClick={() => navigate("/historial")}>
-              VER TODO
+            <h2 className="section_title">Historial</h2>
+            <button className="btn_text" onClick={() => navigate("/historial")}>
+              Ver todo
             </button>
           </div>
 
-          <div className="profile_cards_stack">
+          <div className="profile_list_card">
             {historial.map((hist) => (
               <div key={hist.id} className="profile_history_card">
                 <div className="profile_history_icon_container">
                   {hist.tipo === "entregado" ? (
-                    <CheckCircle2 size={18} color="#757575" />
+                    <CheckCircle2 size={18} strokeWidth={2} />
                   ) : (
-                    <History size={18} color="#757575" />
+                    <History size={18} strokeWidth={2} />
                   )}
                 </div>
                 <div className="profile_history_info">
                   <h3>{hist.titulo}</h3>
                   <p>{hist.detalle}</p>
                 </div>
-                <ArrowRight size={16} color="#B0B0B0" className="profile_row_arrow" />
+                <ChevronRight size={18} className="profile_row_arrow" />
               </div>
             ))}
           </div>
         </section>
 
         {/* Sección Configuración */}
-        <section className="profile_block_section profile_config_block">
-          <h2>Configuración</h2>
-          <div className="profile_config_menu_card">
-            
+        <section className="profile_block_section">
+          <h2 className="section_title">Configuración</h2>
+          <div className="profile_list_card profile_config_menu_card">
+
             {/* 1. Información Personal */}
-            <button 
-              className="profile_config_row_btn" 
+            <button
+              className="profile_config_row_btn"
               onClick={() => navigate("/perfil/informacion-personal")}
             >
               <div className="profile_config_left">
-                <User size={18} color="#1A1A1A" />
+                <span className="profile_config_icon"><User size={18} strokeWidth={2} /></span>
                 <span>Información Personal</span>
               </div>
-              <ArrowRight size={16} color="#B0B0B0" />
+              <ChevronRight size={18} className="profile_row_arrow" />
             </button>
 
             {/* 2. Cambiar Contraseña */}
-            <button 
-              className="profile_config_row_btn" 
+            <button
+              className="profile_config_row_btn"
               onClick={() => navigate("/cambiar-contrasena")}
             >
               <div className="profile_config_left">
-                <Key size={18} color="#1A1A1A" />
+                <span className="profile_config_icon"><Key size={18} strokeWidth={2} /></span>
                 <span>Cambiar Contraseña</span>
               </div>
-              <ArrowRight size={16} color="#B0B0B0" />
+              <ChevronRight size={18} className="profile_row_arrow" />
             </button>
 
             {/* 3. Privacidad y Seguridad */}
             <button className="profile_config_row_btn" type="button">
               <div className="profile_config_left">
-                <Shield size={18} color="#1A1A1A" />
+                <span className="profile_config_icon"><Shield size={18} strokeWidth={2} /></span>
                 <span>Privacidad y seguridad</span>
               </div>
-              <ArrowRight size={16} color="#B0B0B0" />
+              <ChevronRight size={18} className="profile_row_arrow" />
             </button>
 
             {/* 4. Cerrar Sesión */}

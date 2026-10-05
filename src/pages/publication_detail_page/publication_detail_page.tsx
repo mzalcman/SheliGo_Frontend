@@ -15,8 +15,10 @@ import { get_questions, create_question } from "../../services/question_service"
 import { get_publication_archives } from "../../services/publication_archives_service";
 import { useAuthContext } from "../../contexts/auth_context";
 import Loader from "../../components/loader/loader";
-import { getImageUrl } from "../../utils/get_image_url"; // 👈 Usamos tu helper para resolver la foto de Supabase / API
-import { Pencil, Trash2 } from "lucide-react";
+import { getImageUrl } from "../../utils/get_image_url";
+import EmptyState from "../../components/empty_state/empty_state";
+import "../../components/modal/modal.css";
+import { Pencil, Trash2, AlertCircle, MessageCircleQuestion, LogIn } from "lucide-react";
 
 const PublicationDetailPage = () => {
   const { id } = useParams();
@@ -97,8 +99,16 @@ const PublicationDetailPage = () => {
   };
 
   if (loading || is_deleting) return <Loader />;
-  if (error) return <div>{error}</div>;
-  if (!publication) return <div>Publicación no encontrada</div>;
+  if (error) return (
+    <div className="page_container narrow">
+      <EmptyState icon={AlertCircle} title={error} />
+    </div>
+  );
+  if (!publication) return (
+    <div className="page_container narrow">
+      <EmptyState icon={AlertCircle} title="Publicación no encontrada" />
+    </div>
+  );
 
   const is_owner = user && publication ? String(publication.usuario_id) === String(user.id) : false;
   const pending_count = questions.filter((q) => !q.respuesta).length;
@@ -106,102 +116,117 @@ const PublicationDetailPage = () => {
   return (
     <div className="publication_detail_page">
       <Header />
-      <main className="publication_detail_content">
+      <main className="page_container">
         <PublicationDetail publication={publication} archives={archives} />
 
-        {is_owner && (
-          <div className="owner_actions_container">
-            <button
-              className="publication_edit_pill_button"
-              onClick={() => navigate(`/publicaciones/editar/${publication_id}`)}
-            >
-              <Pencil size={18} strokeWidth={2.5} />
-              <span>Editar</span>
-            </button>
+        <div className="publication_detail_bottom">
+          {is_owner && (
+            <div className="owner_actions_container">
+              <span className="owner_actions_label">Tu publicación</span>
+              <div className="owner_actions_buttons">
+                <button
+                  className="btn btn_ghost"
+                  onClick={() => navigate(`/publicaciones/editar/${publication_id}`)}
+                >
+                  <Pencil size={18} strokeWidth={2.2} />
+                  <span>Editar</span>
+                </button>
 
-            <button
-              className="publication_delete_pill_button"
-              onClick={() => set_show_delete_modal(true)}
-            >
-              <Trash2 size={18} strokeWidth={2.5} />
-              <span>Borrar</span>
-            </button>
-          </div>
-        )}
-
-        <section className="questions_section">
-          <div className="questions_header_container">
-            <h2 className="questions_title">Preguntas</h2>
-            {is_owner && pending_count > 0 && (
-              <span className="questions_badge_pending">
-                {pending_count} PENDIENTES
-              </span>
-            )}
-          </div>
-
-          <div className="questions_list">
-            {questions.length === 0 ? (
-              <p className="no_questions_text">No hay preguntas públicas aún</p>
-            ) : (
-              questions.map((question) => (
-                <QuestionCard
-                  key={question.id}
-                  question={question}
-                  publication={publication}
-                  is_owner={is_owner}
-                  on_answer_submitted={refresh_questions}
-                />
-              ))
-            )}
-          </div>
-
-          {user ? (
-            !is_owner && (
-              <>
-                <QuestionInput
-                  value={new_question}
-                  on_change={set_new_question}
-                  on_submit={add_question}
-                />
-                <ClaimButton
-                  otroUsuarioId={publication.usuario_id}
-                  usuarioNombre={`${publication.usuario_nombre} ${publication.usuario_apellido}`} 
-                  // 🚀 Arreglo foto: Resolvemos la URL real de la foto o mandamos el fallback seguro
-                  usuarioAvatar={publication.usuario_foto ? getImageUrl(publication.usuario_foto) : defaultUserPlaceholder} 
-                />
-              </>
-            )
-          ) : (
-            <div className="login_required_container">
-              <p className="login_required_text">
-                ¿Reconoces este objeto o tienes alguna duda?
-              </p>
-              <button
-                className="login_redirect_button"
-                onClick={() => navigate("/login")}
-              >
-                Iniciar sesión para preguntar
-              </button>
+                <button
+                  className="btn btn_ghost owner_delete_button"
+                  onClick={() => set_show_delete_modal(true)}
+                >
+                  <Trash2 size={18} strokeWidth={2.2} />
+                  <span>Borrar</span>
+                </button>
+              </div>
             </div>
           )}
-        </section>
+
+          <section className="questions_section">
+            <div className="questions_header_container">
+              <h2 className="section_title">Preguntas</h2>
+              {questions.length > 0 && (
+                <span className="questions_count">{questions.length}</span>
+              )}
+              {is_owner && pending_count > 0 && (
+                <span className="questions_badge_pending">
+                  {pending_count} PENDIENTES
+                </span>
+              )}
+            </div>
+
+            <div className="questions_list">
+              {questions.length === 0 ? (
+                <EmptyState
+                  icon={MessageCircleQuestion}
+                  title="No hay preguntas públicas aún"
+                  compact
+                />
+              ) : (
+                questions.map((question) => (
+                  <QuestionCard
+                    key={question.id}
+                    question={question}
+                    publication={publication}
+                    is_owner={is_owner}
+                    on_answer_submitted={refresh_questions}
+                  />
+                ))
+              )}
+            </div>
+
+            {user ? (
+              !is_owner && (
+                <div className="questions_actions">
+                  <QuestionInput
+                    value={new_question}
+                    on_change={set_new_question}
+                    on_submit={add_question}
+                  />
+                  <ClaimButton
+                    otroUsuarioId={publication.usuario_id}
+                    usuarioNombre={`${publication.usuario_nombre} ${publication.usuario_apellido}`}
+                    // Resolvemos la URL real de la foto o mandamos el fallback seguro
+                    usuarioAvatar={publication.usuario_foto ? getImageUrl(publication.usuario_foto) : defaultUserPlaceholder}
+                  />
+                </div>
+              )
+            ) : (
+              <div className="login_required_container">
+                <p className="login_required_text">
+                  ¿Reconoces este objeto o tienes alguna duda?
+                </p>
+                <button
+                  className="btn btn_primary"
+                  onClick={() => navigate("/login")}
+                >
+                  <LogIn size={18} strokeWidth={2.2} />
+                  Iniciar sesión para preguntar
+                </button>
+              </div>
+            )}
+          </section>
+        </div>
       </main>
       <Footer />
 
       {show_delete_modal && (
         <div className="delete_modal_overlay">
-          <div className="delete_modal_card">
+          <div className="delete_modal_card" role="dialog" aria-modal="true">
             <div className="delete_modal_icon_container">
-              <Trash2 size={24} color="#D32F2F" strokeWidth={2.5} />
+              <Trash2 size={26} strokeWidth={2.2} />
             </div>
             <h2>¿Deseas borrar esta publicación?</h2>
             <p>No volverá a aparecer y se borrará permanentemente</p>
-            <button className="modal_confirm_button" onClick={handle_delete_publication}>
-              Confirmar
-            </button>
-            <button className="modal_cancel_button" onClick={() => set_show_delete_modal(false)}>
-              Cancelar
-            </button>
+            <div className="modal_buttons_container">
+              <button className="btn btn_danger btn_block" onClick={handle_delete_publication}>
+                Confirmar
+              </button>
+              <button className="btn btn_ghost btn_block" onClick={() => set_show_delete_modal(false)}>
+                Cancelar
+              </button>
+            </div>
           </div>
         </div>
       )}

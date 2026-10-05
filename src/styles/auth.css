@@ -1,0 +1,213 @@
+/* ==========================================================
+   Login y Registro — layout compartido
+   ========================================================== */
+
+.auth_page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  background: var(--color-surface-muted);
+}
+
+/* Panel de marca (solo desktop) */
+.auth_brand_panel {
+  display: none;
+}
+
+.auth_main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: var(--space-8) var(--page-gutter) var(--space-10);
+}
+
+.auth_content {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  animation: sg_fade_up 0.4s var(--ease-out) both;
+}
+
+.auth_header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.auth_subtitle {
+  max-width: 340px;
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-snug);
+}
+
+.auth_card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.auth_title {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-1);
+}
+
+.auth_grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+/* Input con icono a la izquierda */
+.auth_input_icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth_input_icon > svg {
+  position: absolute;
+  left: 16px;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+  transition: color var(--duration-fast) ease;
+}
+
+.auth_input_icon .form_input {
+  padding-left: 46px;
+}
+
+.auth_input_icon:focus-within > svg {
+  color: var(--color-primary);
+}
+
+.auth_divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.auth_divider::before,
+.auth_divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.google_pill_button img {
+  width: 20px;
+  height: 20px;
+}
+
+.auth_switch {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+@media (min-width: 640px) {
+  .auth_main {
+    align-items: center;
+  }
+
+  .auth_card {
+    padding: var(--space-8);
+  }
+}
+
+/* Desktop: panel de marca naranja a la izquierda */
+@media (min-width: 1024px) {
+  .auth_page {
+    background: var(--color-background);
+  }
+
+  .auth_brand_panel {
+    position: relative;
+    overflow: hidden;
+    width: 44%;
+    max-width: 620px;
+    margin: var(--space-4);
+    padding: var(--space-10);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--color-primary);
+    border-radius: var(--radius-xl);
+    color: var(--color-white);
+  }
+
+  .auth_brand_panel .brand_logo_mark {
+    filter: brightness(0) invert(1);
+  }
+
+  .auth_brand_copy {
+    position: relative;
+    z-index: 1;
+    max-width: 420px;
+  }
+
+  .auth_brand_copy h2 {
+    font-size: 2.75rem;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-4);
+  }
+
+  .auth_brand_copy p {
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+    color: rgba(255, 255, 255, 0.88);
+  }
+
+  .auth_brand_mark {
+    position: absolute;
+    right: -90px;
+    top: 50%;
+    width: 420px;
+    height: 420px;
+    transform: translateY(-50%);
+    object-fit: contain;
+    opacity: 0.16;
+    filter: brightness(0) invert(1);
+  }
+
+  .auth_header .brand_logo {
+    display: none;
+  }
+
+  .auth_header {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .auth_card {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .auth_title {
+    font-size: var(--text-2xl);
+  }
+
+  .auth_switch {
+    justify-content: flex-start;
+  }
+}

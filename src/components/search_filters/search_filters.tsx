@@ -138,7 +138,7 @@ const SearchFilters = ({
 
     const formatearFechaCorta = (fechaStr: string) => {
       if (!fechaStr) return "";
-      const [anio, mes, dia] = fechaStr.split("-");
+      const [, mes, dia] = fechaStr.split("-");
       return `${dia}/${mes}`;
     };
 
@@ -158,10 +158,10 @@ const SearchFilters = ({
 
     <>
 
-      <div className="search_filters">
+      <div className="search_filters no_scrollbar">
 
         <button
-          className={`search_filter ${openFilter === "categoria"
+          className={`search_filter ${openFilter === "categoria" || categorias.length > 0
             ? "active"
             : ""
             }`}
@@ -170,18 +170,18 @@ const SearchFilters = ({
           }
         >
 
-          <Shapes size={18} />
+          <Shapes size={16} strokeWidth={2} />
 
           <span>
             {categoriasSeleccionadasTexto()}
           </span>
 
-          <ChevronDown size={16} />
+          <ChevronDown size={14} strokeWidth={2.2} className="search_filter_chevron" />
 
         </button>
 
         <button
-          className={`search_filter ${openFilter === "institucion"
+          className={`search_filter ${openFilter === "institucion" || instituciones.length > 0
             ? "active"
             : ""
             }`}
@@ -190,13 +190,13 @@ const SearchFilters = ({
           }
         >
 
-          <Building2 size={18} />
+          <Building2 size={16} strokeWidth={2} />
 
           <span>
             {institucionesSeleccionadasTexto()}
           </span>
 
-          <ChevronDown size={16} />
+          <ChevronDown size={14} strokeWidth={2.2} className="search_filter_chevron" />
 
         </button>
 
@@ -210,18 +210,18 @@ const SearchFilters = ({
           }
         >
 
-          <CalendarDays size={18} />
+          <CalendarDays size={16} strokeWidth={2} />
 
           <span>
             {fechasSeleccionadasTexto()}
           </span>
 
-          <ChevronDown size={16} />
+          <ChevronDown size={14} strokeWidth={2.2} className="search_filter_chevron" />
 
         </button>
 
         <button
-          className={`search_filter ${tipo === "perdido"
+          className={`search_filter search_filter_lost ${tipo === "perdido"
             ? "active"
             : ""
             }`}
@@ -234,7 +234,7 @@ const SearchFilters = ({
           }
         >
 
-          <Lock size={18} />
+          <Lock size={16} strokeWidth={2} />
 
           <span>
             Perdido
@@ -243,7 +243,7 @@ const SearchFilters = ({
         </button>
 
         <button
-          className={`search_filter ${tipo === "encontrado"
+          className={`search_filter search_filter_found ${tipo === "encontrado"
             ? "active"
             : ""
             }`}
@@ -256,7 +256,7 @@ const SearchFilters = ({
           }
         >
 
-          <ScanSearch size={18} />
+          <ScanSearch size={16} strokeWidth={2} />
 
           <span>
             Encontrado
@@ -268,7 +268,7 @@ const SearchFilters = ({
           className="search_filter clear_filters_button"
           onClick={clearFilters}
         >
-          <Trash2 size={18} />
+          <Trash2 size={16} strokeWidth={2} />
           <span>Borrar</span>
         </button>
 
@@ -305,9 +305,10 @@ const SearchFilters = ({
       >
         <div className="date_range_container">
           <div className="date_field">
-            <label>Desde</label>
+            <label className="form_label">Desde</label>
             <input
               type="date"
+              className="form_input"
               value={fechaDesde}
               max={hoyLimiter}
               onChange={(e) => {
@@ -330,9 +331,10 @@ const SearchFilters = ({
           </div>
 
           <div className="date_field">
-            <label>Hasta</label>
+            <label className="form_label">Hasta</label>
             <input
               type="date"
+              className="form_input"
               value={fechaHasta}
               max={hoyLimiter}
               min={fechaDesde || undefined}

@@ -1,18 +1,18 @@
 import "./landing_page.css";
 import { useNavigate } from "react-router-dom";
+import { ArrowRight, Search, MessageCircle, PackageCheck } from "lucide-react";
+import BrandLogo from "../../components/brand_logo/brand_logo";
+
 const LandingPage = () => {
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   return (
-
     <main className="landing_page">
-
       <div className="landing_image_container" />
 
       <section className="landing_content">
-
         <h1 className="landing_logo">
-          SheliGo
+          <BrandLogo size="lg" />
         </h1>
 
         <h2 className="landing_title">
@@ -24,29 +24,32 @@ const navigate = useNavigate();
           Reportá, buscá y recuperá en tu institución.
         </p>
 
-        <div className="landing_buttons">
+        <ul className="landing_steps">
+          <li><Search size={16} strokeWidth={2.2} /> Reportá</li>
+          <li><MessageCircle size={16} strokeWidth={2.2} /> Coordiná</li>
+          <li><PackageCheck size={16} strokeWidth={2.2} /> Recuperá</li>
+        </ul>
 
-          <button className="landing_register_button" 
-          onClick={() =>
-              navigate("/register")
-            }>
-            Registrarse
-          </button> 
+        <div className="landing_buttons">
           <button
-            className="landing_login_button"
+            className="btn btn_primary btn_lg btn_block"
+            onClick={() => navigate("/register")}
+          >
+            Registrarse
+            <ArrowRight size={18} strokeWidth={2.4} />
+          </button>
+          <button
+            className="btn btn_ghost btn_lg btn_block"
             onClick={() => navigate("/login")}
           >
             Iniciar Sesión
           </button>
-
         </div>
 
+        <p className="landing_tagline">Porque lo tuyo vuelve.</p>
       </section>
-
     </main>
-
   );
-
 };
 
 export default LandingPage;

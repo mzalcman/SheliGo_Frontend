@@ -1,204 +1,193 @@
 .chats_container_page {
-  width: 100%;
   min-height: 100vh;
-  background-color: #ffffff;
-  display: flex;
-  flex-direction: column;
+  background: var(--color-background);
 }
 
-.chats_content {
-  flex: 1;
-  padding: 0 24px;
-  margin-top: 20px;
-}
-
-.chats_main_title {
-  font-family: "poppins";
-  font-size: 38px;
-  font-weight: 400;
-  color: #1c1c1c;
-  margin-bottom: 24px;
-}
-
+/* Buscador */
 .chats_search_wrapper {
   position: relative;
-  width: 100%;
-  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-4);
 }
 
 .chats_search_icon {
   position: absolute;
-  left: 18px;
-  top: 50%;
-  transform: translateY(-50%);
+  left: 16px;
+  color: var(--color-text-secondary);
+  pointer-events: none;
 }
 
-.chats_search_input {
-  width: 100%;
-  background-color: #dbdbdb80;
-  border: none;
-  border-radius: 50px;
-  padding: 14px 14px 14px 48px;
-  font-family: "poppins";
-  font-size: 16px;
-  box-sizing: border-box;
-  outline: none;
+.chats_search_input.form_input {
+  padding-left: 44px;
+  background: var(--color-surface-muted);
+  border-color: transparent;
 }
 
+.chats_search_input.form_input:focus {
+  background: var(--color-surface);
+  border-color: var(--color-primary);
+}
+
+/* Filtros: control segmentado */
 .chats_filter_chips {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 28px;
-  background-color: #f1f1f1;
-  padding: 5px;
-  border-radius: 20px;
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px;
+  margin-bottom: var(--space-5);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
 }
 
 .chats_chip {
-  flex: 1;
-  border: none;
-  background: none;
-  padding: 10px 0;
-  border-radius: 15px;
-  font-family: "poppins";
-  font-size: 14.5px;
-  font-weight: 600;
-  color: #6e6e6e;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  height: 34px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-secondary);
+  transition:
+    background-color var(--duration-fast) ease,
+    color var(--duration-fast) ease,
+    box-shadow var(--duration-fast) ease;
+}
+
+.chats_chip:hover {
+  color: var(--color-text);
 }
 
 .chats_chip.active {
-  background-color: #ffffff;
-  color: #ff6f00;
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.05);
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font-weight: var(--weight-semibold);
+  box-shadow: var(--shadow-sm);
 }
 
+/* Lista */
 .chats_list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-bottom: 40px;
+  gap: var(--space-2);
+}
+
+.chats_loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-10) 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
 }
 
 .chats_item_card {
   display: flex;
   align-items: center;
-  padding: 16px;
-  background-color: #ffffff;
-  border-radius: 28px;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid transparent;
   cursor: pointer;
-  transition: transform 0.15s ease;
+  animation: sg_fade_up var(--duration) var(--ease-out) both;
+  transition:
+    background-color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease,
+    box-shadow var(--duration-fast) ease;
 }
 
-.chats_item_card.unread_bg {
-  background-color: #f8f8f8;
+.chats_item_card:hover {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-sm);
 }
 
-.chats_item_card:active {
-  transform: scale(0.98);
+/* No leído: fondo cálido sutil + tipografía con más peso */
+.chats_item_card.unread {
+  background: var(--color-primary-soft);
+}
+
+.chats_item_card.unread:hover {
+  border-color: rgba(255, 111, 0, 0.25);
 }
 
 .chats_avatar {
-  width: 60px;
-  height: 60px;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
   border-radius: 50%;
   object-fit: cover;
-  margin-right: 16px;
+  background: var(--color-placeholder);
+}
+
+.chats_item_card.unread .chats_avatar {
+  box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-primary);
 }
 
 .chats_card_info {
   flex: 1;
+  min-width: 0;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  overflow: hidden;
+  justify-content: space-between;
+  gap: var(--space-3);
 }
 
 .chats_card_left_content {
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  overflow: hidden;
-  flex: 1;
-  padding-right: 12px;
-}
-
-.chats_card_right_content {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 6px;
-  min-width: 65px;
-  flex-shrink: 0;
+  gap: 2px;
 }
 
 .chats_user_name {
-  font-family: "poppins";
-  font-size: 18px;
-  font-weight: 700;
-  color: #000000;
-}
-
-.chats_time_text {
-  font-family: "poppins";
-  font-size: 11px;
-  font-weight: 600;
-  color: #a0a0a0;
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.chats_status_wrapper {
-  height: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  min-width: 24px;
-}
-
-/* Forzado absoluto de visualización de los tics */
-.chats_list_double_check {
-  font-family: Arial, sans-serif !important; 
-  font-size: 16px !important;
-  font-weight: bold !important;
-  letter-spacing: -1px;
-  line-height: 1;
-  display: block !important;
-}
-
-.chats_list_double_check.unread {
-  color: #b0b0b0 !important;
-}
-
-.chats_list_double_check.read {
-  color: #ff6f00 !important;
 }
 
 .chats_preview_message {
-  font-family: "louis_george";
-  font-weight: 600;
-  font-size: 14px;
-  color: #6e6e6e;
-  white-space: nowrap;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100%; 
+  white-space: nowrap;
+}
+
+.chats_item_card.unread .chats_user_name {
+  font-weight: var(--weight-semibold);
+}
+
+.chats_item_card.unread .chats_preview_message {
+  color: var(--color-text);
+  font-weight: var(--weight-medium);
+}
+
+.chats_card_right_content {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.chats_time_text {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.chats_item_card.unread .chats_time_text {
+  color: var(--color-primary);
+  font-weight: var(--weight-semibold);
 }
 
 .chats_unread_dot {
-  width: 12px;
-  height: 12px;
-  background-color: #ff6f00;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-}
-
-.chats_empty_text {
-  font-family: "louis_george";
-  font-weight: 600;
-  font-size: 16px;
-  color: #717171;
-  text-align: center;
-  margin: 0;
-  line-height: 1.5;
+  background: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-ring);
 }

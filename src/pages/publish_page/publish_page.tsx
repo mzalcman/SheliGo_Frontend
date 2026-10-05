@@ -1,4 +1,3 @@
-import "./publish_page.css";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/header/header";
@@ -7,6 +6,8 @@ import ImageUploader from "../../components/image_uploader/image_uploader";
 import { Send, Check, X } from "lucide-react";
 import { create_publication, getCategories, getInstitutions } from "../../services/publication_service";
 import Modal from "../../components/modal/modal";
+import StatusSelector from "../../components/status_selector/status_selector";
+import "../../styles/form_layout.css";
 
 interface BackendItem {
   id: string;
@@ -233,142 +234,183 @@ const PublishPage = () => {
     <div className="publish_page">
       <Header />
 
-      <main className="publish_content">
-        <h1 className="publish_title">Publicar Objeto</h1>
+      <main className="page_container narrow">
+        <header className="form_page_header">
+          <span className="eyebrow">Nueva publicación</span>
+          <h1 className="page_title">Publicar Objeto</h1>
+          <p className="page_subtitle">
+            Ayúdanos a devolverle al club lo que alguien perdió.
+          </p>
+        </header>
 
-        <p className="publish_subtitle">
-          Ayúdanos a devolverle al club lo que alguien perdió.
-        </p>
+        <section className="form_section">
+          <div className="form_section_header">
+            <span className="form_step">1</span>
+            <div>
+              <h2>Fotos</h2>
+              <p>Una buena foto ayuda a reconocer el objeto.</p>
+            </div>
+          </div>
+          <ImageUploader images={images} setImages={setImages} />
+        </section>
 
-        <ImageUploader images={images} setImages={setImages} />
+        <section className="form_section">
+          <div className="form_section_header">
+            <span className="form_step">2</span>
+            <div>
+              <h2>Detalles del objeto</h2>
+              <p>Contanos qué es y en qué estado se encuentra.</p>
+            </div>
+          </div>
 
-        <section className="publish_form">
-          <label>¿Qué encontraste o perdiste?</label>
-          <input
-            className={`publish_input ${formErrors.nombre ? "input_error" : ""}`}
-            value={nombre}
-            maxLength={110}
-            placeholder="Ej: buzo azul"
-            onChange={(e) => {
-              setNombre(e.target.value);
-              if (formErrors.nombre) setFormErrors(prev => ({ ...prev, nombre: false }));
-            }}
-          />
-
-          <label>Estado del objeto</label>
-          <select
-            className={`publish_input ${!tipo ? "select_placeholder" : ""} ${formErrors.tipo ? "input_error" : ""}`}
-            value={tipo}
-            onChange={(e) => {
-              setTipo(e.target.value);
-              if (formErrors.tipo) setFormErrors(prev => ({ ...prev, tipo: false }));
-            }}
-          >
-            <option value="">Selecciona una opción</option>
-            <option value="perdido">Perdido</option>
-            <option value="encontrado">Encontrado</option>
-          </select>
-
-          <label>Categoría</label>
-          <select
-            className={`publish_input ${!categoriaId ? "select_placeholder" : ""} ${formErrors.categoriaId ? "input_error" : ""}`}
-            value={categoriaId}
-            onChange={(e) => {
-              setCategoriaId(e.target.value);
-              if (formErrors.categoriaId) setFormErrors(prev => ({ ...prev, categoriaId: false }));
-            }}
-          >
-            <option value="">Selecciona una categoría</option>
-            {categorias.map((categoria) => (
-              <option key={categoria.id} value={categoria.id}>
-                {categoria.nombre}
-              </option>
-            ))}
-          </select>
-
-          <label>Fecha del evento</label>
-          <input
-            type="date"
-            max={todayStr}
-            className={`publish_input ${!fechaEvento ? "date_placeholder" : ""} ${formErrors.fechaEvento ? "input_error" : ""}`}
-            value={fechaEvento}
-            onChange={(e) => {
-              setFechaEvento(e.target.value);
-              if (formErrors.fechaEvento) setFormErrors(prev => ({ ...prev, fechaEvento: false }));
-            }}
-          />
-
-          <label>Ubicación</label>
-          <input
-            className={`publish_input ${formErrors.lugarInstitucion ? "input_error" : ""}`}
-            placeholder="¿En qué parte del club?"
-            value={lugarInstitucion}
-            onChange={(e) => {
-              setLugarInstitucion(e.target.value);
-              if (formErrors.lugarInstitucion) setFormErrors(prev => ({ ...prev, lugarInstitucion: false }));
-            }}
-          />
-
-          <label>Descripción adicional</label>
-          <textarea
-            className={`publish_textarea ${formErrors.descripcion ? "input_error" : ""}`}
-            value={descripcion}
-            placeholder="Escribe aquí..."
-            onChange={(e) => {
-              setDescripcion(e.target.value);
-              if (formErrors.descripcion) setFormErrors(prev => ({ ...prev, descripcion: false }));
-            }}
-          />
-
-          <label>Institución</label>
-          <div ref={autocompleteRef} className="autocomplete_container">
+          <div className="form_field">
+            <label className="form_label">¿Qué encontraste o perdiste?</label>
             <input
-              className={`publish_input ${formErrors.institucion ? "input_error" : ""}`}
-              placeholder="Selecciona una institución..."
-              value={institucion}
-              onFocus={() => setShowDropdown(true)}
+              className={`form_input ${formErrors.nombre ? "input_error" : ""}`}
+              value={nombre}
+              maxLength={110}
+              placeholder="Ej: buzo azul"
               onChange={(e) => {
-                setInstitucion(e.target.value);
-                setShowDropdown(true);
-                if (formErrors.institucion) setFormErrors(prev => ({ ...prev, institucion: false }));
+                setNombre(e.target.value);
+                if (formErrors.nombre) setFormErrors(prev => ({ ...prev, nombre: false }));
               }}
             />
+          </div>
 
-            {showDropdown && filteredInstituciones.length > 0 && (
-              <ul className="autocomplete_dropdown">
-                {filteredInstituciones.map((inst) => (
-                  <li
-                    key={inst.id}
-                    onClick={() => {
-                      setInstitucion(inst.nombre);
-                      setShowDropdown(false);
-                    }}
-                  >
-                    {inst.nombre}
-                  </li>
-                ))}
-              </ul>
-            )}
+          <div className="form_field">
+            <label className="form_label">Estado del objeto</label>
+            <StatusSelector
+              value={tipo}
+              has_error={!!formErrors.tipo}
+              onChange={(value) => {
+                setTipo(value);
+                if (formErrors.tipo) setFormErrors(prev => ({ ...prev, tipo: false }));
+              }}
+            />
+          </div>
+
+          <div className="form_field">
+            <label className="form_label">Categoría</label>
+            <select
+              className={`form_select ${!categoriaId ? "select_placeholder" : ""} ${formErrors.categoriaId ? "input_error" : ""}`}
+              value={categoriaId}
+              onChange={(e) => {
+                setCategoriaId(e.target.value);
+                if (formErrors.categoriaId) setFormErrors(prev => ({ ...prev, categoriaId: false }));
+              }}
+            >
+              <option value="">Selecciona una categoría</option>
+              {categorias.map((categoria) => (
+                <option key={categoria.id} value={categoria.id}>
+                  {categoria.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form_field">
+            <label className="form_label">Descripción adicional</label>
+            <textarea
+              className={`form_textarea ${formErrors.descripcion ? "input_error" : ""}`}
+              value={descripcion}
+              placeholder="Escribe aquí..."
+              onChange={(e) => {
+                setDescripcion(e.target.value);
+                if (formErrors.descripcion) setFormErrors(prev => ({ ...prev, descripcion: false }));
+              }}
+            />
           </div>
         </section>
 
-        <button
-          className={`publish_button ${isSubmitting ? "button_loading" : ""}`}
-          onClick={handlePublish}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <>
-              <span>Publicando...</span>
-              <div className="spinner_small"></div>
-            </>
-          ) : (
-            <>
-              <span>Publicar Objeto</span>
-              <Send size={20} strokeWidth={2.5} />
-            </>
-          )}
-        </button>
+        <section className="form_section">
+          <div className="form_section_header">
+            <span className="form_step">3</span>
+            <div>
+              <h2>¿Cuándo y dónde?</h2>
+              <p>Ubicá el objeto dentro de la institución.</p>
+            </div>
+          </div>
+
+          <div className="form_field">
+            <label className="form_label">Fecha del evento</label>
+            <input
+              type="date"
+              max={todayStr}
+              className={`form_input ${!fechaEvento ? "date_placeholder" : ""} ${formErrors.fechaEvento ? "input_error" : ""}`}
+              value={fechaEvento}
+              onChange={(e) => {
+                setFechaEvento(e.target.value);
+                if (formErrors.fechaEvento) setFormErrors(prev => ({ ...prev, fechaEvento: false }));
+              }}
+            />
+          </div>
+
+          <div className="form_field">
+            <label className="form_label">Institución</label>
+            <div ref={autocompleteRef} className="autocomplete_container">
+              <input
+                className={`form_input ${formErrors.institucion ? "input_error" : ""}`}
+                placeholder="Selecciona una institución..."
+                value={institucion}
+                onFocus={() => setShowDropdown(true)}
+                onChange={(e) => {
+                  setInstitucion(e.target.value);
+                  setShowDropdown(true);
+                  if (formErrors.institucion) setFormErrors(prev => ({ ...prev, institucion: false }));
+                }}
+              />
+
+              {showDropdown && filteredInstituciones.length > 0 && (
+                <ul className="autocomplete_dropdown">
+                  {filteredInstituciones.map((inst) => (
+                    <li
+                      key={inst.id}
+                      onClick={() => {
+                        setInstitucion(inst.nombre);
+                        setShowDropdown(false);
+                      }}
+                    >
+                      {inst.nombre}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+
+          <div className="form_field">
+            <label className="form_label">Ubicación</label>
+            <input
+              className={`form_input ${formErrors.lugarInstitucion ? "input_error" : ""}`}
+              placeholder="¿En qué parte del club?"
+              value={lugarInstitucion}
+              onChange={(e) => {
+                setLugarInstitucion(e.target.value);
+                if (formErrors.lugarInstitucion) setFormErrors(prev => ({ ...prev, lugarInstitucion: false }));
+              }}
+            />
+          </div>
+        </section>
+
+        <div className="form_actions">
+          <button
+            className="btn btn_primary btn_lg btn_block"
+            onClick={handlePublish}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <span>Publicando...</span>
+                <div className="spinner_small"></div>
+              </>
+            ) : (
+              <>
+                <span>Publicar Objeto</span>
+                <Send size={20} strokeWidth={2.2} />
+              </>
+            )}
+          </button>
+        </div>
       </main>
 
       <Footer />
@@ -380,7 +422,7 @@ const PublishPage = () => {
         title="¡Publicación exitosa!"
         description="Tu objeto ya se encuentra visible para toda la comunidad de SheliGo."
         variant="success"
-        icon={<Check size={32} strokeWidth={3} />}
+        icon={<Check size={28} strokeWidth={2.6} />}
         onConfirm={handleModalAccept}
       />
 
@@ -391,7 +433,7 @@ const PublishPage = () => {
         title="No se pudo publicar"
         description="Por favor corrige los siguientes detalles:"
         variant="error"
-        icon={<X size={32} strokeWidth={3} />}
+        icon={<X size={28} strokeWidth={2.6} />}
         confirmText="Entendido"
       >
         <div className="error_list_container">

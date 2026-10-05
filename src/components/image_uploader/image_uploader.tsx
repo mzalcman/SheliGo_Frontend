@@ -62,11 +62,7 @@ const ImageUploader = ({
           className="image_upload_box"
         >
           <div className="upload_icon">
-            <Camera
-              size={32}
-              color="black"
-              strokeWidth={2.5}
-            />
+            <Camera size={24} strokeWidth={2} />
           </div>
 
           <h3>Añadir foto</h3>
@@ -100,9 +96,10 @@ const ImageUploader = ({
               <button
                 type="button"
                 className="remove_image_button"
+                aria-label="Quitar imagen"
                 onClick={() => handleRemoveImage(index)}
               >
-                <X size={14} color="#333" strokeWidth={2.5} />
+                <X size={14} strokeWidth={2.5} />
               </button>
             </div>
           ))}

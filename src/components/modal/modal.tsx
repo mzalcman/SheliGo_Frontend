@@ -41,7 +41,7 @@ const Modal: React.FC<ModalProps> = ({
 
   return (
     <div className="modal_overlay">
-      <div className="modal_container">
+      <div className="modal_container" role="dialog" aria-modal="true">
         {icon && <div className={iconContainerClass}>{icon}</div>}
 
         <h2 className="modal_title">{title}</h2>
@@ -53,19 +53,19 @@ const Modal: React.FC<ModalProps> = ({
         <div className="modal_buttons_container">
           {variant === "confirm" && onConfirm ? (
             <>
-              <button 
-                className="modal_confirm_button confirm_brown" 
+              <button
+                className="btn btn_primary btn_block"
                 onClick={onConfirm}
               >
                 {confirmText}
               </button>
-              <button className="modal_cancel_button" onClick={onClose}>
+              <button className="btn btn_ghost btn_block" onClick={onClose}>
                 {cancelText}
               </button>
             </>
           ) : (
             <button
-              className={variant === "error" ? "modal_error_button" : "modal_accept_button"}
+              className="btn btn_primary btn_block"
               onClick={onConfirm || onClose}
             >
               {confirmText}

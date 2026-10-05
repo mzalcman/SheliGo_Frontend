@@ -1,10 +1,11 @@
-import "./login_page.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../services/auth_service";
 import Loader from "../../components/loader/loader";
 import { useAuth } from "../../hooks/use_auth";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import BrandLogo from "../../components/brand_logo/brand_logo";
+import "../../styles/auth.css";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -70,74 +71,97 @@ const LoginPage = () => {
   }
 
   return (
-    <main className="login_page">
-      <div className="login_top" />
-      <div className="login_content">
-        <h1 className="login_logo">SheliGo</h1>
-        <p className="login_subtitle">
-          Encuentra lo que perdiste, devuelve lo que encontraste.
-        </p>
+    <main className="auth_page">
+      <aside className="auth_brand_panel">
+        <BrandLogo size="md" tone="light" />
+        <div className="auth_brand_copy">
+          <h2>Porque lo tuyo vuelve.</h2>
+          <p>La plataforma para recuperar objetos perdidos dentro de tu institución.</p>
+        </div>
+        <img src="/logo_sheligo.png" alt="" className="auth_brand_mark" />
+      </aside>
 
-        <div className="login_card">
-          <h2>Iniciar Sesión</h2>
+      <div className="auth_main">
+        <div className="auth_content">
+          <header className="auth_header">
+            <BrandLogo size="md" />
+            <p className="auth_subtitle">
+              Encuentra lo que perdiste, devuelve lo que encontraste.
+            </p>
+          </header>
 
-          <label>Correo electrónico</label>
-          <input
-            type="email"
-            placeholder="nombre@ejemplo.com"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-          />
+          <div className="auth_card">
+            <h1 className="auth_title">Iniciar Sesión</h1>
 
-          <label>Contraseña</label>
-          <div className="password_input_container">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="••••••••"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-            />
+            <div className="form_field">
+              <label className="form_label">Correo electrónico</label>
+              <div className="auth_input_icon">
+                <Mail size={18} />
+                <input
+                  type="email"
+                  className="form_input"
+                  placeholder="nombre@ejemplo.com"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="form_field">
+              <label className="form_label">Contraseña</label>
+              <div className="password_input_container auth_input_icon">
+                <Lock size={18} />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="form_input"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                />
+
+                <button
+                  type="button"
+                  className="password_toggle"
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                </button>
+              </div>
+            </div>
+
+            {error && <p className="form_alert form_alert_error">{error}</p>}
+
+            <button className="btn btn_primary btn_lg btn_block" onClick={handle_login}>
+              Entrar
+            </button>
+
+            <div className="auth_divider">
+              <span>o también puedes</span>
+            </div>
 
             <button
               type="button"
-              className="password_toggle"
-              onClick={() => setShowPassword(!showPassword)}
+              onClick={loginWithGoogle}
+              className="btn btn_ghost btn_lg btn_block google_pill_button"
             >
-              {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+              <img
+                src="https://www.vectorlogo.zone/logos/google/google-icon.svg"
+                alt="Google"
+              />
+              Sign in with Google
             </button>
           </div>
 
-          {error && <p className="login_error">{error}</p>}
-
-          <button className="login_button" onClick={handle_login}>
-            Entrar
-          </button>
-
-          <div style={{ margin: "3px 0", textAlign: "center", color: "#888", fontSize: "14px" }}>
-            <span>o también puedes</span>
+          <div className="auth_switch">
+            <span>¿No tienes una cuenta?</span>
+            <button
+              className="btn_text"
+              onClick={() => navigate("/register")}
+            >
+              Regístrate gratis
+            </button>
           </div>
-
-          <button
-            type="button"
-            onClick={loginWithGoogle}
-            className="google_pill_button"
-          >
-            <img
-              src="https://www.vectorlogo.zone/logos/google/google-icon.svg"
-              alt="Google"
-            />
-            Sign in with Google
-          </button>
-        </div>
-
-        <div className="register_container">
-          <span>¿No tienes una cuenta?</span>
-          <button
-            className="register_link"
-            onClick={() => navigate("/register")}
-          >
-            Regístrate gratis
-          </button>
         </div>
       </div>
     </main>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Key, Eye, EyeOff, CheckCircle, AlertCircle } from "lucide-react";
+import { ArrowLeft, Key, Eye, EyeOff, CheckCircle, AlertCircle, ShieldCheck } from "lucide-react";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import "./change_password_page.css";
@@ -84,92 +84,98 @@ const ChangePasswordPage = () => {
     <div className="change_pw_layout">
       <Header />
 
-      <main className="change_pw_container">
-        {/* Header de navegación */}
-        <div className="change_pw_nav">
-          <button className="change_pw_back_btn" onClick={() => navigate(-1)}>
-            <ArrowLeft size={26} color="#ff6f00" strokeWidth={2.5} />
+      <main className="page_container narrow">
+        <div className="page_topbar">
+          <button className="icon_button" onClick={() => navigate(-1)} aria-label="Volver">
+            <ArrowLeft size={20} strokeWidth={2.2} />
           </button>
-          <h1 className="change_pw_title">Cambiar Contraseña</h1>
+          <h1 className="page_title">Cambiar Contraseña</h1>
         </div>
 
-        <p className="change_pw_subtitle">
-          Crea una nueva contraseña segura para proteger tu cuenta de SheliGo.
-        </p>
-
-        {/* Mensajes de Alerta */}
-        {errorMsg && (
-          <div className="change_pw_alert alert_error">
-            <AlertCircle size={18} />
-            <span>{errorMsg}</span>
+        <div className="change_pw_card">
+          <div className="change_pw_intro">
+            <span className="change_pw_icon">
+              <ShieldCheck size={22} strokeWidth={2.2} />
+            </span>
+            <p className="page_subtitle">
+              Crea una nueva contraseña segura para proteger tu cuenta de SheliGo.
+            </p>
           </div>
-        )}
 
-        {successMsg && (
-          <div className="change_pw_alert alert_success">
-            <CheckCircle size={18} />
-            <span>{successMsg}</span>
-          </div>
-        )}
+          {/* Mensajes de Alerta */}
+          {errorMsg && (
+            <div className="form_alert form_alert_error">
+              <AlertCircle size={18} />
+              <span>{errorMsg}</span>
+            </div>
+          )}
 
-        {/* Formulario */}
-        <form onSubmit={handleSubmit} className="change_pw_form">
-          {/* Contraseña Actual */}
-          <div className="change_pw_field">
-            <label>Contraseña Actual</label>
-            <div className="change_pw_input_wrapper">
+          {successMsg && (
+            <div className="form_alert form_alert_success">
+              <CheckCircle size={18} />
+              <span>{successMsg}</span>
+            </div>
+          )}
+
+          {/* Formulario */}
+          <form onSubmit={handleSubmit} className="change_pw_form">
+          <div className="form_field">
+            <label className="form_label">Contraseña Actual</label>
+            <div className="change_pw_input_wrapper password_input_container">
               <Key size={18} className="field_icon" />
               <input
                 type={showCurrent ? "text" : "password"}
+                className="form_input"
                 placeholder="Ingresa tu contraseña actual"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
               />
               <button
                 type="button"
-                className="toggle_pwd_btn"
+                className="password_toggle"
+                aria-label={showCurrent ? "Ocultar contraseña" : "Mostrar contraseña"}
                 onClick={() => setShowCurrent(!showCurrent)}
               >
                 {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
-
-          {/* Nueva Contraseña */}
-          <div className="change_pw_field">
-            <label>Nueva Contraseña</label>
-            <div className="change_pw_input_wrapper">
+          <div className="form_field">
+            <label className="form_label">Nueva Contraseña</label>
+            <div className="change_pw_input_wrapper password_input_container">
               <Key size={18} className="field_icon" />
               <input
                 type={showNew ? "text" : "password"}
+                className="form_input"
                 placeholder="Mínimo 6 caracteres"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
               />
               <button
                 type="button"
-                className="toggle_pwd_btn"
+                className="password_toggle"
+                aria-label={showNew ? "Ocultar contraseña" : "Mostrar contraseña"}
                 onClick={() => setShowNew(!showNew)}
               >
                 {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
-
-          {/* Confirmar Nueva Contraseña */}
-          <div className="change_pw_field">
-            <label>Confirmar Nueva Contraseña</label>
-            <div className="change_pw_input_wrapper">
+          <div className="form_field">
+            <label className="form_label">Confirmar Nueva Contraseña</label>
+            <div className="change_pw_input_wrapper password_input_container">
               <Key size={18} className="field_icon" />
               <input
                 type={showConfirm ? "text" : "password"}
+                className="form_input"
                 placeholder="Repite la nueva contraseña"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
               <button
                 type="button"
-                className="toggle_pwd_btn"
+                className="password_toggle"
+                aria-label={showConfirm ? "Ocultar contraseña" : "Mostrar contraseña"}
                 onClick={() => setShowConfirm(!showConfirm)}
               >
                 {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -177,15 +183,21 @@ const ChangePasswordPage = () => {
             </div>
           </div>
 
-          {/* Botón de envío */}
-          <button
-            type="submit"
-            className="change_pw_submit_btn"
-            disabled={loading}
-          >
-            {loading ? "Guardando..." : "Actualizar Contraseña"}
-          </button>
-        </form>
+            {/* Botón de envío */}
+            <button
+              type="submit"
+              className="btn btn_primary btn_lg btn_block"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span>Guardando...</span>
+                  <div className="spinner_small"></div>
+                </>
+              ) : "Actualizar Contraseña"}
+            </button>
+          </form>
+        </div>
       </main>
 
       <Footer />

@@ -20,7 +20,7 @@ const LogoutButton = () => {
   return (
     <>
       <button className="menu_logout" onClick={() => setShowLogoutModal(true)}>
-        <LogOut size={20} />
+        <LogOut size={20} strokeWidth={2} />
         <span>Cerrar sesión</span>
       </button>
 
@@ -30,7 +30,7 @@ const LogoutButton = () => {
         title="¿Deseas cerrar sesión?"
         description="Tendrás que volver a ingresar tus credenciales para acceder a SheliGo."
         variant="confirm"
-        icon={<LogOut size={24} color="#8D4F2A" strokeWidth={2.5} />}
+        icon={<LogOut size={26} strokeWidth={2.2} />}
         confirmText="Confirmar"
         cancelText="Cancelar"
         onConfirm={handleLogoutConfirm}

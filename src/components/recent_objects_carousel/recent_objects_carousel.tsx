@@ -1,5 +1,7 @@
 import "./recent_objects_carousel.css";
 import ObjectCard from "../object_card/object_card";
+import EmptyState from "../empty_state/empty_state";
+import { PackageSearch } from "lucide-react";
 
 interface ObjectType {
   id: string;
@@ -20,16 +22,19 @@ const RecentObjectsCarousel = ({
 }: RecentObjectsCarouselProps) => {
   if (!objects || objects.length === 0) {
     return (
-      <div className="recent_objects_empty">
-        <p className="empty_message_text">No hay objetos recientes en este momento.</p>
-      </div>
+      <EmptyState
+        icon={PackageSearch}
+        title="No hay objetos recientes en este momento."
+        description="Cuando alguien publique un objeto perdido o encontrado, lo vas a ver acá."
+        compact
+      />
     );
   }
 
   const displayedObjects = limit ? objects.slice(0, limit) : objects;
 
   return (
-    <div className="recent_objects_carousel">
+    <div className="recent_objects_carousel no_scrollbar">
       {displayedObjects.map((object) => (
         <ObjectCard
           key={object.id}

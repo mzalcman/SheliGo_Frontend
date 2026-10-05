@@ -65,14 +65,14 @@ const BottomFilterModal = ({
     <>
       <div className="bottom_filter_overlay" onClick={onClose} />
 
-      <div className="bottom_filter_modal">
+      <div className="bottom_filter_modal" role="dialog" aria-modal="true">
         <div className="bottom_filter_handle" />
 
         <div className="bottom_filter_header">
           <h2>{title}</h2>
 
-          <button className="bottom_filter_close" onClick={onClose}>
-            <X size={22} />
+          <button className="icon_button" onClick={onClose} aria-label="Cerrar">
+            <X size={20} />
           </button>
         </div>
 
@@ -80,6 +80,7 @@ const BottomFilterModal = ({
           <div className="bottom_filter_search">
             <Search size={18} />
             <input
+              className="form_input"
               placeholder={`Buscar ${title.toLowerCase()}...`}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -87,7 +88,7 @@ const BottomFilterModal = ({
           </div>
         )}
 
-        <div className="bottom_filter_list">
+        <div className={`bottom_filter_list ${isListMode ? "" : "bottom_filter_custom"}`}>
           {isListMode &&
             filteredItems.map((item: any) => (
               <label key={item.id} className="bottom_filter_option">
@@ -105,7 +106,7 @@ const BottomFilterModal = ({
 
         <div className="bottom_filter_footer">
           <button
-            className="bottom_filter_clear"
+            className="btn btn_ghost"
             onClick={() => {
               if (isListMode) {
                 setTempSelected([]);
@@ -119,7 +120,7 @@ const BottomFilterModal = ({
           </button>
 
           <button
-            className="bottom_filter_apply"
+            className="btn btn_primary"
             onClick={() => {
               if (isListMode) {
                 onChange?.(tempSelected);

@@ -9,7 +9,8 @@ import { useNavigate } from "react-router-dom";
 import { get_home_publications, get_home_institutions } from "../../services/home_service";
 import Loader from "../../components/loader/loader";
 import { useAuth } from "../../hooks/use_auth";
-import { api } from "../../services/api"; 
+import { api } from "../../services/api";
+import { AlertCircle } from "lucide-react";
 
 const HomePage = () => {
   const [publications, set_publications] = useState([]);
@@ -79,12 +80,15 @@ const HomePage = () => {
   return (
     <div className="home_page">
       <Header />
-      <main className="home_page_content">
+      <main className="page_container">
         <section className="home_hero">
-          <h1 className="home_title">Hola, {user?.name || "Usuario"}!</h1>
+          <span className="eyebrow">Porque lo tuyo vuelve</span>
+          <h1 className="home_title">
+            Hola, <span>{user?.name || "Usuario"}</span>!
+          </h1>
           <p className="home_subtitle">¿Has perdido algo hoy o encontraste un tesoro ajeno?</p>
         </section>
-        
+
         <section className="home_actions">
           <ActionCard
             title="Perdí Algo"
@@ -103,15 +107,33 @@ const HomePage = () => {
         </section>
 
         {hasError ? (
-          <div className="home_error_notice" style={{ padding: "40px 20px", textAlign: "center", backgroundColor: "#fff0f0", borderRadius: "8px", margin: "20px 0" }}>
-            <p style={{ color: "#d32f2f", fontWeight: "bold" }}>No se pudieron cargar los objetos recientes.</p>
-            <p style={{ fontSize: "14px", color: "#555" }}>Tu sesión pudo haber expirado. Si el problema persiste, probá <span onClick={() => navigate("/login")} style={{ textDecoration: "underline", color: "#0066cc", cursor: "pointer", fontWeight: "bold" }}>iniciando sesión de nuevo</span>.</p>
+          <div className="home_error_notice animate_fade_in">
+            <AlertCircle size={22} strokeWidth={2} />
+            <div>
+              <p className="home_error_title">No se pudieron cargar los objetos recientes.</p>
+              <p className="home_error_text">
+                Tu sesión pudo haber expirado. Si el problema persiste, probá{" "}
+                <button className="btn_text" onClick={() => navigate("/login")}>
+                  iniciando sesión de nuevo
+                </button>.
+              </p>
+            </div>
           </div>
         ) : (
           <>
-            <InstitutionLogos institutions={institutions} limit={10}/>
-            <section className="recent_section">
-              <h2 className="recent_title">Objetos Recientes</h2>
+            {institutions.length > 0 && (
+              <section className="home_section">
+                <div className="home_section_header">
+                  <h2 className="section_title">Instituciones</h2>
+                </div>
+                <InstitutionLogos institutions={institutions} limit={10}/>
+              </section>
+            )}
+
+            <section className="home_section">
+              <div className="home_section_header">
+                <h2 className="section_title">Objetos Recientes</h2>
+              </div>
               <RecentObjectsCarousel objects={publications} limit={20}/>
             </section>
           </>

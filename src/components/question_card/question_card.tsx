@@ -5,6 +5,7 @@ import QuestionInput from "../question_input/question_input";
 import { create_answer } from "../../services/question_service";
 import type { Publication } from "../../types/publication";
 import { getImageUrl } from "../../utils/get_image_url";
+import { CornerDownRight } from "lucide-react";
 
 interface QuestionCardProps {
   question: Question;
@@ -62,19 +63,19 @@ const QuestionCard = ({
           </div>
         </div>
 
-        <p className="question_content">"{question.contenido}"</p>
+        <p className="question_content">{question.contenido}</p>
 
         {is_owner && !question.respuesta && !is_replying && (
           <button
             className="question_reply_trigger"
             onClick={() => set_is_replying(true)}
           >
-            ← RESPONDER A {(question.usuario?.nombre || "Usuario").toUpperCase()}
+            <CornerDownRight size={16} strokeWidth={2.2} />
+            Responder a {question.usuario?.nombre || "Usuario"}
           </button>
         )}
       </div>
 
-      {/* 🔴 INTERFAZ CORREGIDA: Sin duplicaciones y estilizado */}
       {is_replying && (
         <div className="answer_form_card animate_fade_in">
           <div className="answer_form_user">
@@ -91,7 +92,7 @@ const QuestionCard = ({
             <span className="answer_form_username">Responder como Autor</span>
           </div>
 
-          <div className="answer_input_wrapper">
+          <div>
             {/* Le pasamos el handle_submit_reply directo al QuestionInput */}
             <QuestionInput
               value={reply_text}
@@ -104,7 +105,7 @@ const QuestionCard = ({
           <div className="answer_form_actions">
             <button
               type="button"
-              className="answer_cancel_button"
+              className="btn btn_ghost btn_sm"
               onClick={() => set_is_replying(false)}
             >
               Cancelar
@@ -115,7 +116,6 @@ const QuestionCard = ({
 
       {question.respuesta && (
         <div className="question_answer_container">
-          <div className="question_answer_orange_line"></div>
           <img
             src={
               publication?.usuario_foto && publication.usuario_foto.trim() !== ""
@@ -128,9 +128,12 @@ const QuestionCard = ({
               e.currentTarget.src = DEFAULT_USER_IMAGE;
             }}
           />
-          <p className="question_answer_content">
-            {question.respuesta.contenido}
-          </p>
+          <div className="question_answer_body">
+            <span className="question_answer_label">Respuesta del autor</span>
+            <p className="question_answer_content">
+              {question.respuesta.contenido}
+            </p>
+          </div>
         </div>
       )}
     </div>

@@ -1,82 +1,118 @@
 .header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
   width: 100%;
-  height: 60px;
-  background-color: #EAE8E8;
+  height: var(--header-height);
+  background: rgba(234, 232, 232, 0.86);
+  backdrop-filter: saturate(160%) blur(14px);
+  -webkit-backdrop-filter: saturate(160%) blur(14px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.header_inner {
+  height: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--page-gutter);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 26px;
-  box-sizing: border-box;
+  gap: var(--space-4);
 }
 
-/* Botón imagen perfil */
-.header_profile_button {
-  border: none;
-  background: none;
-  padding: 0;
-  margin: 0;
-  cursor: pointer;
+.header_left {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: var(--space-3);
+  min-width: 0;
 }
 
-/* Imagen perfil */
+/* Avatar (abre el menú) */
+.header_profile_button {
+  display: flex;
+  border-radius: var(--radius-pill);
+  padding: 2px;
+  background: var(--color-white);
+  box-shadow: var(--shadow-xs);
+  transition: box-shadow var(--duration-fast) ease, transform var(--duration-fast) ease;
+}
+
+.header_profile_button:hover {
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.header_profile_button:active {
+  transform: scale(0.95);
+}
+
 .header_profile_image {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   object-fit: cover;
+  background: var(--color-placeholder);
 }
 
-/* Contenedor iconos */
+/* Acciones de la derecha */
 .header_icons {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: var(--space-2);
 }
 
-/* Botones iconos */
 .header_icon_button {
-  border: none;
-  background: none;
-  padding: 0;
-  margin: 0;
-  cursor: pointer;
+  width: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #717171;
+  border-radius: var(--radius-pill);
+  color: var(--color-text-secondary);
+  transition:
+    background-color var(--duration-fast) ease,
+    color var(--duration-fast) ease,
+    transform var(--duration-fast) ease;
 }
 
-/* 🔔 Contenedor para que el globito flote encima de manera independiente */
+.header_icon_button:hover {
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--color-text);
+}
+
+.header_icon_button:active {
+  transform: scale(0.92);
+}
+
+.header_icon_button.active {
+  background: var(--color-white);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-xs);
+}
+
 .header_chat_button_wrapper {
   position: relative;
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
-/* 🔴 Globo rojo dinámico */
+/* Contador de mensajes sin leer */
 .header_unread_badge {
   position: absolute;
-  top: -2px; /* Ajustado para que calce perfecto sobre la esquina del globo de diálogo */
-  right: -5px; 
-  background-color: #ff3b30; 
-  color: #ffffff; 
-  font-family: "poppins", sans-serif;
-  font-size: 11px;
-  font-weight: 800;
+  top: 2px;
+  right: 0;
   min-width: 18px;
   height: 18px;
-  border-radius: 50%;
+  padding: 0 5px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 4px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-  border: 2px solid #EAE8E8; /* Integra el círculo con el fondo del header */
-  pointer-events: none; 
-  box-sizing: border-box;
-  z-index: 10;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: var(--color-white);
+  font-size: 0.6875rem;
+  font-weight: var(--weight-semibold);
+  line-height: 1;
+  border: 2px solid var(--color-gray-light);
+  pointer-events: none;
+  animation: sg_scale_in var(--duration) var(--ease-out);
 }

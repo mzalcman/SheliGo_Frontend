@@ -1,0 +1,163 @@
+/* ==========================================================
+   Layout de formularios guiados — Publicar / Editar publicación
+   ========================================================== */
+
+.publish_page,
+.edit_page {
+  min-height: 100vh;
+  background: var(--color-surface-muted);
+}
+
+.form_page_header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+/* Bloques del formulario */
+.form_section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin-bottom: var(--space-4);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  animation: sg_fade_up 0.35s var(--ease-out) both;
+}
+
+.form_section:nth-of-type(2) {
+  animation-delay: 0.04s;
+}
+
+.form_section:nth-of-type(3) {
+  animation-delay: 0.08s;
+}
+
+.form_section_header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.form_section_header h2 {
+  font-size: var(--text-lg);
+}
+
+.form_section_header p {
+  margin-top: 2px;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.form_step {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-white);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.form_actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+.form_actions > .btn {
+  flex: 1;
+}
+
+/* Selects y fechas sin valor: aspecto de placeholder */
+.select_placeholder,
+.date_placeholder {
+  color: var(--color-text-muted);
+}
+
+/* Autocompletado de institución */
+.autocomplete_container {
+  position: relative;
+}
+
+.autocomplete_dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  max-height: 240px;
+  overflow-y: auto;
+  list-style: none;
+  padding: var(--space-1);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  animation: sg_scale_in var(--duration-fast) var(--ease-out) both;
+}
+
+.autocomplete_dropdown li {
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background-color var(--duration-fast) ease;
+}
+
+.autocomplete_dropdown li:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+@media (min-width: 768px) {
+  .form_section {
+    padding: var(--space-6);
+  }
+
+  .form_page_header {
+    margin-bottom: var(--space-8);
+  }
+}
+
+/* Editar: campos sin modificar en gris, modificados en negro */
+.text_gray {
+  color: var(--color-text-secondary);
+}
+
+.text_black {
+  color: var(--color-text);
+}
+
+.edit_backend_images_preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.edit_bottom_notice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-snug);
+}
+
+.edit_bottom_notice svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-primary);
+}

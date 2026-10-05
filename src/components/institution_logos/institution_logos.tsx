@@ -19,7 +19,7 @@ const InstitutionLogos = ({
   const displayedInstitutions = limit ? institutions.slice(0, limit) : institutions;
 
   return (
-    <div className="institution_logos">
+    <div className="institution_logos no_scrollbar">
       {displayedInstitutions.map((institution) => (
         <div
           key={institution.id}

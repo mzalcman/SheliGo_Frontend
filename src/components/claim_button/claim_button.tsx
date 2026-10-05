@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import "./claim_button.css";
+import { MessageCircle } from "lucide-react";
 
 interface ClaimButtonProps {
   otroUsuarioId: string;     
@@ -57,7 +57,8 @@ const ClaimButton: React.FC<ClaimButtonProps> = ({
   };
 
   return (
-    <button className="claim_button" onClick={handleReclamar}>
+    <button className="btn btn_primary btn_lg btn_block" onClick={handleReclamar}>
+      <MessageCircle size={20} strokeWidth={2.2} />
       Reclamar ahora
     </button>
   );

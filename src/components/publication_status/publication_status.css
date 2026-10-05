@@ -1,37 +1,46 @@
 .publication_status {
-  border-radius: 999px;
-  text-transform: uppercase;
   width: fit-content;
-  font-family: "lemonmilk";
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  font-family: "lemonmilk";
+  gap: 6px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-brand);
   font-weight: 500;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
 }
 
-/*PERDIDO*/
+.publication_status_dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.85;
+}
+
+/* PERDIDO — identidad naranja */
 .publication_status_lost {
-  background-color: #FF6F00;
-  color: #B2540A;
+  background: var(--color-primary);
+  color: var(--color-white);
 }
 
-/*ENCONTRADO*/
+/* ENCONTRADO — identidad amarilla */
 .publication_status_found {
-  background-color: #FFC107;
-  color: #B08A1E;
+  background: var(--color-secondary);
+  color: var(--color-black);
 }
 
-/*HOME*/
+/* Cards */
 .publication_status_small {
-  padding: 6px 12px;
-  font-size: 12px;
-  font-weight: 400;
+  padding: 6px 10px;
+  font-size: 0.625rem;
 }
 
-/*DETALLE*/
+/* Detalle */
 .publication_status_large {
-  padding: 10px 22px;
-  font-size: 14px;
-  font-weight: 400;
+  padding: 9px 16px;
+  font-size: 0.75rem;
 }

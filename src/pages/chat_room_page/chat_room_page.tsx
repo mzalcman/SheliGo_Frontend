@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Paperclip, Send } from "lucide-react";
+import { ArrowLeft, Paperclip, Send, CheckCheck } from "lucide-react";
 import { useAuthContext } from "../../contexts/auth_context";
 import { supabase } from "../../services/supabase";
 import "./chat_room_page.css";
 import { getImageUrl } from "../../utils/get_image_url";
+import "../../components/modal/modal.css";
 
 interface Message {
   id: string;
@@ -208,33 +209,38 @@ const ChatRoomPage = () => {
     <div className="room_container_page">
       {/* Header del Chat */}
       <header className="room_header">
-        <button className="room_back_btn" onClick={() => navigate(-1)}>
-          <ArrowLeft size={26} color="#ff6f00" strokeWidth={2.5} />
-        </button>
-        <img
-          src={
-            chatInfo?.usuario_avatar || chatInfo?.avatar || chatInfo?.foto
-              ? getImageUrl(chatInfo.usuario_avatar || chatInfo.avatar || chatInfo.foto)
-              : "/user_predeterminada.png"
-          }
-          alt="Avatar"
-          className="room_header_avatar"
-          onError={(event) => {
-            event.currentTarget.src = "/user_predeterminada.png";
-          }}
-        />
-        <span className="room_header_name">{chatInfo?.usuario_nombre || "Chat"}</span>
+        <div className="room_header_inner">
+          <button className="icon_button" onClick={() => navigate(-1)} aria-label="Volver">
+            <ArrowLeft size={20} strokeWidth={2.2} />
+          </button>
+          <img
+            src={
+              chatInfo?.usuario_avatar || chatInfo?.avatar || chatInfo?.foto
+                ? getImageUrl(chatInfo.usuario_avatar || chatInfo.avatar || chatInfo.foto)
+                : "/user_predeterminada.png"
+            }
+            alt="Avatar"
+            className="room_header_avatar"
+            onError={(event) => {
+              event.currentTarget.src = "/user_predeterminada.png";
+            }}
+          />
+          <span className="room_header_name">{chatInfo?.usuario_nombre || "Chat"}</span>
+        </div>
       </header>
 
       {/* Área de Mensajes */}
       <main className="room_chat_area">
-        <div className="room_date_tag">
-          <span>CHAT</span>
-        </div>
-
         <div className="room_messages_list">
+          <div className="room_date_tag">
+            <span>CHAT</span>
+          </div>
+
           {cargandoHistorial ? (
-            <p className="room_delete_hint">Cargando mensajes anteriores...</p>
+            <div className="room_status_hint">
+              <div className="spinner" />
+              <p>Cargando mensajes anteriores...</p>
+            </div>
           ) : messages.length > 0 ? (
             messages.map((msg) => {
               const esMio = msg.emisor_id === user?.id;
@@ -251,7 +257,7 @@ const ChatRoomPage = () => {
                   className={`room_bubble_wrapper ${esMio ? "mine" : "theirs"}`}
                   onContextMenu={(e) => {
                     e.preventDefault();
-                    // Modal 
+                    // Modal
                     abrirModalConfirmacion(msg.id, msg.emisor_id);
                   }}
                 >
@@ -261,8 +267,11 @@ const ChatRoomPage = () => {
                   <div className="room_bubble_meta">
                     <span className="room_bubble_time">{formatearHora(msg.created_at)}</span>
                     {esMio && (
-                      <span className={`room_double_check ${estaLeido ? "read" : "unread"}`}>
-                        ✓✓
+                      <span
+                        className={`room_double_check ${estaLeido ? "read" : "unread"}`}
+                        aria-label={estaLeido ? "Leído" : "Enviado"}
+                      >
+                        <CheckCheck size={15} strokeWidth={2.4} />
                       </span>
                     )}
                   </div>
@@ -270,7 +279,7 @@ const ChatRoomPage = () => {
               );
             })
           ) : (
-            <p className="room_delete_hint" style={{ marginTop: "20px" }}>
+            <p className="room_status_hint">
               No hay mensajes aún en esta conversación. ¡Saludá!
             </p>
           )}
@@ -280,27 +289,29 @@ const ChatRoomPage = () => {
 
       {/* Formulario */}
       <form className="room_input_bar" onSubmit={handleSendMessage}>
-        <div className="room_input_wrapper">
-          <input
-            type="text"
-            placeholder="Escribe aquí..."
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            className="room_text_input"
-          />
-          <button type="button" className="room_attachment_btn">
-            <Paperclip size={22} color="#6e6e6e" />
+        <div className="room_input_inner">
+          <div className="room_input_wrapper">
+            <input
+              type="text"
+              placeholder="Escribe aquí..."
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              className="room_text_input"
+            />
+            <button type="button" className="room_attachment_btn" aria-label="Adjuntar">
+              <Paperclip size={20} />
+            </button>
+          </div>
+          <button type="submit" className="room_send_btn" aria-label="Enviar">
+            <Send size={19} strokeWidth={2.2} />
           </button>
         </div>
-        <button type="submit" className="room_send_btn">
-          <Send size={20} color="#ffffff" strokeWidth={2.5} />
-        </button>
       </form>
 
-      {/* MODAL DE CONFIRMACIÓN INTEGRADO*/}
+      {/* Modal de confirmación integrado */}
       {mostrarModal && (
         <div className="room_modal_overlay" onClick={() => { setMostrarModal(false); setMensajeAEliminar(null); }}>
-          <div className="room_modal_card" onClick={(e) => e.stopPropagation()}>
+          <div className="room_modal_card" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
             <h3 className="room_modal_title">¿Eliminar mensaje?</h3>
             <p className="room_modal_text">
               Esto eliminará el mensaje para todos en la conversación de forma permanente.
@@ -308,17 +319,17 @@ const ChatRoomPage = () => {
             <div className="room_modal_actions">
               <button
                 type="button"
-                className="room_modal_btn cancel"
-                onClick={() => { setMostrarModal(false); setMensajeAEliminar(null); }}
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                className="room_modal_btn confirm"
+                className="btn btn_danger btn_block"
                 onClick={handleBorrarMensajeConfirmado}
               >
                 Eliminar
+              </button>
+              <button
+                type="button"
+                className="btn btn_ghost btn_block"
+                onClick={() => { setMostrarModal(false); setMensajeAEliminar(null); }}
+              >
+                Cancelar
               </button>
             </div>
           </div>

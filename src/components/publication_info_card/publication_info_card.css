@@ -1,49 +1,61 @@
 .publication_info_card {
-  width: 100%;
-  background-color: #F5F5F5;
-  border-radius: 28px;
-  padding: 22px;
-  margin-bottom: 22px;
   display: flex;
-  align-items: center;
-  gap: 20px;
-  box-sizing: border-box;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
 }
 
 .publication_info_icon {
-  width: 65px;
-  height: 65px;
-  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  border-radius: var(--radius-md);
+}
+
+.publication_info_icon.on_dark {
+  color: var(--color-white);
+}
+
+.publication_info_icon.on_light {
+  color: var(--color-black);
 }
 
 .publication_info_content {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 2px;
+  min-width: 0;
 }
 
 .publication_info_title {
-  font-size: 14px;
-  color: #717171;
+  font-family: var(--font-brand);
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  font-weight: 400;
-  font-family: "lemonmilk";
+  color: var(--color-text-secondary);
 }
 
 .publication_info_main {
-  font-size: 16px;
-  color: black;
-  font-weight: 600;
-  font-family: "poppins";
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  color: var(--color-text);
+  word-break: break-word;
+}
+
+.publication_info_main::first-letter {
+  text-transform: uppercase;
 }
 
 .publication_info_secondary {
-  font-size: 12px;
-  color: #717171;
-  font-family: "louis_george";
-  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-snug);
 }

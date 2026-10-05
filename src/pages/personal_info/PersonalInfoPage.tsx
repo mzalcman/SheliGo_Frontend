@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Edit2 } from "lucide-react";
+import { ArrowLeft, Edit2, Camera, AlertCircle } from "lucide-react";
 import Header from "../../components/header/header";
 import { useAuth } from "../../hooks/use_auth"; // Tu hook real
 import { getImageUrl } from "../../utils/get_image_url"; // Tu utilitario de imágenes
@@ -127,105 +127,104 @@ const PersonalInfoPage = () => {
     <div className="personal_info_layout_page">
       <Header />
 
-      <main className="personal_info_container">
-        <button 
-          className="personal_info_back_btn" 
-          onClick={() => navigate("/perfil")}
-          disabled={saving}
-          type="button"
-        >
-          <ArrowLeft size={20} color="#ff6f00" strokeWidth={2.5} />
-          <span>Mi Perfil</span>
-        </button>
+      <main className="page_container narrow personal_info_container">
+        <div className="page_topbar">
+          <button
+            className="icon_button"
+            onClick={() => navigate("/perfil")}
+            disabled={saving}
+            type="button"
+            aria-label="Volver a Mi Perfil"
+          >
+            <ArrowLeft size={20} strokeWidth={2.2} />
+          </button>
+          <span className="personal_info_back_label">Mi Perfil</span>
+        </div>
 
         {error && (
-          <div style={{ color: "#d32f2f", textAlign: "center", marginBottom: "16px", fontFamily: "Poppins", fontSize: "14px", fontWeight: 600 }}>
-            {error}
+          <div className="form_alert form_alert_error personal_info_error">
+            <AlertCircle size={18} />
+            <span>{error}</span>
           </div>
         )}
 
         <section className="personal_info_hero">
-          <div className="personal_info_avatar_wrapper" onClick={handleEditAvatarClick} style={{ cursor: "pointer" }}>
-            <img 
-              src={avatar} 
-              alt="User Avatar" 
-              className="personal_info_main_avatar" 
+          <div className="personal_info_avatar_wrapper" onClick={handleEditAvatarClick}>
+            <img
+              src={avatar}
+              alt="User Avatar"
+              className="personal_info_main_avatar"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = defaultPlaceholder;
               }}
             />
-            <button 
-              className="personal_info_edit_avatar_badge" 
+            <button
+              className="personal_info_edit_avatar_badge"
               title="Cambiar Foto"
               type="button"
               disabled={saving}
             >
-              <Edit2 size={12} strokeWidth={3} />
+              <Camera size={14} strokeWidth={2.4} />
             </button>
 
-            <input 
-              type="file" 
+            <input
+              type="file"
               ref={fileInputRef}
               onChange={handleAvatarChange}
-              accept="image/*" 
-              style={{ display: "none" }} 
+              accept="image/*"
+              hidden
             />
           </div>
           <h1 className="personal_info_user_name">
             {nombre} {apellido}
           </h1>
+          <p className="personal_info_hint">Tocá la foto para cambiarla</p>
         </section>
 
         <form onSubmit={handleFormSubmit} className="personal_info_form_section">
-          <h2>Información Personal</h2>
+          <h2 className="section_title">Información Personal</h2>
 
-          <div className="personal_info_field_group">
-            <label>Nombre</label>
+          <div className="form_field">
+            <label className="form_label">Nombre</label>
             <div className="personal_info_input_wrapper">
-              <input 
-                type="text" 
-                value={nombre} 
-                onChange={(e) => setNombre(e.target.value)} 
+              <input
+                type="text"
+                className="form_input"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
                 disabled={saving}
                 required
               />
-              <Edit2 size={14} className="personal_info_field_edit_icon" />
+              <Edit2 size={16} className="personal_info_field_edit_icon" />
             </div>
           </div>
 
-          <div className="personal_info_field_group">
-            <label>Apellido</label>
+          <div className="form_field">
+            <label className="form_label">Apellido</label>
             <div className="personal_info_input_wrapper">
-              <input 
-                type="text" 
-                value={apellido} 
-                onChange={(e) => setApellido(e.target.value)} 
+              <input
+                type="text"
+                className="form_input"
+                value={apellido}
+                onChange={(e) => setApellido(e.target.value)}
                 disabled={saving}
                 required
               />
-              <Edit2 size={14} className="personal_info_field_edit_icon" />
+              <Edit2 size={16} className="personal_info_field_edit_icon" />
             </div>
           </div>
 
-          <button 
-            type="submit" 
-            className="personal_info_save_btn"
+          <button
+            type="submit"
+            className="btn btn_primary btn_lg btn_block personal_info_save_btn"
             disabled={saving}
-            style={{
-              marginTop: "28px",
-              padding: "16px",
-              borderRadius: "20px",
-              border: "none",
-              backgroundColor: saving ? "#b0b0b0" : "#ff6f00",
-              color: "#ffffff",
-              fontFamily: "Poppins",
-              fontWeight: 700,
-              fontSize: "14px",
-              cursor: saving ? "not-allowed" : "pointer",
-              boxShadow: "0px 4px 12px rgba(255, 111, 0, 0.25)"
-            }}
           >
-            {saving ? "Guardando..." : "Guardar cambios"}
+            {saving ? (
+              <>
+                <span>Guardando...</span>
+                <div className="spinner_small"></div>
+              </>
+            ) : "Guardar cambios"}
           </button>
         </form>
       </main>

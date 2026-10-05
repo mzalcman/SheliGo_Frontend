@@ -4,7 +4,7 @@ import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import Loader from "../../components/loader/loader";
 import ImageUploader from "../../components/image_uploader/image_uploader";
-import { ArrowLeft, Check, X } from "lucide-react";
+import { ArrowLeft, Check, X, Info } from "lucide-react";
 import Modal from "../../components/modal/modal";
 import {
   getCategories,
@@ -13,7 +13,8 @@ import {
   update_publication,
   get_publication_photos
 } from "../../services/publication_service";
-import "./edit_publication_page.css";
+import StatusSelector from "../../components/status_selector/status_selector";
+import "../../styles/form_layout.css";
 
 interface BackendItem {
   id: string;
@@ -272,29 +273,37 @@ const EditPublicationPage = () => {
   };
 
   if (loading) {
-    return (
-      <div className="edit_loader_fallback">
-        <Loader />
-      </div>
-    );
+    return <Loader />;
   }
 
   return (
     <div className="edit_page">
       <Header />
 
-      <main className="edit_content">
-        <button className="edit_back_btn" onClick={() => navigate(-1)}>
-          <ArrowLeft size={24} color="#ff6f00" strokeWidth={2} />
-          <span className="edit_back_text">Editar Publicación</span>
-        </button>
+      <main className="page_container narrow">
+        <div className="page_topbar">
+          <button className="icon_button" onClick={() => navigate(-1)} aria-label="Volver">
+            <ArrowLeft size={20} strokeWidth={2.2} />
+          </button>
+          <span className="eyebrow">Editar Publicación</span>
+        </div>
 
-        <h1 className="edit_title">Modificar Objeto</h1>
-        <p className="edit_subtitle">
-          Ayúdanos a devolverle el alma al club reportando lo que falta o lo que sobra.
-        </p>
+        <header className="form_page_header">
+          <h1 className="page_title">Modificar Objeto</h1>
+          <p className="page_subtitle">
+            Ayúdanos a devolverle el alma al club reportando lo que falta o lo que sobra.
+          </p>
+        </header>
 
-        <div className="edit_uploader_wrapper">
+        <section className="form_section">
+          <div className="form_section_header">
+            <span className="form_step">1</span>
+            <div>
+              <h2>Fotos</h2>
+              <p>Podés quitar imágenes actuales o sumar nuevas (hasta 5).</p>
+            </div>
+          </div>
+
           <ImageUploader
             images={newImages}
             setImages={setNewImages}
@@ -303,7 +312,7 @@ const EditPublicationPage = () => {
 
           {existingImages.length > 0 && (
             <div className="edit_backend_images_preview">
-              <p className="edit_section_mini_title">Imágenes actuales de la publicación:</p>
+              <p className="form_label">Imágenes actuales de la publicación:</p>
               <div className="image_preview_container">
                 {existingImages.map((image, index) => (
                   <div key={`existing-${index}`} className="image_preview_wrapper">
@@ -313,6 +322,7 @@ const EditPublicationPage = () => {
                       className="remove_image_button"
                       onClick={() => setExistingImages(prev => prev.filter((_, i) => i !== index))}
                       title="Eliminar imagen"
+                      aria-label="Eliminar imagen"
                     >
                       <X size={13} strokeWidth={2.5} />
                     </button>
@@ -321,129 +331,164 @@ const EditPublicationPage = () => {
               </div>
             </div>
           )}
-        </div>
-
-        <section className="edit_form_card">
-          <label>¿Qué encontraste o perdiste?</label>
-          <input
-            className={`edit_input ${isModified.nombre ? "text_black" : "text_gray"} ${formErrors.nombre ? "input_error" : ""}`}
-            value={nombre}
-            maxLength={45}
-            onChange={(e) => {
-              setNombre(e.target.value);
-              trackChange("nombre");
-              if (formErrors.nombre) setFormErrors(prev => ({ ...prev, nombre: false }));
-            }}
-          />
-
-          <label>Estado del objeto</label>
-          <select
-            className={`edit_input ${isModified.tipo ? "text_black" : "text_gray"} ${formErrors.tipo ? "input_error" : ""}`}
-            value={tipo}
-            onChange={(e) => {
-              setTipo(e.target.value);
-              trackChange("tipo");
-              if (formErrors.tipo) setFormErrors(prev => ({ ...prev, tipo: false }));
-            }}
-          >
-            <option value="perdido">Perdido</option>
-            <option value="encontrado">Encontrado</option>
-          </select>
-
-          <label>Categoría</label>
-          <select
-            className={`edit_input ${isModified.categoriaId ? "text_black" : "text_gray"} ${formErrors.categoriaId ? "input_error" : ""}`}
-            value={categoriaId}
-            onChange={(e) => {
-              setCategoriaId(e.target.value);
-              trackChange("categoriaId");
-              if (formErrors.categoriaId) setFormErrors(prev => ({ ...prev, categoriaId: false }));
-            }}
-          >
-            {categorias.map((cat) => (
-              <option key={cat.id} value={cat.id}>{cat.nombre}</option>
-            ))}
-          </select>
-
-          <label>¿Cuándo ocurrió?</label>
-          <input
-            type="date"
-            max={todayStr}
-            className={`edit_input ${isModified.fechaEvento ? "text_black" : "text_gray"} ${formErrors.fechaEvento ? "input_error" : ""}`}
-            value={fechaEvento}
-            onChange={(e) => {
-              setFechaEvento(e.target.value);
-              trackChange("fechaEvento");
-              if (formErrors.fechaEvento) setFormErrors(prev => ({ ...prev, fechaEvento: false }));
-            }}
-          />
-
-          <label>Institución</label>
-          <div className="edit_autocomplete_container" ref={autocompleteRef}>
-            <input
-              className={`edit_input ${isModified.institucion ? "text_black" : "text_gray"} ${formErrors.institucion ? "input_error" : ""}`}
-              value={institucion}
-              placeholder="Escribe para buscar tu club..."
-              onFocus={() => setShowDropdown(true)}
-              onChange={(e) => {
-                setInstitucion(e.target.value);
-                trackChange("institucion");
-                setShowDropdown(true);
-                if (formErrors.institucion) setFormErrors(prev => ({ ...prev, institucion: false }));
-              }}
-            />
-            {showDropdown && filteredInstituciones.length > 0 && (
-              <ul className="edit_dropdown_list">
-                {filteredInstituciones.map((inst) => (
-                  <li
-                    key={inst.id}
-                    onClick={() => {
-                      setInstitucion(inst.nombre);
-                      setShowDropdown(false);
-                      trackChange("institucion");
-                    }}
-                  >
-                    {inst.nombre}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          <label>Ubicación</label>
-          <input
-            className={`edit_input ${isModified.lugarInstitucion ? "text_black" : "text_gray"} ${formErrors.lugarInstitucion ? "input_error" : ""}`}
-            value={lugarInstitucion}
-            placeholder="Ej: Buffet, Cancha 3, Entrada principal"
-            onChange={(e) => {
-              setLugarInstitucion(e.target.value);
-              trackChange("lugarInstitucion");
-              if (formErrors.lugarInstitucion) setFormErrors(prev => ({ ...prev, lugarInstitucion: false }));
-            }}
-          />
-
-          <label>Descripción adicional</label>
-          <textarea
-            className={`edit_textarea ${isModified.descripcion ? "text_black" : "text_gray"} ${formErrors.descripcion ? "input_error" : ""}`}
-            value={descripcion}
-            onChange={(e) => {
-              setDescripcion(e.target.value);
-              trackChange("descripcion");
-              if (formErrors.descripcion) setFormErrors(prev => ({ ...prev, descripcion: false }));
-            }}
-          />
         </section>
 
-        <div className="edit_buttons_group">
-          <button className="edit_btn_discard" onClick={() => navigate(-1)} disabled={isSubmitting}>
+        <section className="form_section">
+          <div className="form_section_header">
+            <span className="form_step">2</span>
+            <div>
+              <h2>Detalles del objeto</h2>
+              <p>Los campos que modifiques se resaltan.</p>
+            </div>
+          </div>
+
+          <div className="form_field">
+            <label className="form_label">¿Qué encontraste o perdiste?</label>
+            <input
+              className={`form_input ${isModified.nombre ? "text_black" : "text_gray"} ${formErrors.nombre ? "input_error" : ""}`}
+              value={nombre}
+              maxLength={45}
+              onChange={(e) => {
+                setNombre(e.target.value);
+                trackChange("nombre");
+                if (formErrors.nombre) setFormErrors(prev => ({ ...prev, nombre: false }));
+              }}
+            />
+          </div>
+
+          <div className="form_field">
+            <label className="form_label">Estado del objeto</label>
+            <StatusSelector
+              value={tipo}
+              has_error={!!formErrors.tipo}
+              onChange={(value) => {
+                setTipo(value);
+                trackChange("tipo");
+                if (formErrors.tipo) setFormErrors(prev => ({ ...prev, tipo: false }));
+              }}
+            />
+          </div>
+
+          <div className="form_field">
+            <label className="form_label">Categoría</label>
+            <select
+              className={`form_select ${isModified.categoriaId ? "text_black" : "text_gray"} ${formErrors.categoriaId ? "input_error" : ""}`}
+              value={categoriaId}
+              onChange={(e) => {
+                setCategoriaId(e.target.value);
+                trackChange("categoriaId");
+                if (formErrors.categoriaId) setFormErrors(prev => ({ ...prev, categoriaId: false }));
+              }}
+            >
+              {categorias.map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.nombre}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form_field">
+            <label className="form_label">Descripción adicional</label>
+            <textarea
+              className={`form_textarea ${isModified.descripcion ? "text_black" : "text_gray"} ${formErrors.descripcion ? "input_error" : ""}`}
+              value={descripcion}
+              onChange={(e) => {
+                setDescripcion(e.target.value);
+                trackChange("descripcion");
+                if (formErrors.descripcion) setFormErrors(prev => ({ ...prev, descripcion: false }));
+              }}
+            />
+          </div>
+        </section>
+
+        <section className="form_section">
+          <div className="form_section_header">
+            <span className="form_step">3</span>
+            <div>
+              <h2>¿Cuándo y dónde?</h2>
+              <p>Ubicá el objeto dentro de la institución.</p>
+            </div>
+          </div>
+
+          <div className="form_field">
+            <label className="form_label">¿Cuándo ocurrió?</label>
+            <input
+              type="date"
+              max={todayStr}
+              className={`form_input ${isModified.fechaEvento ? "text_black" : "text_gray"} ${formErrors.fechaEvento ? "input_error" : ""}`}
+              value={fechaEvento}
+              onChange={(e) => {
+                setFechaEvento(e.target.value);
+                trackChange("fechaEvento");
+                if (formErrors.fechaEvento) setFormErrors(prev => ({ ...prev, fechaEvento: false }));
+              }}
+            />
+          </div>
+
+          <div className="form_field">
+            <label className="form_label">Institución</label>
+            <div className="autocomplete_container" ref={autocompleteRef}>
+              <input
+                className={`form_input ${isModified.institucion ? "text_black" : "text_gray"} ${formErrors.institucion ? "input_error" : ""}`}
+                value={institucion}
+                placeholder="Escribe para buscar tu club..."
+                onFocus={() => setShowDropdown(true)}
+                onChange={(e) => {
+                  setInstitucion(e.target.value);
+                  trackChange("institucion");
+                  setShowDropdown(true);
+                  if (formErrors.institucion) setFormErrors(prev => ({ ...prev, institucion: false }));
+                }}
+              />
+              {showDropdown && filteredInstituciones.length > 0 && (
+                <ul className="autocomplete_dropdown">
+                  {filteredInstituciones.map((inst) => (
+                    <li
+                      key={inst.id}
+                      onClick={() => {
+                        setInstitucion(inst.nombre);
+                        setShowDropdown(false);
+                        trackChange("institucion");
+                      }}
+                    >
+                      {inst.nombre}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+
+          <div className="form_field">
+            <label className="form_label">Ubicación</label>
+            <input
+              className={`form_input ${isModified.lugarInstitucion ? "text_black" : "text_gray"} ${formErrors.lugarInstitucion ? "input_error" : ""}`}
+              value={lugarInstitucion}
+              placeholder="Ej: Buffet, Cancha 3, Entrada principal"
+              onChange={(e) => {
+                setLugarInstitucion(e.target.value);
+                trackChange("lugarInstitucion");
+                if (formErrors.lugarInstitucion) setFormErrors(prev => ({ ...prev, lugarInstitucion: false }));
+              }}
+            />
+          </div>
+        </section>
+
+        <div className="form_actions">
+          <button className="btn btn_ghost btn_lg" onClick={() => navigate(-1)} disabled={isSubmitting}>
             Descartar
           </button>
-          <button className="edit_btn_save" onClick={handleSaveChanges} disabled={isSubmitting}>
-            {isSubmitting ? "Guardando..." : "Guardar"}
+          <button className="btn btn_primary btn_lg" onClick={handleSaveChanges} disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <span>Guardando...</span>
+                <div className="spinner_small"></div>
+              </>
+            ) : "Guardar"}
           </button>
         </div>
 
         <p className="edit_bottom_notice">
+          <Info size={16} strokeWidth={2.2} />
           Al publicar, notificaremos a la comunidad para que el objeto regrese a su dueño lo antes posible.
         </p>
       </main>
@@ -456,7 +501,7 @@ const EditPublicationPage = () => {
         onClose={() => setShowModal(false)}
         title="¡Cambios guardados!"
         variant="success"
-        icon={<Check size={32} strokeWidth={3} />}
+        icon={<Check size={28} strokeWidth={2.6} />}
         confirmText="Aceptar"
         onConfirm={() => navigate(`/home`)}
       />
@@ -468,7 +513,7 @@ const EditPublicationPage = () => {
         title="No se pudo guardar"
         description="Por favor, corrige los siguientes campos requeridos por el sistema:"
         variant="error"
-        icon={<X size={32} strokeWidth={3} />}
+        icon={<X size={28} strokeWidth={2.6} />}
         confirmText="Entendido"
       >
         <div className="error_list_container">

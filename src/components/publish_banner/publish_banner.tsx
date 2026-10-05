@@ -1,29 +1,26 @@
 import "./publish_banner.css";
 import { useNavigate } from "react-router-dom";
+import { Plus } from "lucide-react";
 
 const PublishBanner = () => {
-const navigate = useNavigate();
+  const navigate = useNavigate();
   return (
     <section className="publish_banner">
+      <div className="publish_banner_content">
+        <span className="publish_banner_eyebrow">Porque lo tuyo vuelve</span>
+        <h2>¿Encontraste o perdiste algo?</h2>
 
-  <div className="publish_banner_content">
+        <button
+          className="btn btn_secondary"
+          onClick={() => navigate("/publicar")}
+        >
+          <Plus size={18} strokeWidth={2.4} />
+          Publicar
+        </button>
+      </div>
 
-    <h2>
-      ¿Encontraste o perdiste algo?
-    </h2>
-
-    <button
-      className="banner_publish_button"
-      onClick={() => navigate("/publicar")}
-      >
-      Publicar
-    </button>
-
-  </div>
-
-  <div className="publish_banner_circle" />
-
-</section>
+      <img src="/logo_sheligo.png" alt="" className="publish_banner_mark" />
+    </section>
   );
 };
 

@@ -29,7 +29,7 @@ const ObjectCard = ({
 
   return (
     <div
-      className="object_card" 
+      className="object_card"
       onClick={() => navigate(`/publicacion/${id}`)}
     >
       <div className="object_card_image_container">
@@ -54,7 +54,7 @@ const ObjectCard = ({
         </h3>
 
         <div className="object_card_location">
-          <MapPin size={14} />
+          <MapPin size={15} strokeWidth={2} />
           <span>{location}</span>
         </div>
       </div>

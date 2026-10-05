@@ -6,7 +6,8 @@ import { format_publication_date, format_publication_time, } from "../../utils/d
 import PublicationInfoCard from "../publication_info_card/publication_info_card";
 import PublicationStatus from "../publication_status/publication_status";
 import { useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { getImageUrl } from "../../utils/get_image_url";
 
 interface PublicationDetailProps {
   publication: Publication;
@@ -60,166 +61,185 @@ const PublicationDetail = ({
 
   return (
     <section className="publication_detail">
-      <div className="publication_image_container">
-        <img
-          src={
-            ordered_archives[current_image]?.url ||
-            "/obj_predeterminada.png"
-          }
-          alt={publication.nombre}
-          className="publication_image"
-          onError={(event) => {
-            event.currentTarget.onerror = null;
-            event.currentTarget.src =
-              "/obj_predeterminada.png";
-          }}
-        />
-        {ordered_archives.length > 1 && (
-          <>
-            <button
-              className="carousel_button carousel_left"
-              onClick={previous_image}
-            >
-              <ChevronLeft size={24} />
-            </button>
+      <div className="publication_media">
+        <div className="publication_image_container">
+          <img
+            src={
+              ordered_archives[current_image]?.url ||
+              "/obj_predeterminada.png"
+            }
+            alt={publication.nombre}
+            className="publication_image"
+            onError={(event) => {
+              event.currentTarget.onerror = null;
+              event.currentTarget.src =
+                "/obj_predeterminada.png";
+            }}
+          />
+          {ordered_archives.length > 1 && (
+            <>
+              <button
+                className="carousel_button carousel_left"
+                onClick={previous_image}
+                aria-label="Imagen anterior"
+              >
+                <ChevronLeft size={22} />
+              </button>
 
-            <button
-              className="carousel_button carousel_right"
-              onClick={next_image}
-            >
-              <ChevronRight size={24} />
-            </button>
-          </>
-        )}
+              <button
+                className="carousel_button carousel_right"
+                onClick={next_image}
+                aria-label="Imagen siguiente"
+              >
+                <ChevronRight size={22} />
+              </button>
+            </>
+          )}
 
-        <div className="publication_header">
-          <div>
+          <div className="publication_header">
             {/* Badge estado */}
             <PublicationStatus status={publication.tipo} />
+
+            <div className="publication_share_wrapper">
+              <button
+                className="publication_share_button"
+                onClick={handle_share}
+                aria-label="Copiar link de la publicación"
+              >
+                <Share2 size={20} strokeWidth={2.2} />
+              </button>
+
+              {copied && (
+                <span className="share_copied_toast">
+                  <Check size={14} strokeWidth={2.6} />
+                  ¡Link copiado!
+                </span>
+              )}
+            </div>
           </div>
 
-          <div style={{ position: "relative" }}>
-            <button
-              className="publication_share_button"
-              onClick={handle_share}
-            >
-              <Share2
-                size={26}
-                strokeWidth={2.2}
-              />
-            </button>
-
-            {copied && <span className="share_copied_toast">¡Link copiado!</span>}
-          </div>
+          {ordered_archives.length > 1 && (
+            <div className="carousel_indicators">
+              {ordered_archives.map((_, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  aria-label={`Ver imagen ${index + 1}`}
+                  className={
+                    index === current_image
+                      ? "carousel_dot active"
+                      : "carousel_dot"
+                  }
+                  onClick={() =>
+                    set_current_image(index)
+                  }
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {ordered_archives.length > 1 && (
-        <div className="carousel_indicators">
-          {ordered_archives.map((_, index) => (
-            <button
-              key={index}
-              type="button"
-              className={
-                index === current_image
-                  ? "carousel_dot active"
-                  : "carousel_dot"
-              }
-              onClick={() =>
-                set_current_image(index)
-              }
-            />
-          ))}
-        </div>
-      )}
+      <div className="publication_info">
+        <section className="publication_section">
+          <h1 className="publication_title">
+            {publication.nombre}
+          </h1>
+        </section>
 
-      <section className="publication_section">
-        <h1 className="publication_title">
-          {publication.nombre}
-        </h1>
-        <h2 className="publication_section_title">
-          Descripción
-        </h2>
-        <div className="publication_box">
-          {publication.descripcion?.trim()}
-        </div>
-      </section>
-
-      <PublicationInfoCard
-        title="CUANDO"
-        icon={CalendarDays}
-        icon_background="#FF6F00"
-        main_text={
-          format_publication_date(
-            publication.fecha_evento
-          )
-        }
-        secondary_text={
-          format_publication_time(
-            publication.created_at
-          )
-        }
-      />
-
-      <PublicationInfoCard
-        title="DONDE"
-        icon={MapPin}
-        icon_background="#FFC107"
-        main_text={
-          publication.lugar_institucion
-        }
-      />
-
-      <PublicationInfoCard
-        title="INSTITUCIÓN"
-        icon={School}
-        icon_background="#FF6F00"
-        main_text={
-          publication.institucion_nombre
-        }
-        secondary_text={
-          publication.institucion_direccion
-        }
-      />
-
-      {publication.latitud != null &&
-        publication.longitud != null && (
-          <section className="publication_section">
-            <h2 className="publication_section_title">
-              Ubicación
-            </h2>
-            <div className="location_card">
-              <iframe
-                title="Ubicación"
-                src={`https://maps.google.com/maps?q=${publication.latitud},${publication.longitud}&z=17&output=embed`}
-                className="location_map"
-                loading="lazy"
-              />
-            </div>
-          </section>
-        )}
-
-      <section className="publication_section">
-        <h2 className="publication_section_title">
-          Publicado por
-        </h2>
-        <div className="publisher_card">
-          <img
-            src={
-              publication.usuario_foto ||
-              "/images/user_placeholder.png"
-            }
-            alt={`${publication.usuario_nombre} ${publication.usuario_apellido}`}
-            className="publisher_image"
-          />
-          <div className="publisher_info">
-            <h3 className="publisher_name">
-              {publication.usuario_nombre}{" "}
-              {publication.usuario_apellido}
-            </h3>
+        <section className="publication_section">
+          <h2 className="publication_section_title">
+            Descripción
+          </h2>
+          <div className="publication_box">
+            {publication.descripcion?.trim()}
           </div>
+        </section>
+
+        <div className="publication_facts">
+          <PublicationInfoCard
+            title="CUANDO"
+            icon={CalendarDays}
+            icon_background="#FF6F00"
+            main_text={
+              format_publication_date(
+                publication.fecha_evento
+              )
+            }
+            secondary_text={
+              format_publication_time(
+                publication.created_at
+              )
+            }
+          />
+
+          <PublicationInfoCard
+            title="DONDE"
+            icon={MapPin}
+            icon_background="#FFC107"
+            main_text={
+              publication.lugar_institucion
+            }
+          />
+
+          <PublicationInfoCard
+            title="INSTITUCIÓN"
+            icon={School}
+            icon_background="#FF6F00"
+            main_text={
+              publication.institucion_nombre
+            }
+            secondary_text={
+              publication.institucion_direccion
+            }
+          />
         </div>
-      </section>
+
+        {publication.latitud != null &&
+          publication.longitud != null && (
+            <section className="publication_section">
+              <h2 className="publication_section_title">
+                Ubicación
+              </h2>
+              <div className="location_card">
+                <iframe
+                  title="Ubicación"
+                  src={`https://maps.google.com/maps?q=${publication.latitud},${publication.longitud}&z=17&output=embed`}
+                  className="location_map"
+                  loading="lazy"
+                />
+              </div>
+            </section>
+          )}
+
+        <section className="publication_section">
+          <h2 className="publication_section_title">
+            Publicado por
+          </h2>
+          <div className="publisher_card">
+            <img
+              src={
+                publication.usuario_foto
+                  ? getImageUrl(publication.usuario_foto)
+                  : "/user_predeterminada.png"
+              }
+              alt={`${publication.usuario_nombre} ${publication.usuario_apellido}`}
+              className="publisher_image"
+              onError={(event) => {
+                event.currentTarget.onerror = null;
+                event.currentTarget.src = "/user_predeterminada.png";
+              }}
+            />
+            <div className="publisher_info">
+              <span className="publisher_label">Miembro de SheliGo</span>
+              <h3 className="publisher_name">
+                {publication.usuario_nombre}{" "}
+                {publication.usuario_apellido}
+              </h3>
+            </div>
+          </div>
+        </section>
+      </div>
     </section>
   );
 };

@@ -1,49 +1,165 @@
+/* ----------------------------------------------------------
+   Mobile / tablet: barra de navegación inferior
+   ---------------------------------------------------------- */
 .footer {
-  width: 100%;
-  height: 82px;
-  background-color: #EAE8E8;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
   position: fixed;
-  bottom: 0;
   left: 0;
-  border-top-left-radius: 38px;
-  border-top-right-radius: 38px;
-  box-sizing: border-box;
-  box-shadow:
-    0 -4px 20px rgba(0, 0, 0, 0.08),
-    0 -1px 3px rgba(0, 0, 0, 0.04);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(255, 255, 255, 0.45);
-  z-index: 999;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-nav);
+  padding: 0 var(--space-3) calc(var(--space-2) + env(safe-area-inset-bottom));
+  pointer-events: none;
 }
 
-/* Cada item */
+.footer_nav {
+  pointer-events: auto;
+  max-width: 520px;
+  height: var(--nav-height);
+  margin: 0 auto;
+  padding: 0 var(--space-2);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: center;
+  background: rgba(234, 232, 232, 0.9);
+  backdrop-filter: saturate(160%) blur(16px);
+  -webkit-backdrop-filter: saturate(160%) blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+
 .footer_item {
-  border: none;
-  background: none;
-  cursor: pointer;
+  position: relative;
+  height: 56px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  color: #717171;
+  gap: 3px;
+  border-radius: var(--radius-lg);
+  color: var(--color-text-secondary);
   transition:
-    transform 0.2s ease,
-    opacity 0.2s ease;
+    color var(--duration-fast) ease,
+    background-color var(--duration-fast) ease,
+    transform var(--duration-fast) ease;
 }
 
-/* Efecto táctil mobile */
+.footer_item:hover {
+  color: var(--color-text);
+}
+
 .footer_item:active {
   transform: scale(0.94);
 }
 
-/* Texto */
+.footer_item.active {
+  color: var(--color-primary);
+}
+
+.footer_item.active::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
+
 .footer_text {
-  font-size: 10px;
-  font-weight: 400;
-  font-family: "lemonmilk";
-  letter-spacing: 0.3px;
+  font-size: 0.6875rem;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+/* Acción central: Publicar */
+.footer_publish_icon {
+  width: 36px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: var(--color-white);
+  box-shadow: var(--shadow-primary);
+  transition: transform var(--duration-fast) ease, background-color var(--duration-fast) ease;
+}
+
+.footer_item_publish:hover .footer_publish_icon {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+.footer_item_publish.active::after {
+  display: none;
+}
+
+/* ----------------------------------------------------------
+   Desktop: la misma navegación se integra al centro del header
+   ---------------------------------------------------------- */
+@media (min-width: 1024px) {
+  .footer {
+    top: 0;
+    bottom: auto;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    padding: 0;
+  }
+
+  .footer_nav {
+    height: var(--header-height);
+    max-width: none;
+    padding: 0;
+    display: flex;
+    gap: var(--space-1);
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .footer_item {
+    height: 40px;
+    flex-direction: row;
+    gap: var(--space-2);
+    padding: 0 var(--space-4);
+    border-radius: var(--radius-pill);
+  }
+
+  .footer_item:hover {
+    background: rgba(255, 255, 255, 0.75);
+  }
+
+  .footer_item.active {
+    background: var(--color-white);
+    box-shadow: var(--shadow-xs);
+  }
+
+  .footer_item.active::after {
+    display: none;
+  }
+
+  .footer_text {
+    font-size: var(--text-sm);
+  }
+
+  .footer_item svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .footer_publish_icon {
+    width: 22px;
+    height: 22px;
+    box-shadow: none;
+  }
+
+  .footer_item_publish:hover .footer_publish_icon {
+    transform: none;
+  }
 }

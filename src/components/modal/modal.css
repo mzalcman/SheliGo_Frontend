@@ -1,228 +1,148 @@
-.modal_overlay {
+/* ==========================================================
+   Modales y diálogos
+   Compartido por: Modal, borrar publicación, borrar mensaje,
+   registro exitoso. (Todas las capas usan el mismo lenguaje.)
+   ========================================================== */
+
+.modal_overlay,
+.delete_modal_overlay,
+.room_modal_overlay,
+.success_modal_overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  z-index: var(--z-modal);
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 1000;
+  justify-content: center;
+  padding: var(--space-4);
+  background: var(--color-overlay);
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: sg_fade_in var(--duration) ease both;
 }
 
-.modal_container {
-  background-color: #ffffff;
-  padding: 30px;
-  border-radius: 28px;
-  width: 90%;
+.modal_container,
+.delete_modal_card,
+.room_modal_card,
+.success_modal_card {
+  width: 100%;
   max-width: 400px;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
+  padding: var(--space-8) var(--space-6) var(--space-6);
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  animation: sg_scale_in 0.26s var(--ease-out) both;
 }
 
-/* Contenedores de Íconos */
-.modal_icon_circle {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
+/* Icono superior */
+.modal_icon_circle,
+.delete_modal_icon_container,
+.success_modal_icon {
+  width: 60px;
+  height: 60px;
+  margin-bottom: var(--space-4);
   display: flex;
-  justify-content: center;
   align-items: center;
-  margin-bottom: 16px;
-  background-color: #e8f5e9; 
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
 }
 
-.modal_icon_circle svg {
-  color: #2e7d32; 
+.modal_icon_circle.success_icon_circle {
+  background: var(--color-secondary-soft);
+  color: var(--color-primary);
 }
 
-/* Alertas y errores */
-.modal_icon_circle.error_icon_circle {
-  background-color: #ffebee;
+.modal_icon_circle.error_icon_circle,
+.delete_modal_icon_container {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
 }
 
-.modal_icon_circle.error_icon_circle svg {
-  color: #c62828; 
+/* El icono de registro exitoso es el propio SVG */
+.success_modal_icon {
+  padding: 14px;
+  background: var(--color-secondary-soft);
 }
 
-/* Tipografías */
-.modal_title {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 0 8px 0;
-  font-family: "poppins";
+/* Textos */
+.modal_title,
+.delete_modal_card h2,
+.room_modal_title,
+.success_modal_card h3 {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  margin-bottom: var(--space-2);
 }
 
-.modal_description_text {
-  font-size: 15px;
-  color: #424242;
-  font-family: "louis_george";
-  font-weight: 700;
-  margin: 8px 0 16px;
-  line-height: 1.4;
+.modal_description_text,
+.delete_modal_card p,
+.room_modal_text,
+.success_modal_card p {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-normal);
+  margin-bottom: var(--space-2);
 }
 
-/* Cuerpo Custom (Para Listas de Errores) */
 .modal_custom_body {
   width: 100%;
-  margin-bottom: 20px;
+  margin-top: var(--space-2);
 }
 
+/* Lista de errores de validación */
 .error_list_container {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  text-align: left;
-  max-height: 200px;
+  gap: var(--space-2);
+  max-height: 220px;
   overflow-y: auto;
-  background: #fafafa;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid #eaeaea;
+  padding: var(--space-3);
+  text-align: left;
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 
 .error_list_item {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .error_item_bullet {
-  color: #ff6f00;
-  font-weight: bold;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-white);
+  font-size: 0.6875rem;
+  font-weight: var(--weight-semibold);
 }
 
 .error_item_text {
-  font-size: 14px;
-  color: #555;
-  font-family: "louis_george";
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  line-height: var(--leading-snug);
 }
 
-/* Botones */
-.modal_buttons_container {
-  display: flex;
-  gap: 12px;
+/* Acciones */
+.modal_buttons_container,
+.room_modal_actions {
   width: 100%;
-  justify-content: center;
-  margin-top: 12px;
-}
-
-.modal_accept_button,
-.modal_error_button,
-.modal_confirm_button,
-.modal_cancel_button {
-  flex: 1;
-  padding: 12px 24px;
-  border-radius: 14px;
-  font-size: 15px;
-  font-weight: 600;
-  font-family: "poppins";
-  cursor: pointer;
-  transition: all 0.2s;
-  border: none;
-}
-
-.modal_accept_button {
-  background-color: #ff6f00;
-  color: #ffffff;
-}
-
-.modal_error_button {
-  background-color: #212121;
-  color: #ffffff;
-}
-
-.modal_confirm_button {
-  background-color: #8d4f2a; 
-  color: #ffffff;
-}
-
-.modal_cancel_button {
-  background-color: #e0e0e0;
-  color: #424242;
-}
-
-.modal_accept_button:hover,
-.modal_confirm_button:hover {
-  filter: brightness(0.9);
-}
-.modal_icon_circle.confirm_icon_circle {
-  background-color: #f7ede8; 
-}
-
-.modal_icon_circle.confirm_icon_circle svg {
-  color: #8d4f2a; 
-}
-
-.modal_buttons_container {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  align-items: center;
-  margin-top: 16px;
-}
-
-.modal_accept_button,
-.modal_confirm_button {
-  background-color: #ff6f00;
-  width: 100%;
-  height: 50px;
-  border: none;
-  border-radius: 25px;
-  font-family: "poppins";
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-bottom: 12px;
-  transition: transform 0.1s ease, filter 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal_confirm_button.confirm_brown {
-  background-color: #FF6F00; 
-}
-
-.modal_cancel_button {
-  background: none;
-  color: #616161;
-  width: 100%;
-  height: 40px;
-  border: none;
-  font-family: "poppins";
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.1s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal_error_button {
-  background-color: #212121;
-  color: #ffffff;
-  width: 100%;
-  height: 50px;
-  border: none;
-  border-radius: 25px;
-  font-family: "poppins";
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.1s ease;
-}
-
-.modal_confirm_button:active,
-.modal_accept_button:active,
-.modal_error_button:active,
-.modal_cancel_button:active {
-  transform: scale(0.98);
+  gap: var(--space-2);
+  margin-top: var(--space-5);
 }

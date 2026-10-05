@@ -1,6 +1,7 @@
 import "./search_page.css";
 import { useEffect, useState } from "react";
-import { Search } from "lucide-react";
+import { Search, SearchX } from "lucide-react";
+import EmptyState from "../../components/empty_state/empty_state";
 import PublishBanner from "../../components/publish_banner/publish_banner";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
@@ -50,14 +51,15 @@ const SearchPage = () => {
   return (
     <div className="search_page">
       <Header />
-      <main className="search_page_content">
+      <main className="page_container">
         <section className="search_hero">
+          <span className="eyebrow">Buscar</span>
           <h1 className="search_title">
             Encuentra lo que
             <span> perdiste.</span>
           </h1>
           <div className="search_bar">
-            <Search size={22} />
+            <Search size={20} strokeWidth={2.2} />
             <input
               type="text"
               placeholder="¿Qué estás buscando?"
@@ -86,11 +88,11 @@ const SearchPage = () => {
         {/*Condicional para cuando no hay publicaciones en los filtros */}
         <section className="search_results">
           {objects.length === 0 ? (
-            <div className="no_results_container animate_fade_in">
-              <p className="no_results_text">
-                No se encontraron publicaciones que coincidan con los filtros aplicados.
-              </p>
-            </div>
+            <EmptyState
+              icon={SearchX}
+              title="Sin resultados"
+              description="No se encontraron publicaciones que coincidan con los filtros aplicados."
+            />
           ) : (
             objects.map((object: any) => (
               <ObjectCard

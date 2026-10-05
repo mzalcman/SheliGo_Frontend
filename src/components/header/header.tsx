@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./header.css";
 import { Bell, MessageCircle } from "lucide-react";
 import { useAuth } from "../../hooks/use_auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { getImageUrl } from "../../utils/get_image_url";
+import BrandLogo from "../brand_logo/brand_logo";
 
 const Header = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [mensajesSinLeer, setMensajesSinLeer] = useState<number>(0);
 
   useEffect(() => {
@@ -61,53 +63,57 @@ const Header = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Solo visual: resalta el icono de mensajes cuando estamos en el chat
+  const chats_active = pathname.startsWith("/chat");
+
   return (
     <header className="header">
-      <button
-        className="header_profile_button"
-        onClick={() => navigate("/menu")}
-      >
-        <img
-          src={
-            user?.profile_image
-              ? getImageUrl(user.profile_image)
-              : "/default-user.png"
-          }
-          alt="user profile"
-          className="header_profile_image"
-          onError={(event) => {
-            event.currentTarget.src = "/user_predeterminada.png";
-          }}
-        />
-      </button>
-
-      <div className="header_icons">
-        {/* Usamos un wrapper relativo para que el badge se posicione perfecto */}
-        <div className="header_chat_button_wrapper">
-          <button 
-            className="header_icon_button" 
-            onClick={() => navigate('/chats')}
+      <div className="header_inner">
+        <div className="header_left">
+          <button
+            className="header_profile_button"
+            onClick={() => navigate("/menu")}
+            aria-label="Abrir menú"
           >
-            <MessageCircle
-              size={34}
-              strokeWidth={2.2}
+            <img
+              src={
+                user?.profile_image
+                  ? getImageUrl(user.profile_image)
+                  : "/user_predeterminada.png"
+              }
+              alt="user profile"
+              className="header_profile_image"
+              onError={(event) => {
+                event.currentTarget.src = "/user_predeterminada.png";
+              }}
             />
           </button>
-          
-          {/* Globo rojo sobre el icono si el contador es mayor a cero */}
-          {mensajesSinLeer > 0 && (
-            <span className="header_unread_badge">
-              {mensajesSinLeer}
-            </span>
-          )}
+
+          <BrandLogo size="sm" />
         </div>
 
-        <button className="header_icon_button">
-          <Bell
-            size={34}
-            strokeWidth={2.2}
-          />
-        </button>
+        <div className="header_icons">
+          {/* Wrapper relativo para posicionar el badge sobre el icono */}
+          <div className="header_chat_button_wrapper">
+            <button
+              className={`header_icon_button ${chats_active ? "active" : ""}`}
+              onClick={() => navigate('/chats')}
+              aria-label="Mensajes"
+            >
+              <MessageCircle size={22} strokeWidth={2} />
+            </button>
+
+            {mensajesSinLeer > 0 && (
+              <span className="header_unread_badge">
+                {mensajesSinLeer}
+              </span>
+            )}
+          </div>
+
+          <button className="header_icon_button" aria-label="Notificaciones">
+            <Bell size={22} strokeWidth={2} />
+          </button>
+        </div>
       </div>
     </header>
   );

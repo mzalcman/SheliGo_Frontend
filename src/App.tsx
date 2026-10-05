@@ -16,7 +16,7 @@ import ChatsListPage from "./pages/chats_list_page/chats_list_page";
 import ChatRoomPage from "./pages/chat_room_page/chat_room_page";
 import MyPublicatiosPage from "./pages/my_publications_page/my_publications_page";
 
-// Pantalla de contáctanos
+// Pantalla
 import ContactPage from "./pages/contact_page/ContactPage";
 
 // IMPORTS DE RUTAS DE PERFIL Y CONFIGURACIÓN

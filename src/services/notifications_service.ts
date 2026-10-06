@@ -10,6 +10,11 @@ export const mark_as_read = async (notificationId: string) => {
   return response.data;
 };
 
+export const mark_all_as_read = async () => {
+  const response = await api.patch("/notificaciones/leidas");
+  return response.data;
+};
+
 /* Normaliza las distintas formas de respuesta del backend a un array. */
 export const extract_notifications = (res: any): any[] => {
   const list =

@@ -12,6 +12,15 @@
   font-size: var(--text-sm);
 }
 
+.notifications_toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: calc(var(--space-2) * -1) 0 var(--space-6);
+}
+
 .notifications_unread_pill {
   flex-shrink: 0;
   padding: 5px 12px;

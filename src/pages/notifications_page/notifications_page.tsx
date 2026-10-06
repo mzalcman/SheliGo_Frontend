@@ -9,6 +9,8 @@ import {
   Sparkles,
   CheckCheck,
   ArrowLeft,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
@@ -17,6 +19,7 @@ import EmptyState from "../../components/empty_state/empty_state";
 import {
   get_notifications,
   mark_as_read,
+  mark_all_as_read,
   extract_notifications,
   notify_notifications_updated,
 } from "../../services/notifications_service";
@@ -47,6 +50,7 @@ const NotificationsPage = () => {
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [markingAll, setMarkingAll] = useState(false);
 
   useEffect(() => {
     const loadNotifications = async () => {
@@ -90,6 +94,11 @@ const NotificationsPage = () => {
 
     const tipoLower = notification.tipo?.toLowerCase();
 
+    // La publicación ya no existe: no hay a dónde navegar
+    if (tipoLower === "publicacion_eliminada") {
+      return;
+    }
+
     if (tipoLower === "seguridad") {
       navigate("/privacidad-y-seguridad");
       return;
@@ -132,7 +141,14 @@ const NotificationsPage = () => {
         return <MessageSquare size={20} strokeWidth={2.2} />;
 
       case "nueva_respuesta":
+      case "respuesta_pregunta":
         return <CheckCheck size={20} strokeWidth={2.2} />;
+
+      case "publicacion_editada":
+        return <Pencil size={20} strokeWidth={2.2} />;
+
+      case "publicacion_eliminada":
+        return <Trash2 size={20} strokeWidth={2.2} />;
 
       case "nuevo_chat":
       case "nueva_conversacion":
@@ -144,7 +160,7 @@ const NotificationsPage = () => {
     }
   };
 
-  const getActionButtonText = (tipo: string) => {
+  const getActionButtonText = (tipo: string): string | null => {
     const tipoLower = tipo?.toLowerCase() || "";
 
     switch (tipoLower) {
@@ -159,7 +175,14 @@ const NotificationsPage = () => {
         return "Responder";
 
       case "nueva_respuesta":
+      case "respuesta_pregunta":
         return "Ver respuesta";
+
+      case "publicacion_editada":
+        return "Ver publicación";
+
+      case "publicacion_eliminada":
+        return null;
 
       case "nuevo_chat":
       case "nueva_conversacion":
@@ -168,6 +191,24 @@ const NotificationsPage = () => {
 
       default:
         return "Ver detalle";
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    if (markingAll) return;
+
+    const previous = notifications;
+    setMarkingAll(true);
+    setNotifications((prev) => prev.map((item) => ({ ...item, leida: true })));
+
+    try {
+      await mark_all_as_read();
+      notify_notifications_updated();
+    } catch (error) {
+      console.error("No se pudieron marcar todas las notificaciones como leídas.", error);
+      setNotifications(previous);
+    } finally {
+      setMarkingAll(false);
     }
   };
 
@@ -273,12 +314,24 @@ const NotificationsPage = () => {
             <h1 className="page_title">Notificaciones</h1>
             <p className="page_subtitle">Gestiona tus hallazgos y reportes</p>
           </div>
-          {unreadCount > 0 && (
-            <span className="notifications_unread_pill">
-              {unreadCount} {unreadCount === 1 ? "nueva" : "nuevas"}
-            </span>
-          )}
         </div>
+
+        {unreadCount > 0 && (
+          <div className="notifications_toolbar">
+            <span className="notifications_unread_pill">
+              {unreadCount} sin leer
+            </span>
+            <button
+              type="button"
+              className="btn btn_ghost btn_sm"
+              onClick={() => void handleMarkAllAsRead()}
+              disabled={markingAll}
+            >
+              <CheckCheck size={16} strokeWidth={2.2} />
+              Marcar todas como leídas
+            </button>
+          </div>
+        )}
 
         <section className="notifications_list">
           {Object.entries(grouped).map(([groupKey, items]) => {
@@ -318,16 +371,18 @@ const NotificationsPage = () => {
                         <p className="notification_description">{item.contenido}</p>
                       )}
 
-                      <button
-                        type="button"
-                        className="notification_action"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          void handleNotificationClick(item);
-                        }}
-                      >
-                        {getActionButtonText(item.tipo)}
-                      </button>
+                      {getActionButtonText(item.tipo) && (
+                        <button
+                          type="button"
+                          className="notification_action"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            void handleNotificationClick(item);
+                          }}
+                        >
+                          {getActionButtonText(item.tipo)}
+                        </button>
+                      )}
                     </div>
 
                     {!item.leida && (

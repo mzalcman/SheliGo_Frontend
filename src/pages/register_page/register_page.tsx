@@ -186,26 +186,16 @@ const RegisterPage = () => {
     return <Loader />;
   }
 
+  // El flujo de Google redirige fuera de la app; al volver, AuthContext
+  // sincroniza con el backend y decide el destino (/home o /completar-perfil).
   const handleGoogleClick = async () => {
+    setError("");
     try {
-      setError("");
-      setLoading(true);
-
-      // Ejecuta la función de tu context
-      const res: any = await loginWithGoogle();
-
-      // Si la API devuelve que debe completar perfil
-      if (res?.data?.requiereCompletarPerfil || res?.requiereCompletarPerfil) {
-        navigate("/completar-perfil");
-      } else {
-        navigate("/home");
-      }
+      await loginWithGoogle();
     } catch (err: any) {
       setError(
         err?.response?.data?.message || "Ocurrió un error al iniciar sesión con Google."
       );
-    } finally {
-      setLoading(false);
     }
   };
 

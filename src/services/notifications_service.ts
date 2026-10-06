@@ -6,7 +6,7 @@ export const get_notifications = async () => {
 };
 
 export const mark_as_read = async (notificationId: string) => {
-  const response = await api.patch(`/notificaciones/${notificationId}/leer`);
+  const response = await api.patch(`/notificaciones/${notificationId}/leida`);
   return response.data;
 };
 

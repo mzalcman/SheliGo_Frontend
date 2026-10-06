@@ -61,9 +61,13 @@ const PublicationDetailPage = () => {
         set_publication(publication_data);
         set_archives(archives_data);
         set_questions(questions_data);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error al cargar publicación:", error);
-        set_error("Error al cargar publicación");
+        set_error(
+          error?.response?.status === 404
+            ? "Esta publicación ya no está disponible."
+            : "Error al cargar publicación"
+        );
       } finally {
         set_loading(false);
       }

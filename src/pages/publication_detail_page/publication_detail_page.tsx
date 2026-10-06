@@ -62,7 +62,10 @@ const PublicationDetailPage = () => {
         set_archives(archives_data);
         set_questions(questions_data);
       } catch (error: any) {
-        console.error("Error al cargar publicación:", error);
+        // Un 404 es esperado (publicación eliminada): no ensuciamos la consola
+        if (error?.response?.status !== 404) {
+          console.error("Error al cargar publicación:", error);
+        }
         set_error(
           error?.response?.status === 404
             ? "Esta publicación ya no está disponible."

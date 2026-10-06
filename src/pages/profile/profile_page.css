@@ -182,8 +182,7 @@
   min-width: 0;
 }
 
-.profile_item_info h3,
-.profile_history_info h3 {
+.profile_item_info h3 {
   font-size: var(--text-base);
   font-weight: var(--weight-semibold);
   overflow: hidden;
@@ -191,14 +190,13 @@
   white-space: nowrap;
 }
 
-.profile_item_info p,
-.profile_history_info p {
+.profile_item_info p {
   margin-top: 2px;
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
 }
 
-/* Listas (historial y configuración) */
+/* Lista de configuración */
 .profile_list_card {
   display: flex;
   flex-direction: column;
@@ -209,7 +207,6 @@
   box-shadow: var(--shadow-xs);
 }
 
-.profile_history_card,
 .profile_config_row_btn {
   display: flex;
   align-items: center;
@@ -221,12 +218,10 @@
   transition: background-color var(--duration-fast) ease;
 }
 
-.profile_history_card:hover,
 .profile_config_row_btn:hover {
   background: var(--color-surface-muted);
 }
 
-.profile_history_icon_container,
 .profile_config_icon {
   width: 40px;
   height: 40px;
@@ -235,18 +230,8 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-sm);
-  background: var(--color-surface-muted);
-  color: var(--color-text-secondary);
-}
-
-.profile_config_icon {
   background: var(--color-primary-soft);
   color: var(--color-primary);
-}
-
-.profile_history_info {
-  flex: 1;
-  min-width: 0;
 }
 
 .profile_config_row_btn {
@@ -268,7 +253,6 @@
   transition: transform var(--duration-fast) ease;
 }
 
-.profile_history_card:hover .profile_row_arrow,
 .profile_config_row_btn:hover .profile_row_arrow {
   transform: translateX(3px);
 }

@@ -1,0 +1,177 @@
+.notifications_page {
+  min-height: 100vh;
+  background: var(--color-background);
+}
+
+.notifications_heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.notifications_heading .page_subtitle {
+  font-size: var(--text-sm);
+}
+
+.notifications_unread_pill {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+}
+
+/* Grupos por fecha */
+.notifications_list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.notifications_group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.notifications_group_title {
+  font-family: var(--font-brand);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-1);
+}
+
+/* Tarjeta */
+.notification_card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  animation: sg_fade_up var(--duration) var(--ease-out) both;
+  transition:
+    background-color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease,
+    box-shadow var(--duration-fast) ease;
+}
+
+.notification_card:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-sm);
+}
+
+/* No leída: fondo cálido, borde de acento y título con más peso */
+.notification_card.unread {
+  background: var(--color-primary-soft);
+  border-color: rgba(255, 111, 0, 0.2);
+}
+
+.notification_card.unread::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 14px;
+  bottom: 14px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--color-primary);
+}
+
+.notification_icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  color: var(--color-text-secondary);
+}
+
+.notification_card.unread .notification_icon {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.notification_info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notification_top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.notification_title {
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  color: var(--color-text);
+  line-height: var(--leading-snug);
+}
+
+.notification_card.unread .notification_title {
+  font-weight: var(--weight-semibold);
+}
+
+.notification_time {
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-size: 0.6875rem;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.02em;
+  color: var(--color-text-secondary);
+}
+
+.notification_card.unread .notification_time {
+  color: var(--color-primary);
+}
+
+.notification_description {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-normal);
+  word-break: break-word;
+}
+
+.notification_action {
+  align-self: flex-start;
+  margin-top: var(--space-1);
+  padding: 4px 0;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-primary);
+}
+
+.notification_action:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.notification_unread_dot {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-ring);
+}
+
+.notification_card.unread .notification_top {
+  padding-right: var(--space-5);
+}

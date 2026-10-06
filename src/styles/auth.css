@@ -211,3 +211,20 @@
     justify-content: flex-start;
   }
 }
+
+/* Encabezado de pasos (Completar perfil) */
+.auth_step_header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.auth_step_header .auth_subtitle {
+  max-width: none;
+}
+
+.auth_form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}

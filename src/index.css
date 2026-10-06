@@ -317,6 +317,11 @@ a {
   color: var(--color-text);
 }
 
+.form_hint {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
 .form_input,
 .form_textarea,
 .form_select {
@@ -387,6 +392,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   opacity: 0.55;
 }
 
+/* Select sin valor elegido: aspecto de placeholder */
+.select_placeholder {
+  color: var(--color-text-muted);
+}
+
 /* Estado de error de campo */
 .input_error,
 .input_error:hover:not(:disabled) {
@@ -397,6 +407,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .input_error:focus {
   border-color: var(--color-danger);
   box-shadow: 0 0 0 3px rgba(217, 48, 37, 0.18);
+}
+
+/* Mensaje de error debajo de un campo */
+.field_error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  color: var(--color-danger);
+  animation: sg_fade_in var(--duration-fast) ease both;
 }
 
 /* Input con botón de mostrar/ocultar contraseña */
@@ -448,16 +469,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .form_alert_error {
   background: var(--color-danger-soft);
   color: var(--color-danger);
-}
-
-.form_alert_success {
-  background: var(--color-secondary-soft);
-  color: var(--color-text);
-  border: 1px solid rgba(255, 193, 7, 0.45);
-}
-
-.form_alert_success svg {
-  color: var(--color-primary);
 }
 
 /* ==========================================================

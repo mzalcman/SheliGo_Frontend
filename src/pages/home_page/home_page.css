@@ -58,36 +58,6 @@
   gap: var(--space-3);
 }
 
-/* Error de carga */
-.home_error_notice {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
-  padding: var(--space-5);
-  border-radius: var(--radius-lg);
-  background: var(--color-danger-soft);
-  color: var(--color-danger);
-}
-
-.home_error_notice > svg {
-  flex-shrink: 0;
-}
-
-.home_error_title {
-  font-weight: var(--weight-semibold);
-  color: var(--color-text);
-  margin-bottom: var(--space-1);
-}
-
-.home_error_text {
-  font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-}
-
-.home_error_text .btn_text {
-  padding: 0;
-}
-
 @media (min-width: 768px) {
   .home_title {
     font-size: var(--text-4xl);

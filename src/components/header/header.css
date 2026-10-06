@@ -90,7 +90,7 @@
   box-shadow: var(--shadow-xs);
 }
 
-.header_chat_button_wrapper {
+.header_icon_wrapper {
   position: relative;
   display: inline-flex;
 }
@@ -115,4 +115,9 @@
   border: 2px solid var(--color-gray-light);
   pointer-events: none;
   animation: sg_scale_in var(--duration) var(--ease-out);
+}
+
+/* Contador de notificaciones no leídas */
+.header_notification_badge {
+  background: var(--color-danger);
 }

@@ -10,18 +10,17 @@ import { get_home_publications, get_home_institutions } from "../../services/hom
 import Loader from "../../components/loader/loader";
 import { useAuth } from "../../hooks/use_auth";
 import { api } from "../../services/api";
-import { AlertCircle } from "lucide-react";
+import type { Publication } from "../../types/publication";
 
 const HomePage = () => {
-  const [publications, set_publications] = useState([]);
+  const [publications, set_publications] = useState<Publication[]>([]);
   const [institutions, set_institutions] = useState([]);
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, set_loading] = useState(true);
-  const [hasError, set_hasError] = useState(false); 
 
   useEffect(() => {
-    let isMounted = true; 
+    let isMounted = true;
 
     if (!user) {
       return;
@@ -31,14 +30,10 @@ const HomePage = () => {
       try {
         if (isMounted) {
           set_loading(true);
-          set_hasError(false);
         }
 
         const token = localStorage.getItem("token");
-
-        if (!token) {
-          console.warn("⚠️ ALERTA: No se encontró ningún token bajo la clave 'token' en localStorage.");
-        } else {
+        if (token) {
           api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         }
 
@@ -48,17 +43,21 @@ const HomePage = () => {
         ]);
 
         if (isMounted) {
-          const pubs = publications_data?.publicaciones || publications_data?.data?.publicaciones || [];
-          const insts = institutions_data?.instituciones || institutions_data?.data?.instituciones || [];
-          
-          set_publications(pubs);
-          set_institutions(insts);
+          const pubsRaw: Publication[] =
+            publications_data?.publicaciones ||
+            publications_data?.data?.publicaciones ||
+            (Array.isArray(publications_data) ? publications_data : []);
+
+          const instsRaw =
+            institutions_data?.instituciones ||
+            institutions_data?.data?.instituciones ||
+            (Array.isArray(institutions_data) ? institutions_data : []);
+
+          set_publications(pubsRaw);
+          set_institutions(instsRaw);
         }
       } catch (error) {
-        console.error("Error crítico al traer datos del Home:", error);
-        if (isMounted) {
-          set_hasError(true);
-        }
+        console.error("Error al traer datos del Home:", error);
       } finally {
         if (isMounted) {
           set_loading(false);
@@ -69,9 +68,9 @@ const HomePage = () => {
     fetch_data();
 
     return () => {
-      isMounted = false; 
+      isMounted = false;
     };
-  }, [user]); 
+  }, [user]);
 
   if (!user || loading) {
     return <Loader />;
@@ -84,7 +83,7 @@ const HomePage = () => {
         <section className="home_hero">
           <span className="eyebrow">Porque lo tuyo vuelve</span>
           <h1 className="home_title">
-            Hola, <span>{user?.name || "Usuario"}</span>!
+            Hola, <span>{user?.nombre || user?.name || "Usuario"}</span>!
           </h1>
           <p className="home_subtitle">¿Has perdido algo hoy o encontraste un tesoro ajeno?</p>
         </section>
@@ -106,42 +105,25 @@ const HomePage = () => {
           />
         </section>
 
-        {hasError ? (
-          <div className="home_error_notice animate_fade_in">
-            <AlertCircle size={22} strokeWidth={2} />
-            <div>
-              <p className="home_error_title">No se pudieron cargar los objetos recientes.</p>
-              <p className="home_error_text">
-                Tu sesión pudo haber expirado. Si el problema persiste, probá{" "}
-                <button className="btn_text" onClick={() => navigate("/login")}>
-                  iniciando sesión de nuevo
-                </button>.
-              </p>
+        {institutions.length > 0 && (
+          <section className="home_section">
+            <div className="home_section_header">
+              <h2 className="section_title">Instituciones</h2>
             </div>
-          </div>
-        ) : (
-          <>
-            {institutions.length > 0 && (
-              <section className="home_section">
-                <div className="home_section_header">
-                  <h2 className="section_title">Instituciones</h2>
-                </div>
-                <InstitutionLogos institutions={institutions} limit={10}/>
-              </section>
-            )}
-
-            <section className="home_section">
-              <div className="home_section_header">
-                <h2 className="section_title">Objetos Recientes</h2>
-              </div>
-              <RecentObjectsCarousel objects={publications} limit={20}/>
-            </section>
-          </>
+            <InstitutionLogos institutions={institutions} limit={10} />
+          </section>
         )}
+
+        <section className="home_section">
+          <div className="home_section_header">
+            <h2 className="section_title">Objetos Recientes</h2>
+          </div>
+          <RecentObjectsCarousel objects={publications} limit={20} />
+        </section>
       </main>
       <Footer />
     </div>
   );
 };
 
-export default HomePage;  
+export default HomePage;

@@ -1,5 +1,5 @@
 import "./menu_page.css";
-import { User, Package, Wallet, Headphones, ArrowLeft, ChevronRight } from "lucide-react";
+import { User, Package, Phone, Headphones, ArrowLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/use_auth";
 import { getImageUrl } from "../../utils/get_image_url";
@@ -69,9 +69,12 @@ const MenuPage = () => {
             <ChevronRight size={18} className="menu_option_chevron" />
           </button>
 
-          <button className="menu_option">
-            <span className="menu_option_icon"><Wallet size={20} strokeWidth={2} /></span>
-            <span className="menu_option_label">Movimientos</span>
+          <button
+            className="menu_option"
+            onClick={() => navigate("/contactanos")}
+          >
+            <span className="menu_option_icon"><Phone size={20} strokeWidth={2} /></span>
+            <span className="menu_option_label">Contactanos</span>
             <ChevronRight size={18} className="menu_option_chevron" />
           </button>
 

@@ -2,86 +2,120 @@ import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import type { User } from "../types/user";
 import { supabase } from "../services/supabase";
+import { api } from "../services/api";
 
 interface AuthContextType {
   user: User | null;
-  loading: boolean; 
+  loading: boolean;
   login: (usuario: any) => void;
   loginWithGoogle: () => Promise<void>;
   logout: () => void;
+  refetchUser: () => Promise<void>; // 🚀 Agregamos refetch por si actualizan perfil
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true); 
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // Mapeo seguro del objeto usuario
+  // En AuthContext.tsx
+
+  // En AuthContext.tsx
+
+  const mapUserResponse = (usuarioRaw: any): User => {
+    // Buscamos las instituciones probando todos los nombres posibles que suele enviar el backend
+    const insts =
+      usuarioRaw.instituciones ||
+      usuarioRaw.instituciones_ids ||
+      usuarioRaw.user_institutions ||
+      usuarioRaw.institucion ||
+      [];
+
+    return {
+      id: usuarioRaw.id,
+      nombre: usuarioRaw.nombre || usuarioRaw.name || "",
+      apellido: usuarioRaw.apellido || "",
+      email: usuarioRaw.email || "",
+      telefono: usuarioRaw.telefono || "",
+      foto: usuarioRaw.foto || usuarioRaw.profile_image || "",
+      instituciones: Array.isArray(insts) ? insts : [insts], // Nos aseguramos de que siempre sea un Array
+      name: usuarioRaw.nombre || usuarioRaw.name || "",
+      profile_image: usuarioRaw.foto || usuarioRaw.profile_image || ""
+    };
+  };
+
+  const saveAndSetUser = (uData: any, token?: string) => {
+    if (token) {
+      localStorage.setItem("token", token);
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    }
+    localStorage.setItem("user", JSON.stringify(uData));
+    setUser(mapUserResponse(uData));
+  };
 
   useEffect(() => {
+    // Cargar inmediatamente el usuario que ya teníamos guardado al arrancar la app
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const usuario = JSON.parse(storedUser);
+        setUser(mapUserResponse(usuario));
+      } catch (e) {
+        console.error("Error al parsear el usuario del localStorage", e);
+      }
+    }
+    setLoading(false);
+
+    // Escuchar cambios SOLO para el flujo con Google / Supabase
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      
       if (session?.user) {
         const miTokenPropio = localStorage.getItem("token");
 
         if (!miTokenPropio) {
-          setLoading(true); 
+          setLoading(true);
           try {
-            const response = await fetch("http://localhost:3000/auth/google", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${session.access_token}`
+            const response = await api.post(
+              "/auth/google",
+              {},
+              {
+                headers: {
+                  Authorization: `Bearer ${session.access_token}`,
+                },
               }
-            });
+            );
 
-            const resBody = await response.json();
+            const resBody = response.data;
 
             if (resBody?.data?.token) {
-              localStorage.setItem("token", resBody.data.token);
-              localStorage.setItem("user", JSON.stringify(resBody.data.usuario));
-              
-              setUser({
-                id: resBody.data.usuario.id,
-                name: resBody.data.usuario.nombre,
-                profile_image: resBody.data.usuario.foto,
-              });
-              
+              const uData = resBody.data.usuario;
+
+              // Guardamos token y datos del usuario
+              saveAndSetUser(uData, resBody.data.token);
               setLoading(false);
 
-              // 🔴 CORRECCIÓN AQUÍ: Revisar si el usuario venía por un enlace compartido antes de forzar /home
+              // EVALUAMOS SI REQUIERE COMPLETAR PERFIL (INSTITUCIONES)
+              if (resBody.requiereCompletarPerfil || resBody.data?.requiereCompletarPerfil) {
+                window.location.href = "/completar-perfil";
+                return;
+              }
+
+              // Si ya tiene instituciones, va a su destino o /home
               const redirectUrl = localStorage.getItem("redirect_after_login");
               if (redirectUrl) {
-                localStorage.removeItem("redirect_after_login"); // Limpiar
-                window.location.href = redirectUrl; // Llevar a la publicación
+                localStorage.removeItem("redirect_after_login");
+                window.location.href = redirectUrl;
               } else {
-                window.location.href = "/home"; // Comportamiento por defecto
+                window.location.href = "/home";
               }
-              return;
             }
           } catch (error) {
             console.error("Error al sincronizar Google con tu backend:", error);
+            setLoading(false);
           }
-        } else {
-          const storedUser = localStorage.getItem("user");
-          if (storedUser) {
-            const usuario = JSON.parse(storedUser);
-            setUser({ id: usuario.id, name: usuario.nombre, profile_image: usuario.foto });
-          }
-          setLoading(false);
-          return;
         }
       }
-
-      const storedUser = localStorage.getItem("user");
-      if (storedUser && !user) {
-        try {
-          const usuario = JSON.parse(storedUser);
-          setUser({ id: usuario.id, name: usuario.nombre, profile_image: usuario.foto });
-        } catch (e) {
-          console.error("Error al parsear el usuario del localStorage", e);
-        }
-      }
-      setLoading(false); 
     });
 
     return () => {
@@ -89,9 +123,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  const login = (usuario: any) => {
-    localStorage.setItem("user", JSON.stringify(usuario));
-    setUser({ id: usuario.id, name: usuario.nombre, profile_image: usuario.foto });
+  const login = (uData: any) => {
+    saveAndSetUser(uData);
   };
 
   const loginWithGoogle = async () => {
@@ -99,9 +132,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/login`, 
+          redirectTo: `${window.location.origin}/login`,
           queryParams: {
-            prompt: 'select_account consent', 
+            prompt: 'select_account consent',
             access_type: 'offline',
           },
         },
@@ -119,8 +152,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     window.location.href = "/login";
   };
 
+  const refetchUser = async () => {
+    // Opcional: si tienes un endpoint como /auth/me o /usuarios/perfil
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, loginWithGoogle, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, loginWithGoogle, logout, refetchUser }}>
       {children}
     </AuthContext.Provider>
   );

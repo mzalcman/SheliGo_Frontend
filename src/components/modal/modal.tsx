@@ -11,6 +11,7 @@ interface ModalProps {
   confirmText?: string;
   cancelText?: string;
   onConfirm?: () => void;
+  confirmTone?: "primary" | "danger";
   children?: ReactNode;
 }
 
@@ -24,6 +25,7 @@ const Modal: React.FC<ModalProps> = ({
   confirmText = "Aceptar",
   cancelText = "Cancelar",
   onConfirm,
+  confirmTone = "primary",
   children,
 }) => {
   if (!isOpen) return null;
@@ -54,7 +56,7 @@ const Modal: React.FC<ModalProps> = ({
           {variant === "confirm" && onConfirm ? (
             <>
               <button
-                className="btn btn_primary btn_block"
+                className={`btn btn_${confirmTone} btn_block`}
                 onClick={onConfirm}
               >
                 {confirmText}

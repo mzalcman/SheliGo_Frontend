@@ -5,54 +5,41 @@ import { useAuth } from "../../hooks/use_auth";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getImageUrl } from "../../utils/get_image_url";
 import BrandLogo from "../brand_logo/brand_logo";
+import { api } from "../../services/api";
+import { useUnreadNotifications } from "../../hooks/use_unread_notifications";
 
 const Header = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [mensajesSinLeer, setMensajesSinLeer] = useState<number>(0);
+  const notificacionesSinLeer = useUnreadNotifications();
 
   useEffect(() => {
     const fetchMensajesSinLeer = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.log("⚠️ [HEADER] No se encontró token en localStorage");
-          return;
-        }
+        if (!localStorage.getItem("token")) return;
 
-        const response = await fetch("http://localhost:3000/chat/salas", {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
-        });
+        const response = await api.get("/chat/salas");
+        const resJson = response.data;
+        const rawSalas = resJson && Array.isArray(resJson.data) ? resJson.data : [];
 
-        if (response.ok) {
-          const resJson = await response.json();
-          console.log("📨 [HEADER] Respuesta de salas recibida:", resJson);
+        // Buscamos dinámicamente cualquier campo que suene a "sin leer"
+        const totalSinLeer = rawSalas.reduce((acumulado: number, sala: any) => {
+          const sinLeerCount = parseInt(
+            sala.mensajes_sin_leer ??
+            sala.mensajes_no_leidos ??
+            sala.sin_leer ??
+            sala.unread_count ??
+            "0",
+            10
+          );
+          return acumulado + (isNaN(sinLeerCount) ? 0 : sinLeerCount);
+        }, 0);
 
-          const rawSalas = resJson && Array.isArray(resJson.data) ? resJson.data : [];
-
-          // Buscamos dinámicamente cualquier campo que suene a "sin leer"
-          const totalSinLeer = rawSalas.reduce((acumulado: number, sala: any) => {
-            const sinLeerCount = parseInt(
-              sala.mensajes_sin_leer ?? 
-              sala.mensajes_no_leidos ?? 
-              sala.sin_leer ?? 
-              sala.unread_count ?? 
-              "0", 
-              10
-            );
-            return acumulado + (isNaN(sinLeerCount) ? 0 : sinLeerCount);
-          }, 0);
-
-          console.log("🔴 [HEADER] Total de mensajes sin leer calculado:", totalSinLeer);
-          setMensajesSinLeer(totalSinLeer);
-        } else {
-          console.error("❌ [HEADER] Error en la petición HTTP:", response.status);
-        }
+        setMensajesSinLeer(totalSinLeer);
       } catch (error) {
-        console.error("❌ [HEADER] Error de red al traer mensajes sin leer:", error);
+        console.error("Error al traer mensajes sin leer:", error);
       }
     };
 
@@ -65,6 +52,8 @@ const Header = () => {
 
   // Solo visual: resalta el icono de mensajes cuando estamos en el chat
   const chats_active = pathname.startsWith("/chat");
+  const notifications_active = pathname.startsWith("/notificaciones");
+  const format_badge = (count: number) => (count > 99 ? "99+" : count);
 
   return (
     <header className="header">
@@ -93,8 +82,8 @@ const Header = () => {
         </div>
 
         <div className="header_icons">
-          {/* Wrapper relativo para posicionar el badge sobre el icono */}
-          <div className="header_chat_button_wrapper">
+          {/* Wrappers relativos para posicionar los badges sobre los iconos */}
+          <div className="header_icon_wrapper">
             <button
               className={`header_icon_button ${chats_active ? "active" : ""}`}
               onClick={() => navigate('/chats')}
@@ -105,14 +94,30 @@ const Header = () => {
 
             {mensajesSinLeer > 0 && (
               <span className="header_unread_badge">
-                {mensajesSinLeer}
+                {format_badge(mensajesSinLeer)}
               </span>
             )}
           </div>
 
-          <button className="header_icon_button" aria-label="Notificaciones">
-            <Bell size={22} strokeWidth={2} />
-          </button>
+          <div className="header_icon_wrapper">
+            <button
+              className={`header_icon_button ${notifications_active ? "active" : ""}`}
+              onClick={() => navigate("/notificaciones")}
+              aria-label={
+                notificacionesSinLeer > 0
+                  ? `Notificaciones, ${notificacionesSinLeer} sin leer`
+                  : "Notificaciones"
+              }
+            >
+              <Bell size={22} strokeWidth={2} />
+            </button>
+
+            {notificacionesSinLeer > 0 && (
+              <span className="header_unread_badge header_notification_badge">
+                {format_badge(notificacionesSinLeer)}
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </header>

@@ -35,10 +35,6 @@
   animation: sg_fade_up 0.35s var(--ease-out) both;
 }
 
-.contact_select_placeholder {
-  color: var(--color-text-muted);
-}
-
 .contact_actions {
   margin-top: var(--space-5);
 }

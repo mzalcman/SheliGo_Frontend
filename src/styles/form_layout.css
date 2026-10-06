@@ -77,12 +77,6 @@
   flex: 1;
 }
 
-/* Selects y fechas sin valor: aspecto de placeholder */
-.select_placeholder,
-.date_placeholder {
-  color: var(--color-text-muted);
-}
-
 /* Autocompletado de institución */
 .autocomplete_container {
   position: relative;

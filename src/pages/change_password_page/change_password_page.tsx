@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Key, Eye, EyeOff, CheckCircle, AlertCircle, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Key, Eye, EyeOff, CheckCircle2, AlertCircle, ShieldCheck } from "lucide-react";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
+import Modal from "../../components/modal/modal";
+import { api } from "../../services/api";
 import "./change_password_page.css";
 
 const ChangePasswordPage = () => {
@@ -17,64 +19,85 @@ const ChangePasswordPage = () => {
   const [showConfirm, setShowConfirm] = useState(false);
 
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    variant: "success" | "error";
+    icon: React.ReactNode;
+    onConfirm?: () => void;
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+    variant: "success",
+    icon: null,
+  });
+
+  const closeModal = () => {
+    setModalConfig((prev) => ({ ...prev, isOpen: false }));
+  };
+
+  const showModalError = (title: string, description: string) => {
+    setModalConfig({
+      isOpen: true,
+      title,
+      description,
+      variant: "error",
+      icon: <AlertCircle size={28} strokeWidth={2.2} />,
+      onConfirm: closeModal,
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg(null);
-    setSuccessMsg(null);
 
-    // Validaciones locales
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setErrorMsg("Por favor, completa todos los campos.");
+      showModalError("Campos incompletos", "Por favor, completa todos los campos del formulario.");
       return;
     }
 
     if (newPassword.length < 6) {
-      setErrorMsg("La nueva contraseña debe tener al menos 6 caracteres.");
+      showModalError("Contraseña muy corta", "La nueva contraseña debe tener al menos 6 caracteres.");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setErrorMsg("Las nuevas contraseñas no coinciden.");
+      showModalError("Las contraseñas no coinciden", "Revisa que la nueva contraseña y su confirmación sean idénticas.");
       return;
     }
 
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-
-      // Ajustá la URL si tu endpoint se llama distinto en el backend
-      const response = await fetch("http://localhost:3000/usuarios/cambiar-contrasena", {
-        method: "PUT",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contrasenaActual: currentPassword,
-          nuevaContrasena: newPassword,
-        }),
+      // La instancia "api" agrega el token Bearer automáticamente
+      await api.put("/usuarios/cambiar-contrasena", {
+        contrasenaActual: currentPassword,
+        nuevaContrasena: newPassword,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccessMsg("¡Contraseña actualizada con éxito!");
-        setCurrentPassword("");
-        setNewPassword("");
-        setConfirmPassword("");
-        setTimeout(() => {
+      setModalConfig({
+        isOpen: true,
+        title: "¡Contraseña actualizada!",
+        description: "Tu contraseña ha sido cambiada exitosamente.",
+        variant: "success",
+        icon: <CheckCircle2 size={28} strokeWidth={2.2} />,
+        onConfirm: () => {
+          closeModal();
+          setCurrentPassword("");
+          setNewPassword("");
+          setConfirmPassword("");
           navigate("/perfil");
-        }, 1800);
-      } else {
-        setErrorMsg(data?.message || "No se pudo cambiar la contraseña. Revisa tus datos.");
-      }
-    } catch (err) {
+        },
+      });
+    } catch (err: any) {
       console.error("Error cambiando contraseña:", err);
-      setErrorMsg("Error al conectar con el servidor.");
+      const errorMessage =
+        err.response?.data?.message ||
+        "No fue posible conectar con el servidor. Inténtalo más tarde.";
+      
+      showModalError("No se pudo cambiar", errorMessage);
     } finally {
       setLoading(false);
     }
@@ -86,7 +109,7 @@ const ChangePasswordPage = () => {
 
       <main className="page_container narrow">
         <div className="page_topbar">
-          <button className="icon_button" onClick={() => navigate(-1)} aria-label="Volver">
+          <button className="icon_button" onClick={() => navigate(-1)} type="button" aria-label="Volver">
             <ArrowLeft size={20} strokeWidth={2.2} />
           </button>
           <h1 className="page_title">Cambiar Contraseña</h1>
@@ -102,88 +125,77 @@ const ChangePasswordPage = () => {
             </p>
           </div>
 
-          {/* Mensajes de Alerta */}
-          {errorMsg && (
-            <div className="form_alert form_alert_error">
-              <AlertCircle size={18} />
-              <span>{errorMsg}</span>
-            </div>
-          )}
-
-          {successMsg && (
-            <div className="form_alert form_alert_success">
-              <CheckCircle size={18} />
-              <span>{successMsg}</span>
-            </div>
-          )}
-
-          {/* Formulario */}
           <form onSubmit={handleSubmit} className="change_pw_form">
-          <div className="form_field">
-            <label className="form_label">Contraseña Actual</label>
-            <div className="change_pw_input_wrapper password_input_container">
-              <Key size={18} className="field_icon" />
-              <input
-                type={showCurrent ? "text" : "password"}
-                className="form_input"
-                placeholder="Ingresa tu contraseña actual"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-              />
-              <button
-                type="button"
-                className="password_toggle"
-                aria-label={showCurrent ? "Ocultar contraseña" : "Mostrar contraseña"}
-                onClick={() => setShowCurrent(!showCurrent)}
-              >
-                {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
+            <div className="form_field">
+              <label className="form_label">Contraseña Actual</label>
+              <div className="change_pw_input_wrapper password_input_container">
+                <Key size={18} className="field_icon" />
+                <input
+                  type={showCurrent ? "text" : "password"}
+                  className="form_input"
+                  placeholder="Ingresa tu contraseña actual"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  className="password_toggle"
+                  aria-label={showCurrent ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  onClick={() => setShowCurrent(!showCurrent)}
+                  disabled={loading}
+                >
+                  {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
-          </div>
-          <div className="form_field">
-            <label className="form_label">Nueva Contraseña</label>
-            <div className="change_pw_input_wrapper password_input_container">
-              <Key size={18} className="field_icon" />
-              <input
-                type={showNew ? "text" : "password"}
-                className="form_input"
-                placeholder="Mínimo 6 caracteres"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-              <button
-                type="button"
-                className="password_toggle"
-                aria-label={showNew ? "Ocultar contraseña" : "Mostrar contraseña"}
-                onClick={() => setShowNew(!showNew)}
-              >
-                {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
+            <div className="form_field">
+              <label className="form_label">Nueva Contraseña</label>
+              <div className="change_pw_input_wrapper password_input_container">
+                <Key size={18} className="field_icon" />
+                <input
+                  type={showNew ? "text" : "password"}
+                  className="form_input"
+                  placeholder="Mínimo 6 caracteres"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  className="password_toggle"
+                  aria-label={showNew ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  onClick={() => setShowNew(!showNew)}
+                  disabled={loading}
+                >
+                  {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
-          </div>
-          <div className="form_field">
-            <label className="form_label">Confirmar Nueva Contraseña</label>
-            <div className="change_pw_input_wrapper password_input_container">
-              <Key size={18} className="field_icon" />
-              <input
-                type={showConfirm ? "text" : "password"}
-                className="form_input"
-                placeholder="Repite la nueva contraseña"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-              <button
-                type="button"
-                className="password_toggle"
-                aria-label={showConfirm ? "Ocultar contraseña" : "Mostrar contraseña"}
-                onClick={() => setShowConfirm(!showConfirm)}
-              >
-                {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
+            <div className="form_field">
+              <label className="form_label">Confirmar Nueva Contraseña</label>
+              <div className="change_pw_input_wrapper password_input_container">
+                <Key size={18} className="field_icon" />
+                <input
+                  type={showConfirm ? "text" : "password"}
+                  className="form_input"
+                  placeholder="Repite la nueva contraseña"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  className="password_toggle"
+                  aria-label={showConfirm ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  onClick={() => setShowConfirm(!showConfirm)}
+                  disabled={loading}
+                >
+                  {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
-          </div>
 
-            {/* Botón de envío */}
             <button
               type="submit"
               className="btn btn_primary btn_lg btn_block"
@@ -201,6 +213,17 @@ const ChangePasswordPage = () => {
       </main>
 
       <Footer />
+
+      <Modal
+        isOpen={modalConfig.isOpen}
+        onClose={closeModal}
+        title={modalConfig.title}
+        description={modalConfig.description}
+        variant={modalConfig.variant}
+        icon={modalConfig.icon}
+        confirmText="Aceptar"
+        onConfirm={modalConfig.onConfirm || closeModal}
+      />
     </div>
   );
 };

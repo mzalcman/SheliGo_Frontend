@@ -12,10 +12,6 @@
   font-weight: var(--weight-semibold);
 }
 
-.personal_info_error {
-  margin-bottom: var(--space-5);
-}
-
 /* Avatar */
 .personal_info_hero {
   display: flex;
@@ -104,4 +100,63 @@
 
 .personal_info_save_btn {
   margin-top: var(--space-2);
+}
+
+.personal_info_avatar_wrapper.is_disabled {
+  cursor: default;
+}
+
+/* Campos: sin editar en gris, editados en negro */
+.input_user_initial {
+  color: var(--color-text-secondary);
+}
+
+.input_user_edited {
+  color: var(--color-text);
+}
+
+/* Bloque de instituciones */
+.personal_info_institutions_group {
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+.personal_info_institutions_header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.personal_info_institutions_count {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+}
+
+.personal_info_institution_search {
+  display: flex;
+  align-items: center;
+}
+
+.personal_info_institution_search > svg {
+  position: absolute;
+  left: 16px;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+.personal_info_institution_search .form_input {
+  padding-left: 46px;
+}
+
+.personal_info_institution_search:focus-within > svg {
+  color: var(--color-primary);
 }

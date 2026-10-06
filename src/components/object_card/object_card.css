@@ -67,7 +67,8 @@
   overflow: hidden;
 }
 
-.object_card_location {
+.object_card_location,
+.object_card_date {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -76,13 +77,19 @@
   color: var(--color-text-secondary);
 }
 
-.object_card_location svg {
+.object_card_location svg,
+.object_card_date svg {
   flex-shrink: 0;
   color: var(--color-primary);
 }
 
-.object_card_location span {
+.object_card_location span,
+.object_card_date span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.object_card_date svg {
+  color: var(--color-text-secondary);
 }

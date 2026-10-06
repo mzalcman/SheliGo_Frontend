@@ -1,12 +1,10 @@
 /* ==========================================================
    Modales y diálogos
-   Compartido por: Modal, borrar publicación, borrar mensaje,
-   registro exitoso. (Todas las capas usan el mismo lenguaje.)
+   Compartido por: Modal, borrar publicación y registro exitoso. (Todas las capas usan el mismo lenguaje.)
    ========================================================== */
 
 .modal_overlay,
 .delete_modal_overlay,
-.room_modal_overlay,
 .success_modal_overlay {
   position: fixed;
   inset: 0;
@@ -23,7 +21,6 @@
 
 .modal_container,
 .delete_modal_card,
-.room_modal_card,
 .success_modal_card {
   width: 100%;
   max-width: 400px;
@@ -73,7 +70,6 @@
 /* Textos */
 .modal_title,
 .delete_modal_card h2,
-.room_modal_title,
 .success_modal_card h3 {
   font-size: var(--text-xl);
   font-weight: var(--weight-semibold);
@@ -83,7 +79,6 @@
 
 .modal_description_text,
 .delete_modal_card p,
-.room_modal_text,
 .success_modal_card p {
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
@@ -138,8 +133,7 @@
 }
 
 /* Acciones */
-.modal_buttons_container,
-.room_modal_actions {
+.modal_buttons_container {
   width: 100%;
   display: flex;
   flex-direction: column;

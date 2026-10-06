@@ -1,5 +1,5 @@
 import "./object_card.css";
-import { MapPin } from "lucide-react";
+import { MapPin, Calendar } from "lucide-react";
 import PublicationStatus from "../publication_status/publication_status";
 import { useNavigate } from "react-router-dom";
 
@@ -9,6 +9,7 @@ interface ObjectCardProps {
   title: string;
   location: string;
   status: string;
+  createdAt?: string | Date;
 }
 
 const ObjectCard = ({
@@ -17,6 +18,7 @@ const ObjectCard = ({
   title,
   location,
   status,
+  createdAt,
 }: ObjectCardProps) => {
   const navigate = useNavigate();
 
@@ -26,6 +28,20 @@ const ObjectCard = ({
     !image || image.includes("placeholder-bege.jpg") 
       ? "/obj_predeterminada.png" 
       : image;
+
+  const formatDate = (dateValue?: string | Date) => {
+    if (!dateValue) return null;
+
+    const date = new Date(dateValue);
+    if (isNaN(date.getTime())) return null;
+
+    return new Intl.DateTimeFormat("es-ES", {
+      day: "numeric",
+      month: "long",
+    }).format(date);
+  };
+
+  const formattedDate = formatDate(createdAt);
 
   return (
     <div
@@ -57,6 +73,13 @@ const ObjectCard = ({
           <MapPin size={15} strokeWidth={2} />
           <span>{location}</span>
         </div>
+
+        {formattedDate && (
+          <div className="object_card_date">
+            <Calendar size={15} strokeWidth={2} />
+            <span>{formattedDate}</span>
+          </div>
+        )}
       </div>
     </div>
   );

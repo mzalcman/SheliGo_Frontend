@@ -37,7 +37,7 @@ const PublicationDetailPage = () => {
   const [show_delete_modal, set_show_delete_modal] = useState(false);
   const [is_deleting, set_is_deleting] = useState(false);
 
-  // Fallback seguro de avatar por si se rompe la red del localhost
+  // Fallback seguro de avatar por si se interrumpe la red local
   const defaultUserPlaceholder = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150";
 
   const refresh_questions = async () => {
@@ -62,6 +62,7 @@ const PublicationDetailPage = () => {
         set_archives(archives_data);
         set_questions(questions_data);
       } catch (error) {
+        console.error("Error al cargar publicación:", error);
         set_error("Error al cargar publicación");
       } finally {
         set_loading(false);

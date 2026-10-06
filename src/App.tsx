@@ -9,25 +9,24 @@ import LoginPage from "./pages/login_page/login_page";
 import RegisterPage from "./pages/register_page/register_page";
 import HelpPage from "./pages/help_page/help_page";
 import EditPublicationPage from "./pages/edit_publication_page/edit_publication_page";
-import ProtectedRoute from "./components/protected_route/protected_route"; 
+import ProtectedRoute from "./components/protected_route/protected_route";
 import { Routes, Route } from "react-router-dom";
-import ChatsListPage from "./pages/chats_list_page/chats_list_page"; 
+import ChatsListPage from "./pages/chats_list_page/chats_list_page";
 import ChatRoomPage from "./pages/chat_room_page/chat_room_page";
 import MyPublicatiosPage from "./pages/my_publications_page/my_publications_page";
-
-// Pantalla
+import PrivacySecurityPage from "./pages/PrivacySecurityPage/PrivacySecurityPage";
 import ContactPage from "./pages/contact_page/ContactPage";
-
-// IMPORTS DE RUTAS DE PERFIL Y CONFIGURACIÓN
+import NotificationsPage from "./pages/notifications_page/notifications_page";
 import ProfilePage from "./pages/profile/ProfilePage";
 import PersonalInfoPage from "./pages/personal_info/PersonalInfoPage";
 import ChangePasswordPage from "./pages/change_password_page/change_password_page";
+import CompleteProfilePage from "./pages/CompleteProfilePage/CompleteProfilePage";
 
 function App() {
 
   useEffect(() => {
     const currentPath = window.location.pathname;
-    
+
     if (currentPath.startsWith("/publicacion/")) {
       localStorage.setItem("redirect_after_login", currentPath);
     }
@@ -41,7 +40,8 @@ function App() {
       <Route path="/buscar" element={<SearchPage />} />
       <Route path="/ayuda" element={<HelpPage />} />
       <Route path="/contactanos" element={<ContactPage />} />
-
+      <Route path="/privacidad-y-seguridad" element={<PrivacySecurityPage />} />
+      <Route path="/completar-perfil" element={<CompleteProfilePage />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/home" element={<HomePage />} />
         <Route path="/publicacion/:id" element={<PublicationDetailPage />} />
@@ -51,11 +51,11 @@ function App() {
         <Route path="/chat/:salaId" element={<ChatRoomPage />} />
         <Route path="/mispublicaciones" element={<MyPublicatiosPage />} />
         <Route path="/menu" element={<MenuPage />} />
-
-        {/* RUTAS PROTEGIDAS DEL PERFIL Y CONFIGURACIÓN */}
         <Route path="/perfil" element={<ProfilePage />} />
         <Route path="/perfil/informacion-personal" element={<PersonalInfoPage />} />
         <Route path="/cambiar-contrasena" element={<ChangePasswordPage />} />
+        <Route path="/notificaciones" element={<NotificationsPage />}
+        />
       </Route>
     </Routes>
   );

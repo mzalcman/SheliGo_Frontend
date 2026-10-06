@@ -15,6 +15,7 @@ import {
 } from "../../services/publication_service";
 import StatusSelector from "../../components/status_selector/status_selector";
 import "../../styles/form_layout.css";
+import { getImageUrl } from "../../utils/get_image_url";
 
 interface BackendItem {
   id: string;
@@ -93,15 +94,18 @@ const EditPublicationPage = () => {
           if (Array.isArray(fotosRaw)) {
             imagenesProcesadas = fotosRaw.map((img: any) => {
               if (typeof img === "string") {
-                return { id: img, url: img };
+                return { id: img, url: getImageUrl(img) };
               }
+
               const urlFoto = img.url || img.ruta || img.nombre_servidor || "";
-              const urlCompleta = urlFoto.startsWith("http")
-                ? urlFoto
-                : `http://localhost:3000/uploads/${urlFoto}`;
+              const urlCompleta = getImageUrl(urlFoto);
+
+              const realId = String(
+                img.id ?? img._id ?? img.foto_id ?? img.archivo_id ?? img.id_archivo ?? img.ruta ?? img.nombre_servidor ?? ""
+              );
 
               return {
-                id: String(img.id || img.ruta || img.nombre_servidor || ""),
+                id: realId,
                 url: urlCompleta
               };
             }).filter((img) => img.url !== "");
@@ -167,14 +171,21 @@ const EditPublicationPage = () => {
       errors.categoriaId = true;
       messages.push("La categoría es inválida o no ha sido seleccionada.");
     }
+    // Validación de fecha (evitar fechas futuras)
     if (!fechaEvento) {
       errors.fechaEvento = true;
       messages.push("La fecha ingresada no es válida.");
     } else {
-      const parsedDate = Date.parse(`${fechaEvento}T00:00:00`);
-      if (isNaN(parsedDate)) {
+      const selectedDate = new Date(`${fechaEvento}T00:00:00`);
+      const today = new Date();
+      today.setHours(23, 59, 59, 999); // Incluir todo el día actual
+
+      if (isNaN(selectedDate.getTime())) {
         errors.fechaEvento = true;
         messages.push("La fecha ingresada no es válida.");
+      } else if (selectedDate > today) {
+        errors.fechaEvento = true;
+        messages.push("La fecha del evento no puede ser posterior al día de hoy.");
       }
     }
 
@@ -197,25 +208,26 @@ const EditPublicationPage = () => {
     setIsSubmitting(true);
 
     const formData = new FormData();
+
+    // 1. Campos de texto
     formData.append("nombre", nombre);
     formData.append("tipo", tipo);
     formData.append("categoria_id", categoriaId);
-    
-    // Enviamos la fecha con el mismo formato "T00:00:00" que sí acepta tu back
     formData.append("fecha_evento", `${fechaEvento}T00:00:00`);
-    
     formData.append("lugar_institucion", lugarInstitucion);
     formData.append("descripcion", descripcion);
-    formData.append("institucion_id", institucionEncontrada ? institucionEncontrada.id : "");
+    formData.append("institucion_id", institucionEncontrada ? String(institucionEncontrada.id) : "");
 
+    // 2. Fotos a eliminar (como JSON string)
     const fotosAEliminar = originalBackendImages
       .filter(origImg => !existingImages.some(currImg => currImg.id === origImg.id))
       .map(img => img.id);
 
-    fotosAEliminar.forEach((idFoto) => {
-      formData.append("fotosAEliminar[]", idFoto);
-    });
+    if (fotosAEliminar.length > 0) {
+      formData.append("fotosAEliminar", JSON.stringify(fotosAEliminar));
+    }
 
+    // 3. Archivos de imagen nuevos (al final)
     if (newImages.length > 0) {
       newImages.forEach((image) => {
         formData.append("imagenes", image);

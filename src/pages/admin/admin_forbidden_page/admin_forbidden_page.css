@@ -1,0 +1,52 @@
+.admin_forbidden {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6) var(--page-gutter);
+  background: var(--color-surface-muted);
+}
+
+.admin_forbidden_card {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.admin_forbidden_icon {
+  width: 64px;
+  height: 64px;
+  margin-top: var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.admin_forbidden_title {
+  font-size: var(--text-xl);
+}
+
+.admin_forbidden_text {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.admin_forbidden_actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}

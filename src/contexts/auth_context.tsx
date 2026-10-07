@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import type { User } from "../types/user";
 import { supabase } from "../services/supabase";
-import { api } from "../services/api";
+import { api, getMe } from "../services/api";
 
 interface AuthContextType {
   user: User | null;
@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     return {
       id: usuarioRaw.id,
+      rol: usuarioRaw.rol,
       nombre: usuarioRaw.nombre || usuarioRaw.name || "",
       apellido: usuarioRaw.apellido || "",
       email: usuarioRaw.email || "",
@@ -152,8 +153,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     window.location.href = "/login";
   };
 
+  // Refresca el usuario desde /usuarios/me conservando lo que ya estaba guardado
+  // (las sesiones iniciadas antes del backoffice no traen el rol).
   const refetchUser = async () => {
-    // Opcional: si tienes un endpoint como /auth/me o /usuarios/perfil
+    if (!localStorage.getItem("token")) return;
+    try {
+      const fresh = await getMe();
+      const stored = JSON.parse(localStorage.getItem("user") || "{}");
+      saveAndSetUser({ ...stored, ...fresh });
+    } catch (error) {
+      console.error("No se pudo actualizar el usuario", error);
+    }
   };
 
   return (

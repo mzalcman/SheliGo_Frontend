@@ -1,16 +1,26 @@
 import "./menu_page.css";
-import { User, Package, Phone, Headphones, ArrowLeft, ChevronRight } from "lucide-react";
+import { useEffect } from "react";
+import { User, Package, Phone, Headphones, ArrowLeft, ChevronRight, LayoutDashboard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/use_auth";
 import { getImageUrl } from "../../utils/get_image_url";
 import LogoutButton from "../../components/logout_button/logout_button";
 
 const MenuPage = () => {
-  const { user: typedUser } = useAuth();
+  const { user: typedUser, refetchUser } = useAuth();
   const navigate = useNavigate();
 
   const user = typedUser as any;
   const userFullName = user?.name || "Usuario";
+
+  // Trae el rol actualizado (las sesiones iniciadas antes del backoffice no lo tienen)
+  useEffect(() => {
+    void refetchUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Solo decide si mostrar el acceso: el backend valida el permiso al entrar a /admin
+  const canSeeBackoffice = typedUser?.rol === "admin" || typedUser?.rol === "institution_admin";
 
   return (
     <main className="menu_page">
@@ -51,6 +61,17 @@ const MenuPage = () => {
         </div>
 
         <div className="menu_options">
+          {canSeeBackoffice && (
+            <button
+              className="menu_option"
+              onClick={() => navigate("/admin")}
+            >
+              <span className="menu_option_icon"><LayoutDashboard size={20} strokeWidth={2} /></span>
+              <span className="menu_option_label">Backoffice</span>
+              <ChevronRight size={18} className="menu_option_chevron" />
+            </button>
+          )}
+
           <button
             className="menu_option"
             onClick={() => navigate("/perfil/informacion-personal")}

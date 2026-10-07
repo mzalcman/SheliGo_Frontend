@@ -1,0 +1,34 @@
+.admin_state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 240px;
+  padding: var(--space-10) var(--space-6);
+  text-align: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.admin_state_icon {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.admin_state_title {
+  font-weight: var(--weight-semibold);
+}
+
+.admin_state_text {
+  max-width: 420px;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}

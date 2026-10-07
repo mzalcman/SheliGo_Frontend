@@ -1,0 +1,90 @@
+.admin_header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--page-gutter);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admin_header_titles {
+  min-width: 0;
+  flex: 1;
+}
+
+.admin_header_title {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin_header_description {
+  display: none;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.admin_header_user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.admin_header_user_text {
+  display: none;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: var(--leading-snug);
+}
+
+.admin_header_user_name {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.admin_header_scope {
+  max-width: 220px;
+  font-size: var(--text-xs);
+  color: var(--color-primary);
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin_header_avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-primary-soft);
+}
+
+@media (min-width: 768px) {
+  .admin_header_description {
+    display: block;
+  }
+
+  .admin_header_user_text {
+    display: flex;
+  }
+}
+
+@media (min-width: 1024px) {
+  .admin_header {
+    padding: 0 var(--space-8);
+  }
+
+  /* Más específico que .icon_button, que también define display */
+  .admin_header .admin_header_menu {
+    display: none;
+  }
+}

@@ -1,0 +1,35 @@
+/* Estructura general del backoffice */
+.admin_layout {
+  --admin-sidebar-width: 256px;
+  min-height: 100vh;
+  background: var(--color-surface-muted);
+}
+
+.admin_layout_collapsed {
+  --admin-sidebar-width: 76px;
+}
+
+.admin_layout_main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: padding-left var(--duration) var(--ease-out);
+}
+
+.admin_layout_content {
+  flex: 1;
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--page-gutter) var(--space-12);
+}
+
+@media (min-width: 1024px) {
+  .admin_layout_main {
+    padding-left: var(--admin-sidebar-width);
+  }
+
+  .admin_layout_content {
+    padding: var(--space-8) var(--space-8) var(--space-12);
+  }
+}

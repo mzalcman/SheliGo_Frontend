@@ -1,0 +1,13 @@
+.admin_confirm_text {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-normal);
+}
+
+.admin_confirm_extra {
+  margin-top: var(--space-4);
+}
+
+.admin_confirm_error {
+  margin-top: var(--space-4);
+}

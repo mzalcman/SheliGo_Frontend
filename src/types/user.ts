@@ -5,8 +5,13 @@ export interface UserInstitution {
   foto?: string;
 }
 
+/* Roles definidos en el backend. Solo se usan para mostrar u ocultar
+   accesos: los permisos reales los valida la API en cada request. */
+export type UserRole = "user" | "institution_admin" | "admin";
+
 export interface User {
   id: string;
+  rol?: UserRole;
   nombre: string;
   apellido?: string;
   email?: string;

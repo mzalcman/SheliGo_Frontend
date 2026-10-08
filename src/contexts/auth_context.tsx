@@ -7,7 +7,7 @@ import { api, getMe } from "../services/api";
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (usuario: any) => void;
+  login: (usuario: any, token?: string) => void;
   loginWithGoogle: () => Promise<void>;
   logout: () => void;
   refetchUser: () => Promise<void>; // 🚀 Agregamos refetch por si actualizan perfil
@@ -45,6 +45,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       name: usuarioRaw.nombre || usuarioRaw.name || "",
       profile_image: usuarioRaw.foto || usuarioRaw.profile_image || ""
     };
+  };
+
+  // Destino después de iniciar sesión: la página que se quería ver o /home
+  const redirectAfterLogin = () => {
+    const redirectUrl = localStorage.getItem("redirect_after_login");
+    if (redirectUrl) {
+      localStorage.removeItem("redirect_after_login");
+      window.location.href = redirectUrl;
+    } else {
+      window.location.href = "/home";
+    }
   };
 
   const saveAndSetUser = (uData: any, token?: string) => {
@@ -87,29 +98,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               }
             );
 
-            const resBody = response.data;
+            const resData = response.data?.data;
 
-            if (resBody?.data?.token) {
-              const uData = resBody.data.usuario;
-
-              // Guardamos token y datos del usuario
-              saveAndSetUser(uData, resBody.data.token);
+            // Sin instituciones todavía: el backend no emite sesión de SheliGo.
+            // El registro se completa en /completar-perfil con el token de Google.
+            if (resData?.requiereCompletarPerfil) {
               setLoading(false);
-
-              // EVALUAMOS SI REQUIERE COMPLETAR PERFIL (INSTITUCIONES)
-              if (resBody.requiereCompletarPerfil || resBody.data?.requiereCompletarPerfil) {
+              if (window.location.pathname !== "/completar-perfil") {
                 window.location.href = "/completar-perfil";
-                return;
               }
+              return;
+            }
 
-              // Si ya tiene instituciones, va a su destino o /home
-              const redirectUrl = localStorage.getItem("redirect_after_login");
-              if (redirectUrl) {
-                localStorage.removeItem("redirect_after_login");
-                window.location.href = redirectUrl;
-              } else {
-                window.location.href = "/home";
-              }
+            if (resData?.token) {
+              saveAndSetUser(resData.usuario, resData.token);
+              setLoading(false);
+              redirectAfterLogin();
             }
           } catch (error) {
             console.error("Error al sincronizar Google con tu backend:", error);
@@ -124,8 +128,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  const login = (uData: any) => {
-    saveAndSetUser(uData);
+  // token es opcional: el login con email ya lo guarda por su cuenta
+  const login = (uData: any, token?: string) => {
+    saveAndSetUser(uData, token);
   };
 
   const loginWithGoogle = async () => {

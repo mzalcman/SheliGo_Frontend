@@ -47,9 +47,16 @@ export const logout = async () => {
   return response.data;
 };
 
-export const completarInstituciones = async (institucionesIds: string[]) => {
-  const response = await api.post("/auth/completar-instituciones", {
-    instituciones_ids: institucionesIds,
-  });
-  return response.data;
+// Último paso del registro con Google. Se autentica con el token de Supabase
+// (todavía no hay sesión de SheliGo) y devuelve { token, usuario }.
+export const completarInstituciones = async (
+  institucionesIds: string[],
+  tokenGoogle: string
+) => {
+  const response = await api.post(
+    "/auth/completar-instituciones",
+    { instituciones_ids: institucionesIds },
+    { headers: { Authorization: `Bearer ${tokenGoogle}` } }
+  );
+  return response.data.data;
 };

@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { X, Building2, ArrowRight } from "lucide-react";
 import Loader from "../../components/loader/loader";
 import { get_all_institutions } from "../../services/home_service";
-import { api } from "../../services/api";
+import { completarInstituciones } from "../../services/auth_service";
+import { supabase } from "../../services/supabase";
 import { useAuth } from "../../hooks/use_auth";
 import BrandLogo from "../../components/brand_logo/brand_logo";
 import "../../styles/auth.css";
@@ -11,7 +12,7 @@ import "../../styles/institution_picker.css";
 
 const CompleteProfilePage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
 
   const [availableInstitutions, setAvailableInstitutions] = useState<any[]>([]);
   const [selectedInstitutions, setSelectedInstitutions] = useState<any[]>([]);
@@ -20,6 +21,13 @@ const CompleteProfilePage = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Quien ya tiene sesión de SheliGo completó el onboarding: no vuelve a pasar por acá
+  useEffect(() => {
+    if (user && (user.instituciones?.length ?? 0) > 0) {
+      navigate("/home", { replace: true });
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     const fetchInstitutions = async () => {
@@ -115,69 +123,34 @@ const CompleteProfilePage = () => {
     try {
       setLoading(true);
 
-      // Obtener el token JWT de la sesión
-      const token = localStorage.getItem("token");
-
-      if (!token) {
+      // Todavía no hay sesión de SheliGo: el backend valida la sesión de Google
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
         setError(
-          "No se encontró una sesión activa. Por favor, vuelve a iniciar sesión."
+          "Tu sesión de Google expiró. Por favor, vuelve a iniciar sesión."
         );
         return;
       }
 
-      // Obtener únicamente los IDs de las instituciones
       const instituciones_ids = selectedInstitutions.map(
         (inst) => inst.id || inst.institucion_id || inst
       );
 
-
-      // Guardar instituciones
-      const response = await api.post(
-        "/auth/completar-instituciones",
-        {
-          instituciones_ids,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const { token, usuario } = await completarInstituciones(
+        instituciones_ids,
+        session.access_token
       );
 
-      if (response.data?.status !== "success") {
-        throw new Error(
-          response.data?.message ||
-            "No se pudieron guardar las instituciones."
-        );
+      if (!token || !usuario) {
+        throw new Error("No se pudo completar el registro.");
       }
 
-      // Obtener el usuario actualizado
-      const userResponse = await api.get("/usuarios/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // Recién ahora el usuario queda registrado y con sesión
+      login(usuario, token);
 
-      const updatedUser =
-        userResponse.data?.data?.usuario;
-
-      if (!updatedUser) {
-        throw new Error(
-          "No se pudo obtener el usuario actualizado."
-        );
-      }
-
-      // Actualizar el contexto de autenticación
-      login(updatedUser);
-
-      // Mantener actualizado localStorage
-      localStorage.setItem(
-        "user",
-        JSON.stringify(updatedUser)
-      );
-
-      // Ir al home
-      navigate("/home");
+      const redirectUrl = localStorage.getItem("redirect_after_login");
+      localStorage.removeItem("redirect_after_login");
+      navigate(redirectUrl || "/home", { replace: true });
     } catch (err: any) {
       console.error("Error al completar instituciones:", err.response?.data || err);
 

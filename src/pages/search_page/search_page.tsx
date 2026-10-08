@@ -16,17 +16,30 @@ const SearchPage = () => {
   const [searchText, setSearchText] = useState("");
   const [openFilter, setOpenFilter] = useState("");
   const [categorias, setCategorias] = useState<string[]>([]);
-  const [instituciones, setInstituciones] = useState<string[]>([]);
+  // null = sin elección propia: el filtro arranca con las instituciones del usuario
+  const [institucionesElegidas, setInstitucionesElegidas] = useState<string[] | null>(null);
   const [fechaDesde, setFechaDesde] = useState("");
   const [fechaHasta, setFechaHasta] = useState("");
   const [tipo, setTipo] = useState("");
 
   const { user } = useAuth() as { user: User | null };
 
+  const institucionesDelUsuario = useMemo(
+    () => (user?.instituciones || []).map((inst) => String(inst.id)),
+    [user]
+  );
+
+  // Lo tildado en el filtro es exactamente lo que se consulta al backend.
+  // Desmarcar todas vuelve al valor por defecto (las instituciones del usuario),
+  // que es también lo que el backend usa cuando no recibe institucion_id.
+  const instituciones = institucionesElegidas ?? institucionesDelUsuario;
+  const setInstituciones = (value: string[]) =>
+    setInstitucionesElegidas(value.length > 0 ? value : null);
+
   const clearFilters = () => {
     setSearchText("");
     setCategorias([]);
-    setInstituciones([]);
+    setInstitucionesElegidas(null);
     setFechaDesde("");
     setFechaHasta("");
     setTipo("");
@@ -34,6 +47,8 @@ const SearchPage = () => {
   };
 
   useEffect(() => {
+    // Evita que una respuesta vieja pise la de filtros más nuevos
+    let vigente = true;
     const buscar = async () => {
       try {
         const publicaciones = await searchPublications({
@@ -44,57 +59,16 @@ const SearchPage = () => {
           fecha_desde: fechaDesde || undefined,
           fecha_hasta: fechaHasta || undefined,
         });
-        setObjects(publicaciones || []);
+        if (vigente) setObjects(publicaciones || []);
       } catch (error) {
         console.error("Error al buscar publicaciones:", error);
       }
     };
     buscar();
+    return () => {
+      vigente = false;
+    };
   }, [searchText, categorias, instituciones, fechaDesde, fechaHasta, tipo]);
-
-  // Filtrado de las publicaciones devueltas por las instituciones del usuario
-  const filteredObjects = useMemo(() => {
-    if (!objects || objects.length === 0) return [];
-
-    const userInstitutions = user?.instituciones || [];
-
-    // Si el usuario no pertenece a ninguna institución, no mostramos resultados
-    if (userInstitutions.length === 0) {
-      return [];
-    }
-
-    const userInstIds = new Set(
-      userInstitutions
-        .map((inst) => (inst.id ? String(inst.id).trim().toLowerCase() : ""))
-        .filter(Boolean)
-    );
-
-    const userInstNames = new Set(
-      userInstitutions
-        .map((inst) => (inst.nombre ? inst.nombre.trim().toLowerCase() : ""))
-        .filter(Boolean)
-    );
-
-    return objects.filter((pub: any) => {
-      const pubInstId = pub.institucion_id
-        ? String(pub.institucion_id).trim().toLowerCase()
-        : "";
-
-      const pubInstName = pub.institucion_nombre
-        ? String(pub.institucion_nombre).trim().toLowerCase()
-        : "";
-
-      const pubLocation = pub.lugar_institucion
-        ? String(pub.lugar_institucion).trim().toLowerCase()
-        : "";
-
-      const matchesId = pubInstId ? userInstIds.has(pubInstId) : false;
-      const matchesName = pubInstName ? userInstNames.has(pubInstName) : false;
-      const matchesLocation = pubLocation ? userInstNames.has(pubLocation) : false;
-
-      return matchesId || matchesName || matchesLocation;
-    });
-  }, [objects, user]);
 
   return (
     <div className="search_page">
@@ -135,14 +109,14 @@ const SearchPage = () => {
 
         {/* Condicional para cuando no hay publicaciones en los filtros */}
         <section className="search_results">
-          {filteredObjects.length === 0 ? (
+          {objects.length === 0 ? (
             <EmptyState
               icon={SearchX}
               title="Sin resultados"
-              description="No se encontraron publicaciones que coincidan con tus instituciones y filtros aplicados."
+              description="No se encontraron publicaciones que coincidan con las instituciones y filtros aplicados."
             />
           ) : (
-            filteredObjects.map((object: any) => (
+            objects.map((object: any) => (
               <ObjectCard
                 key={object.id}
                 id={object.id}

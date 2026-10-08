@@ -98,7 +98,7 @@ const PublicationDetail = ({
 
           <div className="publication_header">
             {/* Badge estado */}
-            <PublicationStatus status={publication.tipo} />
+            <PublicationStatus status={publication.tipo} estado={publication.estado} />
 
             <div className="publication_share_wrapper">
               <button

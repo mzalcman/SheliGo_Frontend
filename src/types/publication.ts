@@ -1,3 +1,7 @@
+/* Valores reales de publicaciones.estado en la base (CHECK publicaciones_estado_check).
+   "eliminada" es la baja lógica: la API deja de devolverla en la app. */
+export type PublicationState = "activa" | "recuperada" | "eliminada";
+
 export interface Publication {
   id: string;
   nombre: string;
@@ -8,7 +12,7 @@ export interface Publication {
   created_at: string;
   updated_at: string;
   tipo: string;
-  estado: string;
+  estado: PublicationState;
   usuario_id: string;
   institucion_id: string;
   categoria_id: string;

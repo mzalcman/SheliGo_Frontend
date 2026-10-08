@@ -2,6 +2,8 @@ import "./publication_status.css";
 
 interface PublicationStatusProps {
   status: string;
+  // publicaciones.estado: una publicación recuperada se muestra como tal
+  estado?: string;
   small?: boolean;
 }
 
@@ -13,6 +15,7 @@ interface PublicationStatusProps {
   → versión grande (detalle) */
 
 const PublicationStatus = ({ status,
+  estado,
   small = false,
 }: PublicationStatusProps) => {
 
@@ -24,9 +27,11 @@ const PublicationStatus = ({ status,
   cualquier otro caso
   → perdido (naranja)*/
 
-  const status_class =
-    normalized_status ===
-    "encontrado"
+  const is_recovered = estado === "recuperada";
+
+  const status_class = is_recovered
+    ? "publication_status_recovered"
+    : normalized_status === "encontrado"
       ? "publication_status_found"
       : "publication_status_lost";
 
@@ -38,7 +43,7 @@ const PublicationStatus = ({ status,
   return (
     <div className={`publication_status ${status_class} ${size_class}`}>
       <span className="publication_status_dot" />
-      {status}
+      {is_recovered ? "recuperado" : status}
     </div>
   );
 };

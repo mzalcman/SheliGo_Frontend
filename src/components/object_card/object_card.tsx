@@ -9,6 +9,7 @@ interface ObjectCardProps {
   title: string;
   location: string;
   status: string;
+  estado?: string;
   createdAt?: string | Date;
 }
 
@@ -18,6 +19,7 @@ const ObjectCard = ({
   title,
   location,
   status,
+  estado,
   createdAt,
 }: ObjectCardProps) => {
   const navigate = useNavigate();
@@ -60,7 +62,7 @@ const ObjectCard = ({
         />
 
         <div className="object_card_status">
-          <PublicationStatus status={status} small={true} />
+          <PublicationStatus status={status} estado={estado} small={true} />
         </div>
       </div>
 

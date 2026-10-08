@@ -1,4 +1,5 @@
 import { api } from "./api";
+import type { PublicationState } from "../types/publication";
 
 export const get_publication_by_id = async (id: string) => {
   const response = await api.get(`/publicaciones/${id}`);
@@ -36,6 +37,24 @@ export const update_publication = async (id: string, formData: FormData) => {
     },
   });
   return response.data;
+};
+
+/* Cambio de estado por el dueño, con los endpoints existentes:
+   - recuperada → PATCH /publicaciones/:id/recuperar
+   - activa     → PUT /publicaciones/:id (solo el campo estado)
+   La baja ("eliminada") va por delete_publication, que es lógica en el backend. */
+export const update_publication_state = async (
+  id: string,
+  estado: Exclude<PublicationState, "eliminada">
+) => {
+  if (estado === "recuperada") {
+    const response = await api.patch(`/publicaciones/${id}/recuperar`);
+    return response.data.data.publicacion;
+  }
+  const formData = new FormData();
+  formData.append("estado", estado);
+  const response = await update_publication(id, formData);
+  return response.data.publicacion;
 };
 
 export const delete_publication = async (id: string) => {

@@ -34,6 +34,7 @@
 
 .owner_actions_buttons {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-2);
 }
 
@@ -122,4 +123,15 @@
   .publication_detail_bottom {
     margin-top: var(--space-12);
   }
+}
+
+/* Reemplaza a "Reclamar" cuando el objeto ya fue recuperado */
+.publication_recovered_note {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  text-align: center;
 }

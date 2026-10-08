@@ -116,6 +116,7 @@ const MyPublicationsPage = () => {
                   id={pub.id}
                   title={pub.nombre || "Sin título"}
                   status={pub.tipo || "perdido"}
+                  estado={pub.estado}
                   location={parseLocation(pub)}
                   image={getImageUrl(pub.foto_principal_url)}
                   createdAt={pub.fecha_evento}

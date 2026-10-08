@@ -36,16 +36,20 @@ const CategoryFormModal = ({ category, on_close, on_saved }: CategoryFormModalPr
     descripcion: category?.descripcion ?? "",
   });
   const [name_error, set_name_error] = useState<string | null>(null);
+  const [description_error, set_description_error] = useState<string | null>(null);
   const [server_error, set_server_error] = useState<string | null>(null);
   const [busy, set_busy] = useState(false);
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
+    // Mismas reglas que el backend (categorias.nombre y descripcion son NOT NULL)
     const nombre = form.nombre.trim();
-    if (nombre.length < 2 || nombre.length > 60) {
-      set_name_error("El nombre debe tener entre 2 y 60 caracteres.");
-      return;
-    }
+    const descripcion = form.descripcion.trim();
+    const nombre_invalido = nombre.length < 2 || nombre.length > 60;
+    const descripcion_invalida = descripcion.length < 3 || descripcion.length > 255;
+    set_name_error(nombre_invalido ? "El nombre debe tener entre 2 y 60 caracteres." : null);
+    set_description_error(descripcion_invalida ? "La descripción debe tener entre 3 y 255 caracteres." : null);
+    if (nombre_invalido || descripcion_invalida) return;
 
     set_busy(true);
     set_server_error(null);
@@ -99,11 +103,18 @@ const CategoryFormModal = ({ category, on_close, on_saved }: CategoryFormModalPr
           {name_error && <span className="field_error">{name_error}</span>}
         </label>
         <label className="form_field">
-          <span className="form_label">Descripción</span>
-          <textarea className="form_textarea" rows={3} maxLength={255} value={form.descripcion}
-            placeholder="Opcional"
-            onChange={(event) => set_form((current) => ({ ...current, descripcion: event.target.value }))} />
-          <span className="form_hint">{form.descripcion.length}/255</span>
+          <span className="form_label">Descripción <span className="admin_required">*</span></span>
+          <textarea className={`form_textarea ${description_error ? "input_error" : ""}`} rows={3} maxLength={255}
+            value={form.descripcion} placeholder="Ej.: Llaves sueltas y llaveros" aria-invalid={Boolean(description_error)}
+            onChange={(event) => {
+              set_form((current) => ({ ...current, descripcion: event.target.value }));
+              set_description_error(null);
+            }} />
+          {description_error ? (
+            <span className="field_error">{description_error}</span>
+          ) : (
+            <span className="form_hint">{form.descripcion.length}/255</span>
+          )}
         </label>
       </form>
     </AdminModal>

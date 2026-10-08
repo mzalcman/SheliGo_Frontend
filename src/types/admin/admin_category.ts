@@ -1,7 +1,7 @@
 export interface AdminCategory {
   id: string;
   nombre: string;
-  descripcion: string | null;
+  descripcion: string;
   publicaciones_activas: number;
   publicaciones_total: number;
 }

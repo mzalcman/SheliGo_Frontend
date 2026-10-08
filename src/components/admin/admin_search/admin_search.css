@@ -1,7 +1,13 @@
 .admin_search {
   position: relative;
-  flex: 1 1 260px;
+  flex: 1 1 100%;
   min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .admin_search {
+    flex: 1 1 260px;
+  }
 }
 
 .admin_search_icon {

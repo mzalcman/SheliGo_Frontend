@@ -8,6 +8,8 @@ export interface AdminColumn<T> {
   // Columnas angostas (acciones, contadores) alineadas a la derecha
   align?: "left" | "right";
   width?: string;
+  // En móvil (tarjetas) se oculta: p. ej. el botón "ver" cuando toda la tarjeta ya abre el detalle
+  hide_on_mobile?: boolean;
 }
 
 interface AdminTableProps<T> {
@@ -51,7 +53,7 @@ const AdminTable = <T,>({ columns, rows, get_row_key, on_row_click, refreshing =
               <td
                 key={column.key}
                 data-label={column.header}
-                className={column.align === "right" ? "align_right" : ""}
+                className={`${column.align === "right" ? "align_right" : ""} ${column.hide_on_mobile ? "hide_on_mobile" : ""}`}
               >
                 {column.render(row)}
               </td>

@@ -98,6 +98,7 @@ const AdminPublicationsPage = () => {
       header: "Acciones",
       align: "right",
       width: "72px",
+      hide_on_mobile: true,
       render: (pub) => (
         <span className="admin_row_actions">
           <button className="icon_button" aria-label={`Ver ${pub.nombre}`}

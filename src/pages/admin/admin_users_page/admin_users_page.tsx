@@ -71,6 +71,7 @@ const AdminUsersPage = () => {
       header: "Acciones",
       align: "right",
       width: "72px",
+      hide_on_mobile: true,
       render: (user) => (
         <span className="admin_row_actions">
           <button className="icon_button" aria-label={`Ver ${user.email}`}

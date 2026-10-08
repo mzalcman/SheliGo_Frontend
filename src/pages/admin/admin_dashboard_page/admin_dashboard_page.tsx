@@ -118,7 +118,7 @@ const AdminDashboardPage = () => {
           ) : (
             <div className="admin_list">
               {instituciones_destacadas.map((inst) => (
-                <div key={inst.id} className="admin_list_item">
+                <div key={inst.id} className="admin_list_item is_stacked">
                   <span className="admin_cell_title">{inst.nombre}</span>
                   <span className="admin_muted admin_number">
                     {inst.publicaciones_activas} activas · {inst.publicaciones_recuperadas} recuperadas

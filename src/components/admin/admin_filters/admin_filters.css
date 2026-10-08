@@ -6,14 +6,17 @@
   margin-bottom: var(--space-4);
 }
 
+/* En móvil entran dos filtros por renglón; el buscador ocupa uno entero */
 .admin_filter {
-  flex: 1 1 160px;
+  flex: 1 1 130px;
+  min-width: 0;
   max-width: 100%;
 }
 
 .admin_filter .admin_filter_select {
   min-height: 44px;
   font-size: var(--text-sm);
+  text-overflow: ellipsis;
 }
 
 .admin_filter_select.is_active {

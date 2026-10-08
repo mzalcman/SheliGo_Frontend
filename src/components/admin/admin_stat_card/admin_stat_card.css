@@ -57,3 +57,25 @@
   font-size: var(--text-xs);
   color: var(--color-text-muted);
 }
+
+/* Móvil: dos indicadores por renglón, ícono arriba */
+@media (max-width: 639px) {
+  .admin_stat_card {
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+  }
+
+  .admin_stat_icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .admin_stat_label {
+    font-size: var(--text-xs);
+  }
+
+  .admin_stat_value {
+    font-size: var(--text-xl);
+  }
+}

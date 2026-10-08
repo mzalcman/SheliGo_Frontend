@@ -32,13 +32,15 @@ const to_form = (institution: AdminInstitution | null): AdminInstitutionForm => 
   longitud: institution?.longitud?.toString() ?? "",
 });
 
-// Mismas reglas que valida el backend (admin-schema.ts), para avisar antes de enviar
+// Mismas reglas que valida el backend (admin-schema.ts), para avisar antes de enviar.
+// nombre, direccion y foto son NOT NULL en la tabla instituciones.
 const validate = (form: AdminInstitutionForm): FormErrors => {
   const errors: FormErrors = {};
   const nombre = form.nombre.trim();
   if (nombre.length < 2 || nombre.length > 120) errors.nombre = "El nombre debe tener entre 2 y 120 caracteres.";
   if (form.email.trim() && !EMAIL_PATTERN.test(form.email.trim())) errors.email = "El email no es válido.";
-  if (form.direccion.trim().length > 200) errors.direccion = "Máximo 200 caracteres.";
+  const direccion = form.direccion.trim();
+  if (direccion.length < 3 || direccion.length > 200) errors.direccion = "La dirección debe tener entre 3 y 200 caracteres.";
   if (form.telefono.trim().length > 30) errors.telefono = "Máximo 30 caracteres.";
 
   const lat = form.latitud.trim();
@@ -61,7 +63,6 @@ const AdminInstitutionFormModal = ({ institution, on_close, on_saved }: AdminIns
   const [errors, set_errors] = useState<FormErrors>({});
   const [photo, set_photo] = useState<File | null>(null);
   const [photo_preview, set_photo_preview] = useState<string | null>(institution?.foto ?? null);
-  const [remove_photo, set_remove_photo] = useState(false);
   const [busy, set_busy] = useState(false);
   const [server_error, set_server_error] = useState<string | null>(null);
   const file_input = useRef<HTMLInputElement>(null);
@@ -98,20 +99,20 @@ const AdminInstitutionFormModal = ({ institution, on_close, on_saved }: AdminIns
     }
     set_errors((current) => ({ ...current, foto: undefined }));
     set_photo(file);
-    set_remove_photo(false);
     set_photo_preview(URL.createObjectURL(file));
   };
 
+  // Solo en el alta: descarta la imagen elegida antes de guardar
   const clear_photo = () => {
     set_photo(null);
     set_photo_preview(null);
-    set_remove_photo(true);
     if (file_input.current) file_input.current.value = "";
   };
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     const found = validate(form);
+    if (!is_edit && !photo) found.foto = "El logo o foto es obligatorio.";
     set_errors(found);
     if (Object.values(found).some(Boolean)) return;
 
@@ -119,7 +120,7 @@ const AdminInstitutionFormModal = ({ institution, on_close, on_saved }: AdminIns
     set_server_error(null);
     try {
       if (is_edit) {
-        await update_admin_institution(institution.id, form, photo, remove_photo);
+        await update_admin_institution(institution.id, form, photo);
         notify(`Institución "${form.nombre.trim()}" actualizada`);
       } else {
         await create_admin_institution(form, photo);
@@ -181,13 +182,15 @@ const AdminInstitutionFormModal = ({ institution, on_close, on_saved }: AdminIns
             {photo_preview ? <img src={photo_preview} alt="" /> : <ImagePlus size={22} />}
           </span>
           <div className="admin_photo_actions">
-            <span className="form_label">Logo o foto</span>
+            <span className="form_label">
+              Logo o foto {!is_edit && <span className="admin_required">*</span>}
+            </span>
             <span className="form_hint">JPG, PNG o WEBP de hasta 8 MB.</span>
             <div className="admin_detail_actions" style={{ marginTop: 4 }}>
               <button type="button" className="btn btn_secondary btn_sm" onClick={() => file_input.current?.click()}>
                 {photo_preview ? "Cambiar" : "Subir imagen"}
               </button>
-              {photo_preview && (
+              {!is_edit && photo_preview && (
                 <button type="button" className="btn btn_ghost btn_sm" onClick={clear_photo}>
                   <Trash2 size={16} />
                   Quitar
@@ -204,7 +207,7 @@ const AdminInstitutionFormModal = ({ institution, on_close, on_saved }: AdminIns
           {field("nombre", "Nombre", { wide: true, required: true, placeholder: "Ej.: Colegio Nacional" })}
           {field("email", "Email de contacto", { type: "email", inputMode: "email", placeholder: "contacto@institucion.edu" })}
           {field("telefono", "Teléfono", { type: "tel", inputMode: "tel", placeholder: "011 4444-5555" })}
-          {field("direccion", "Dirección", { wide: true, placeholder: "Calle 123, Ciudad" })}
+          {field("direccion", "Dirección", { wide: true, required: true, placeholder: "Calle 123, Ciudad" })}
           {field("latitud", "Latitud", { inputMode: "decimal", placeholder: "-34.6037" })}
           {field("longitud", "Longitud", { inputMode: "decimal", placeholder: "-58.3816" })}
         </div>

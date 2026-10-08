@@ -2,9 +2,9 @@ export interface AdminInstitution {
   id: string;
   nombre: string;
   email: string | null;
-  direccion: string | null;
+  direccion: string;
   telefono: string | null;
-  foto: string | null;
+  foto: string;
   latitud: number | null;
   longitud: number | null;
   created_at: string | null;

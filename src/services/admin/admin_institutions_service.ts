@@ -22,13 +22,12 @@ export const get_admin_institution = async (id: string): Promise<AdminInstitutio
 
 /* Las instituciones viajan como multipart porque pueden incluir foto.
    Se envían todos los campos: '' le indica al backend que el valor queda vacío. */
-const build_form_data = (form: AdminInstitutionForm, photo: File | null, remove_photo = false) => {
+const build_form_data = (form: AdminInstitutionForm, photo: File | null) => {
   const data = new FormData();
   (Object.keys(form) as (keyof AdminInstitutionForm)[]).forEach((key) => {
     data.append(key, form[key].trim());
   });
   if (photo) data.append("foto", photo);
-  if (remove_photo && !photo) data.append("eliminarFoto", "true");
   return data;
 };
 
@@ -46,12 +45,12 @@ export const create_admin_institution = async (
 export const update_admin_institution = async (
   id: string,
   form: AdminInstitutionForm,
-  photo: File | null,
-  remove_photo: boolean
+  // null = conservar la foto actual (instituciones.foto es obligatoria, no se puede quitar)
+  photo: File | null
 ): Promise<AdminInstitutionDetail> => {
   const response = await api.patch(
     `/admin/instituciones/${id}`,
-    build_form_data(form, photo, remove_photo),
+    build_form_data(form, photo),
     multipart
   );
   return response.data.data.institucion;

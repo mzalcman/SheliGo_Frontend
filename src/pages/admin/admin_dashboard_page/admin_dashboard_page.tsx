@@ -162,11 +162,17 @@ const AdminDashboardPage = () => {
 
         <section className="admin_card">
           <div className="admin_card_header">
-            <h3 className="admin_card_title">Actividad del equipo</h3>
+            <h3 className="admin_card_title">
+              {session.es_global ? "Actividad del equipo" : "Actividad de tus instituciones"}
+            </h3>
           </div>
           {actividad_reciente.length === 0 ? (
             <EmptyState compact icon={History} title="Sin actividad registrada"
-              description="Acá vas a ver los cambios que hagan los administradores." />
+              description={
+                session.es_global
+                  ? "Acá vas a ver los cambios que hagan los administradores."
+                  : "Acá vas a ver los cambios que hagan los miembros de tus instituciones."
+              } />
           ) : (
             <ul className="admin_activity">
               {actividad_reciente.map((act) => (

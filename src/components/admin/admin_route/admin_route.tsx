@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../../../hooks/use_auth";
 import Loader from "../../loader/loader";
 import AdminLayout from "../admin_layout/admin_layout";
 import AdminSessionProvider from "../admin_session_provider/admin_session_provider";
+import { AdminLoadingState } from "../admin_states/admin_states";
 import AdminForbiddenPage from "../../../pages/admin/admin_forbidden_page/admin_forbidden_page";
 import { get_admin_session } from "../../../services/admin/admin_session_service";
 import { get_admin_error_message, get_admin_error_status } from "../../../services/admin/admin_error";
@@ -58,7 +59,10 @@ const AdminRoute = () => {
   return (
     <AdminSessionProvider session={state.session}>
       <AdminLayout>
-        <Outlet />
+        {/* Las páginas del backoffice se cargan bajo demanda: el layout queda visible */}
+        <Suspense fallback={<AdminLoadingState />}>
+          <Outlet />
+        </Suspense>
       </AdminLayout>
     </AdminSessionProvider>
   );

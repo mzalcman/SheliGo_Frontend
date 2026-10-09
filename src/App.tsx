@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import HomePage from "./pages/home_page/home_page";
 import PublicationDetailPage from "./pages/publication_detail_page/publication_detail_page";
 import SearchPage from "./pages/search_page/search_page";
@@ -21,12 +21,15 @@ import ProfilePage from "./pages/profile/ProfilePage";
 import PersonalInfoPage from "./pages/personal_info/PersonalInfoPage";
 import ChangePasswordPage from "./pages/change_password_page/change_password_page";
 import CompleteProfilePage from "./pages/CompleteProfilePage/CompleteProfilePage";
-import AdminRoute from "./components/admin/admin_route/admin_route";
-import AdminDashboardPage from "./pages/admin/admin_dashboard_page/admin_dashboard_page";
-import AdminUsersPage from "./pages/admin/admin_users_page/admin_users_page";
-import AdminPublicationsPage from "./pages/admin/admin_publications_page/admin_publications_page";
-import AdminInstitutionsPage from "./pages/admin/admin_institutions_page/admin_institutions_page";
-import AdminCategoriesPage from "./pages/admin/admin_categories_page/admin_categories_page";
+import Loader from "./components/loader/loader";
+
+// El backoffice se descarga solo cuando alguien entra a /admin
+const AdminRoute = lazy(() => import("./components/admin/admin_route/admin_route"));
+const AdminDashboardPage = lazy(() => import("./pages/admin/admin_dashboard_page/admin_dashboard_page"));
+const AdminUsersPage = lazy(() => import("./pages/admin/admin_users_page/admin_users_page"));
+const AdminPublicationsPage = lazy(() => import("./pages/admin/admin_publications_page/admin_publications_page"));
+const AdminInstitutionsPage = lazy(() => import("./pages/admin/admin_institutions_page/admin_institutions_page"));
+const AdminCategoriesPage = lazy(() => import("./pages/admin/admin_categories_page/admin_categories_page"));
 
 function App() {
 
@@ -64,7 +67,7 @@ function App() {
         />
       </Route>
       {/* Backoffice: AdminRoute valida el acceso contra GET /admin/me (la API vuelve a validar cada acción) */}
-      <Route path="/admin" element={<AdminRoute />}>
+      <Route path="/admin" element={<Suspense fallback={<Loader />}><AdminRoute /></Suspense>}>
         <Route index element={<AdminDashboardPage />} />
         <Route path="usuarios" element={<AdminUsersPage />} />
         <Route path="publicaciones" element={<AdminPublicationsPage />} />

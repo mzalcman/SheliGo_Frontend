@@ -336,9 +336,12 @@ const PersonalInfoPage = () => {
         formData.append("foto", newImageFile);
       }
 
+      // Sin este header, axios usa el Content-Type JSON por defecto de `api`,
+      // convierte el FormData a JSON y la foto se pierde (igual que en publicar).
       const response = await api.put(
         "/usuarios/me",
-        formData
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
       // Intentamos obtener el usuario actualizado desde

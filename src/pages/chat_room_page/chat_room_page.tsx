@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Paperclip, Send, AlertCircle, Trash2, CheckCheck } from "lucide-react";
 import { useAuthContext } from "../../contexts/auth_context";
-import { supabase } from "../../services/supabase";
 import { api } from "../../services/api";
 import Modal from "../../components/modal/modal";
 import "./chat_room_page.css";
 import { getImageUrl } from "../../utils/get_image_url";
+import { ACCEPTED_IMAGE_INPUT, get_image_error } from "../../utils/image_rules";
 
 interface Message {
   id: string;
@@ -30,6 +30,8 @@ const esRutaImagen = (texto?: string): boolean => {
   );
 };
 
+const INTERVALO_ACTUALIZACION_MS = 3000;
+
 const ChatRoomPage = () => {
   const { salaId } = useParams<{ salaId: string }>();
   const navigate = useNavigate();
@@ -45,82 +47,57 @@ const ChatRoomPage = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const versionMensajesRef = useRef(0);
 
   const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
   const [mensajeAEliminar, setMensajeAEliminar] = useState<string | null>(null);
   const [mostrarModalError, setMostrarModalError] = useState(false);
   const [mensajeError, setMensajeError] = useState("");
+  const [eliminando, setEliminando] = useState(false);
 
+  // Agrega el mensaje que devolvió el backend sin esperar a la próxima actualización
+  const agregarMensajePropio = (mensaje?: Message) => {
+    if (!mensaje?.id) return;
+    versionMensajesRef.current += 1;
+    setMessages((prev) => (prev.some((msg) => msg.id === mensaje.id) ? prev : [...prev, mensaje]));
+  };
+
+  /*
+  Mensajes nuevos, leídos y borrados: se consulta al backend cada pocos segundos.
+  No se usa Realtime de Supabase porque el cliente del navegador usa la clave
+  pública (anon) y no la sesión de SheliGo: para recibir eventos habría que
+  dejar la tabla mensajes legible para cualquiera. El backend sí valida que el
+  usuario sea parte de la sala (y al leer marca los mensajes como leídos).
+  */
   useEffect(() => {
     if (!salaId) return;
+    let activo = true;
 
-    const cargarHistorial = async () => {
+    const cargarMensajes = async (primeraCarga: boolean) => {
+      // Si mientras tanto se envió o borró un mensaje, esta respuesta quedó vieja
+      const version = versionMensajesRef.current;
       try {
-        setCargandoHistorial(true);
         const response = await api.get(`/chat/salas/${salaId}/mensajes`);
         const resJson = response.data;
-
-        if (resJson && resJson.status === "success" && Array.isArray(resJson.data)) {
+        if (activo && version === versionMensajesRef.current && resJson?.status === "success" && Array.isArray(resJson.data)) {
           setMessages(resJson.data);
         }
       } catch (error) {
-        console.error("Error al cargar el historial:", error);
+        if (primeraCarga) console.error("Error al cargar el historial:", error);
       } finally {
-        setCargandoHistorial(false);
+        if (activo && primeraCarga) setCargandoHistorial(false);
       }
     };
 
-    cargarHistorial();
+    cargarMensajes(true);
 
-    const canal = supabase
-      .channel(`sala_${salaId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "mensajes",
-          filter: `sala_id=eq.${salaId}`
-        },
-        (payload) => {
-          const nuevoMensaje = payload.new as Message;
-          setMessages((prev) => {
-            if (prev.some((msg) => msg.id === nuevoMensaje.id)) return prev;
-            return [...prev, nuevoMensaje];
-          });
-        }
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "mensajes",
-          filter: `sala_id=eq.${salaId}`
-        },
-        (payload) => {
-          const mensajeActualizado = payload.new as Message;
-          setMessages((prev) =>
-            prev.map((msg) => (msg.id === mensajeActualizado.id ? mensajeActualizado : msg))
-          );
-        }
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "DELETE",
-          schema: "public",
-          table: "mensajes"
-        },
-        (payload) => {
-          const mensajeEliminadoId = payload.old.id;
-          setMessages((prev) => prev.filter((msg) => msg.id !== mensajeEliminadoId));
-        }
-      )
-      .subscribe();
+    const intervalo = setInterval(() => {
+      if (!document.hidden) cargarMensajes(false);
+    }, INTERVALO_ACTUALIZACION_MS);
 
     return () => {
-      supabase.removeChannel(canal);
+      activo = false;
+      clearInterval(intervalo);
     };
   }, [salaId]);
 
@@ -163,11 +140,14 @@ const ChatRoomPage = () => {
     setEnviando(true);
 
     try {
-      await api.post("/chat/mensaje", {
+      const response = await api.post("/chat/mensaje", {
         sala_id: salaId,
         contenido: contenidoMensaje
       });
+      agregarMensajePropio(response.data?.data);
     } catch (error: any) {
+      // Se devuelve el texto al input para no perder lo que se escribió
+      setInputValue((actual) => actual || contenidoMensaje);
       const errorMsg = error.response?.data?.message || "No se pudo enviar el mensaje.";
       showErrorModal(errorMsg);
     } finally {
@@ -181,6 +161,11 @@ const ChatRoomPage = () => {
     if (!file || !salaId) return;
 
     e.target.value = "";
+    const imageError = get_image_error(file);
+    if (imageError) {
+      showErrorModal(imageError);
+      return;
+    }
     const formData = new FormData();
     formData.append("sala_id", salaId);
     formData.append("foto", file);
@@ -188,11 +173,12 @@ const ChatRoomPage = () => {
     setEnviando(true);
 
     try {
-      await api.post("/chat/mensaje", formData, {
+      const response = await api.post("/chat/mensaje", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      agregarMensajePropio(response.data?.data);
     } catch (error: any) {
       const errorMsg = error.response?.data?.message || "Error al subir la imagen.";
       showErrorModal(errorMsg);
@@ -208,15 +194,18 @@ const ChatRoomPage = () => {
 
   // CONFIRMAR BORRADO
   const handleBorrarMensajeConfirmado = async () => {
-    if (!mensajeAEliminar) return;
+    if (!mensajeAEliminar || eliminando) return;
 
+    setEliminando(true);
     try {
       await api.delete(`/chat/mensaje/${mensajeAEliminar}`);
+      versionMensajesRef.current += 1;
       setMessages((prev) => prev.filter((msg) => msg.id !== mensajeAEliminar));
     } catch (error: any) {
       const errorMsg = error.response?.data?.message || "No se pudo eliminar el mensaje.";
       showErrorModal(errorMsg);
     } finally {
+      setEliminando(false);
       setMostrarModalEliminar(false);
       setMensajeAEliminar(null);
     }
@@ -324,7 +313,7 @@ const ChatRoomPage = () => {
       <input
         type="file"
         ref={fileInputRef}
-        accept="image/*"
+        accept={ACCEPTED_IMAGE_INPUT}
         hidden
         onChange={handleFileChange}
       />

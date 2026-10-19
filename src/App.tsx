@@ -46,13 +46,13 @@ function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/buscar" element={<SearchPage />} />
       <Route path="/ayuda" element={<HelpPage />} />
       <Route path="/contactanos" element={<ContactPage />} />
       <Route path="/privacidad-y-seguridad" element={<PrivacySecurityPage />} />
       <Route path="/completar-perfil" element={<CompleteProfilePage />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/home" element={<HomePage />} />
+        <Route path="/buscar" element={<SearchPage />} />
         <Route path="/publicacion/:id" element={<PublicationDetailPage />} />
         <Route path="/publicar" element={<PublishPage />} />
         <Route path="/publicaciones/editar/:id" element={<EditPublicationPage />} />

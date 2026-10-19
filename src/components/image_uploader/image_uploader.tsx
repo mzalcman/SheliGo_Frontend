@@ -1,4 +1,6 @@
+import { useEffect, useMemo, useState } from "react";
 import "./image_uploader.css";
+import { ACCEPTED_IMAGE_INPUT, get_image_error } from "../../utils/image_rules";
 import { Camera, X } from "lucide-react"; 
 
 interface ImageUploaderProps {
@@ -12,13 +14,21 @@ const ImageUploader = ({
   setImages,
   maxFiles = 5,
 }: ImageUploaderProps) => {
+  const [error, setError] = useState("");
+
+  // Una URL temporal por imagen, liberada cuando cambia la lista o se desmonta
+  const previews = useMemo(() => images.map((image) => URL.createObjectURL(image)), [images]);
+  useEffect(() => () => previews.forEach((url) => URL.revokeObjectURL(url)), [previews]);
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     if (!event.target.files) return;
 
-    const nuevosArchivos = Array.from(event.target.files);
+    const seleccionados = Array.from(event.target.files);
+    const errores = seleccionados.map(get_image_error).filter(Boolean);
+    setError(errores.length > 0 ? `${errores[0]} Se omitieron ${errores.length} archivo(s).` : "");
+    const nuevosArchivos = seleccionados.filter((archivo) => !get_image_error(archivo));
 
     const archivosUnicos = nuevosArchivos.filter((nuevo) => {
       const yaExiste = images.some(
@@ -28,9 +38,6 @@ const ImageUploader = ({
           existente.lastModified === nuevo.lastModified
       );
       
-      if (yaExiste) {
-        console.warn(`La imagen "${nuevo.name}" ya está agregada.`);
-      }
       return !yaExiste;
     });
 
@@ -79,17 +86,17 @@ const ImageUploader = ({
         id="image_input"
         type="file"
         multiple={maxFiles > 1}
-        accept="image/*"
+        accept={ACCEPTED_IMAGE_INPUT}
         hidden
         onChange={handleChange}
       />
 
       {images.length > 0 && (
         <div className="image_preview_container">
-          {images.map((image, index) => (
+          {previews.map((preview, index) => (
             <div key={index} className="image_preview_wrapper">
               <img
-                src={URL.createObjectURL(image)}
+                src={preview}
                 className="image_preview"
                 alt={`preview-${index}`}
               />
@@ -106,6 +113,7 @@ const ImageUploader = ({
         </div>
       )}
 
+      {error && <p className="form_alert form_alert_error">{error}</p>}
     </div>
   );
 };

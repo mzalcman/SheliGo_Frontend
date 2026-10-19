@@ -11,11 +11,14 @@ interface AuthContextType {
   loginWithGoogle: () => Promise<void>;
   logout: () => void;
   refetchUser: () => Promise<void>; // 🚀 Agregamos refetch por si actualizan perfil
+  // Motivo por el que falló el ingreso con Google (lo muestra el login)
+  googleError: string;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [googleError, setGoogleError] = useState("");
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -115,8 +118,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               setLoading(false);
               redirectAfterLogin();
             }
-          } catch (error) {
-            console.error("Error al sincronizar Google con tu backend:", error);
+          } catch (error: any) {
+            setGoogleError(error?.response?.data?.message || "No se pudo ingresar con Google. Inténtalo de nuevo.");
+            // Se cierra la sesión de Google para no reintentar en cada carga
+            await supabase.auth.signOut().catch(() => undefined);
             setLoading(false);
           }
         }
@@ -172,7 +177,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, loginWithGoogle, logout, refetchUser }}>
+    <AuthContext.Provider value={{ user, loading, login, loginWithGoogle, logout, refetchUser, googleError }}>
       {children}
     </AuthContext.Provider>
   );

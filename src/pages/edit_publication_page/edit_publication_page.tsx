@@ -4,7 +4,8 @@ import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import Loader from "../../components/loader/loader";
 import ImageUploader from "../../components/image_uploader/image_uploader";
-import { ArrowLeft, Check, X, Info } from "lucide-react";
+import { ArrowLeft, Check, X, Info, AlertCircle } from "lucide-react";
+import EmptyState from "../../components/empty_state/empty_state";
 import Modal from "../../components/modal/modal";
 import {
   getCategories,
@@ -34,6 +35,7 @@ const EditPublicationPage = () => {
   const [categorias, setCategorias] = useState<BackendItem[]>([]);
   const [instituciones, setInstituciones] = useState<BackendItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [showModal, setShowModal] = useState(false);
 
   const [originalBackendImages, setOriginalBackendImages] = useState<PublicationImage[]>([]);
@@ -115,8 +117,15 @@ const EditPublicationPage = () => {
           setExistingImages(imagenesProcesadas);
         }
         setLoading(false);
-      } catch (error) {
-        console.error("Error cargando los datos de edición:", error);
+      } catch (error: any) {
+        const status = error?.response?.status;
+        setLoadError(
+          status === 404
+            ? "Esta publicación no existe o fue eliminada."
+            : status === 403
+              ? "No tienes permisos para editar esta publicación."
+              : "No se pudieron cargar los datos de la publicación. Inténtalo de nuevo."
+        );
         setLoading(false);
       }
     };
@@ -288,6 +297,21 @@ const EditPublicationPage = () => {
     return <Loader />;
   }
 
+  // Sin los datos no se muestra el formulario vacío (guardarlo fallaría con errores confusos)
+  if (loadError) {
+    return (
+      <div className="edit_page">
+        <Header />
+        <main className="page_container narrow">
+          <EmptyState icon={AlertCircle} title={loadError}>
+            <button className="btn btn_primary" onClick={() => navigate(-1)}>Volver</button>
+          </EmptyState>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="edit_page">
       <Header />
@@ -359,7 +383,7 @@ const EditPublicationPage = () => {
             <input
               className={`form_input ${isModified.nombre ? "text_black" : "text_gray"} ${formErrors.nombre ? "input_error" : ""}`}
               value={nombre}
-              maxLength={45}
+              maxLength={100}
               onChange={(e) => {
                 setNombre(e.target.value);
                 trackChange("nombre");

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { supabase } from "./supabase";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000",
@@ -23,17 +24,21 @@ api.interceptors.request.use(
   }
 );
 
-// En src/services/api.ts
+// Sesión vencida: se cierra todo y se vuelve al login
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response && error.response.status === 401) {
       const currentPath = window.location.pathname;
+      const requestUrl: string = error.config?.url ?? "";
 
-      // 🚀 SOLO redirigimos si NO estamos en registro ni en login
-      if (!currentPath.includes("/login") && !currentPath.includes("/register")) {
+      // Login, registro y alta con Google muestran su propio error (credenciales, token de Google vencido)
+      const esPantallaDeIngreso = ["/login", "/register", "/completar-perfil"].some((ruta) => currentPath.includes(ruta));
+      if (!esPantallaDeIngreso && !requestUrl.startsWith("/auth/")) {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
+        // Sin esto, la sesión de Google guardada vuelve a iniciar sesión sola al llegar al login
+        await supabase.auth.signOut().catch(() => undefined);
         window.location.href = "/login?expired=true";
       }
     }
@@ -45,9 +50,4 @@ api.interceptors.response.use(
 export const getMe = async () => {
   const response = await api.get("/usuarios/me");
   return response.data.data.usuario;
-};
-
-export const getInstitucionesUsuario = async (usuarioId: string) => {
-  const response = await api.get(`/usuarios/${usuarioId}/instituciones`);
-  return response.data.data;
 };

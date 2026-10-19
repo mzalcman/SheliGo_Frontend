@@ -36,9 +36,8 @@ const QuestionCard = ({
       set_reply_text("");
 
       if (on_answer_submitted) on_answer_submitted();
-    } catch (error) {
-      console.error("Error al responder la pregunta:", error);
-      alert("No se pudo enviar la respuesta. Inténtalo de nuevo.");
+    } catch (error: any) {
+      alert(error?.response?.data?.message || "No se pudo enviar la respuesta. Inténtalo de nuevo.");
     } finally {
       set_is_submitting(false);
     }
@@ -99,6 +98,7 @@ const QuestionCard = ({
               on_change={set_reply_text}
               on_submit={handle_submit_reply}
               placeholder="Escribe aquí tu respuesta..."
+              disabled={is_submitting}
             />
           </div>
 

@@ -41,6 +41,8 @@ const PublicationDetailPage = () => {
   const [show_state_modal, set_show_state_modal] = useState(false);
   const [is_updating_state, set_is_updating_state] = useState(false);
   const [state_error, set_state_error] = useState("");
+  const [is_sending_question, set_is_sending_question] = useState(false);
+  const [question_error, set_question_error] = useState("");
 
   // Fallback seguro de avatar por si se interrumpe la red local
   const defaultUserPlaceholder = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150";
@@ -119,14 +121,18 @@ const PublicationDetailPage = () => {
   };
 
   const add_question = async () => {
-    if (!new_question.trim() || !user?.id) return;
+    if (!new_question.trim() || !user?.id || is_sending_question) return;
 
+    set_is_sending_question(true);
+    set_question_error("");
     try {
       await create_question(publication_id, user.id, new_question);
-      await refresh_questions();
       set_new_question("");
-    } catch (error) {
-      console.error("Error al añadir pregunta:", error);
+      await refresh_questions();
+    } catch (error: any) {
+      set_question_error(error?.response?.data?.message || "No se pudo publicar la pregunta. Inténtalo de nuevo.");
+    } finally {
+      set_is_sending_question(false);
     }
   };
 
@@ -231,7 +237,9 @@ const PublicationDetailPage = () => {
                     value={new_question}
                     on_change={set_new_question}
                     on_submit={add_question}
+                    disabled={is_sending_question}
                   />
+                  {question_error && <p className="form_alert form_alert_error">{question_error}</p>}
                   {is_recovered ? (
                     <p className="publication_recovered_note">
                       Este objeto ya fue recuperado por su dueño.

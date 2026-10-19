@@ -5,6 +5,7 @@ import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import Modal from "../../components/modal/modal";
 import { api } from "../../services/api";
+import { get_password_error } from "../../utils/password_rules";
 import "./change_password_page.css";
 
 const ChangePasswordPage = () => {
@@ -58,8 +59,9 @@ const ChangePasswordPage = () => {
       return;
     }
 
-    if (newPassword.length < 6) {
-      showModalError("Contraseña muy corta", "La nueva contraseña debe tener al menos 6 caracteres.");
+    const passwordError = get_password_error(newPassword);
+    if (passwordError) {
+      showModalError("Contraseña no válida", passwordError);
       return;
     }
 

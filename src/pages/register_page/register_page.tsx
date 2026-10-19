@@ -9,6 +9,7 @@ import { useAuth } from "../../hooks/use_auth";
 import BrandLogo from "../../components/brand_logo/brand_logo";
 import "../../styles/auth.css";
 import "../../styles/institution_picker.css";
+import { get_password_error } from "../../utils/password_rules";
 import "../../components/modal/modal.css";
 
 const RegisterPage = () => {
@@ -65,7 +66,9 @@ const RegisterPage = () => {
     const numbers = value.replace(/\D/g, "");
     if (numbers.length <= 2) return numbers;
     if (numbers.length <= 6) return `${numbers.slice(0, 2)} ${numbers.slice(2)}`;
-    return `${numbers.slice(0, 2)} ${numbers.slice(2, 6)}-${numbers.slice(6, 10)}`;
+    const base = `${numbers.slice(0, 2)} ${numbers.slice(2, 6)}-${numbers.slice(6, 10)}`;
+    // El backend acepta hasta 15 dígitos (por ejemplo, con código de país)
+    return numbers.length > 10 ? `${base} ${numbers.slice(10, 15)}` : base;
   };
 
   const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -121,6 +124,12 @@ const RegisterPage = () => {
 
     if (!is_valid_email(email)) {
       setError("Ingresa un correo válido.");
+      return;
+    }
+
+    const passwordError = get_password_error(password);
+    if (passwordError) {
+      setError(passwordError);
       return;
     }
 
@@ -267,7 +276,7 @@ const RegisterPage = () => {
                 placeholder="11 1234-5678"
                 value={phone}
                 onChange={handlePhoneChange}
-                maxLength={13}
+                maxLength={19}
               />
             </div>
 

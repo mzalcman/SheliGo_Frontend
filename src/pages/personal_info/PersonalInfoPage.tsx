@@ -12,6 +12,7 @@ import {
 import Header from "../../components/header/header";
 import { useAuth } from "../../hooks/use_auth";
 import { getImageUrl } from "../../utils/get_image_url";
+import { ACCEPTED_IMAGE_INPUT, get_image_error } from "../../utils/image_rules";
 import { api } from "../../services/api";
 import Modal from "../../components/modal/modal";
 import "./personal_info_page.css";
@@ -214,6 +215,20 @@ const PersonalInfoPage = () => {
     const file = e.target.files?.[0];
 
     if (!file) {
+      return;
+    }
+
+    const imageError = get_image_error(file);
+    if (imageError) {
+      e.target.value = "";
+      setModalConfig({
+        isOpen: true,
+        title: "Imagen no válida",
+        description: imageError,
+        variant: "error",
+        icon: <AlertCircle size={28} strokeWidth={2.2} />,
+        onConfirm: closeModal,
+      });
       return;
     }
 
@@ -522,7 +537,7 @@ const PersonalInfoPage = () => {
               type="file"
               ref={fileInputRef}
               onChange={handleAvatarChange}
-              accept="image/*"
+              accept={ACCEPTED_IMAGE_INPUT}
               hidden
             />
           </div>

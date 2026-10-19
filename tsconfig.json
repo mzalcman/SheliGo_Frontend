@@ -11,6 +11,5 @@
   "compilerOptions": {
     "noUnusedLocals": false,
     "noUnusedParameters": false
-  },
-  "extends": "expo/tsconfig.base"
+  }
 }

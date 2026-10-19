@@ -84,10 +84,12 @@ const NotificationsPage = () => {
       try {
         await mark_as_read(notification.id);
         notify_notifications_updated();
-      } catch (error) {
-        console.warn(
-          "No se pudo marcar la notificación como leída.",
-          error
+      } catch {
+        // Si no se guardó en el backend, vuelve a mostrarse como no leída
+        setNotifications((prev) =>
+          prev.map((item) =>
+            item.id === notification.id ? { ...item, leida: false } : item
+          )
         );
       }
     }

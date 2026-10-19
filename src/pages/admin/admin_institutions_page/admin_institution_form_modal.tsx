@@ -9,6 +9,7 @@ import {
 } from "../../../services/admin/admin_institutions_service";
 import { get_admin_error_message } from "../../../services/admin/admin_error";
 import type { AdminInstitution, AdminInstitutionForm } from "../../../types/admin/admin_institution";
+import { ACCEPTED_IMAGE_INPUT, get_image_error } from "../../../utils/image_rules";
 
 interface AdminInstitutionFormModalProps {
   // null = alta de una institución nueva
@@ -19,8 +20,6 @@ interface AdminInstitutionFormModalProps {
 
 type FormErrors = Partial<Record<keyof AdminInstitutionForm | "foto", string>>;
 
-const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
-const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const to_form = (institution: AdminInstitution | null): AdminInstitutionForm => ({
@@ -89,12 +88,9 @@ const AdminInstitutionFormModal = ({ institution, on_close, on_saved }: AdminIns
 
   const pick_photo = (file: File | undefined) => {
     if (!file) return;
-    if (!PHOTO_TYPES.includes(file.type)) {
-      set_errors((current) => ({ ...current, foto: "Solo JPG, PNG o WEBP." }));
-      return;
-    }
-    if (file.size > MAX_PHOTO_BYTES) {
-      set_errors((current) => ({ ...current, foto: "La imagen supera los 8 MB." }));
+    const photo_error = get_image_error(file);
+    if (photo_error) {
+      set_errors((current) => ({ ...current, foto: photo_error }));
       return;
     }
     set_errors((current) => ({ ...current, foto: undefined }));
@@ -199,7 +195,7 @@ const AdminInstitutionFormModal = ({ institution, on_close, on_saved }: AdminIns
             </div>
             {errors.foto && <span className="field_error">{errors.foto}</span>}
           </div>
-          <input ref={file_input} type="file" accept={PHOTO_TYPES.join(",")} hidden
+          <input ref={file_input} type="file" accept={ACCEPTED_IMAGE_INPUT} hidden
             onChange={(event) => pick_photo(event.target.files?.[0])} />
         </div>
 

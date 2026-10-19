@@ -12,7 +12,7 @@ import "../../styles/auth.css";
 const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login: loginContext, loginWithGoogle, user } = useAuth();
+  const { login: loginContext, loginWithGoogle, user, googleError } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -83,9 +83,14 @@ const LoginPage = () => {
       }
 
     } catch (error: any) {
-      console.error(error);
       setLoading(false);
-      setError("Correo o contraseña incorrectos.");
+      const status = error?.response?.status;
+      // 400/401: credenciales; el resto (429 por intentos, 500, sin conexión) tiene su propio mensaje
+      setError(
+        status === 400 || status === 401
+          ? "Correo o contraseña incorrectos."
+          : error?.response?.data?.message || "No se pudo conectar con el servidor. Inténtalo de nuevo."
+      );
     }
   };
 
@@ -162,10 +167,10 @@ const LoginPage = () => {
               </div>
             </div>
 
-            {error && <p className="form_alert form_alert_error">{error}</p>}
+            {(error || googleError) && <p className="form_alert form_alert_error">{error || googleError}</p>}
 
-            <button className="btn btn_primary btn_lg btn_block" onClick={handle_login}>
-              Entrar
+            <button className="btn btn_primary btn_lg btn_block" onClick={handle_login} disabled={loading}>
+              {loading ? "Entrando..." : "Entrar"}
             </button>
 
             <div className="auth_divider">

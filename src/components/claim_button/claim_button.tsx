@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MessageCircle } from "lucide-react";
 import { api } from "../../services/api";
@@ -15,8 +15,13 @@ const ClaimButton: React.FC<ClaimButtonProps> = ({
   usuarioAvatar = "" 
 }) => {
   const navigate = useNavigate();
+  const [abriendo, setAbriendo] = useState(false);
+  const [error, setError] = useState("");
 
   const handleReclamar = async () => {
+    if (abriendo) return;
+    setAbriendo(true);
+    setError("");
     try {
       const response = await api.post("/chat/salas", {
         otroUsuarioId: otroUsuarioId
@@ -37,18 +42,23 @@ const ClaimButton: React.FC<ClaimButtonProps> = ({
           }
         });
       } else {
-        console.error("El backend no devolvió el ID de la sala esperado:", jsonResponse);
+        setError("No se pudo abrir el chat. Inténtalo de nuevo.");
       }
-    } catch (error) {
-      console.error("Error al intentar abrir o crear la sala de chat:", error);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "No se pudo abrir el chat. Inténtalo de nuevo.");
+    } finally {
+      setAbriendo(false);
     }
   };
 
   return (
-    <button className="btn btn_primary btn_lg btn_block" onClick={handleReclamar}>
-      <MessageCircle size={20} strokeWidth={2.2} />
-      Reclamar ahora
-    </button>
+    <>
+      <button className="btn btn_primary btn_lg btn_block" onClick={handleReclamar} disabled={abriendo}>
+        <MessageCircle size={20} strokeWidth={2.2} />
+        {abriendo ? "Abriendo chat..." : "Reclamar ahora"}
+      </button>
+      {error && <p className="form_alert form_alert_error">{error}</p>}
+    </>
   );
 };
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "./header.css";
 import { Bell, MessageCircle } from "lucide-react";
 import { useAuth } from "../../hooks/use_auth";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { getImageUrl } from "../../utils/get_image_url";
 import BrandLogo from "../brand_logo/brand_logo";
 import { api } from "../../services/api";
@@ -71,7 +71,9 @@ const Header = () => {
             />
           </button>
 
-          <BrandLogo size="sm" />
+          <Link to="/home" className="header_brand_link" aria-label="Ir al inicio">
+            <BrandLogo size="sm" />
+          </Link>
         </div>
 
         <div className="header_icons">

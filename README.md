@@ -20,7 +20,8 @@ Aplicación web de SheliGo para publicar y encontrar objetos perdidos dentro de 
 npm install
 ```
 
-Crear `.env.local` en la raíz:
+Copiar `.env.example` como `.env` (o `.env.local`) y completar los valores.
+Ninguno de los dos se sube al repo; en producción las variables están en Vercel.
 
 ```
 VITE_API_URL=http://localhost:3000

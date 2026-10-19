@@ -28,6 +28,16 @@
   min-width: 0;
 }
 
+/* Logo: vuelve al inicio */
+.header_brand_link {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+
 /* Avatar (abre el menú) */
 .header_profile_button {
   display: flex;

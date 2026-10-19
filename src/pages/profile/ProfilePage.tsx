@@ -9,13 +9,14 @@ import { getImageUrl } from "../../utils/get_image_url";
 import PublicationStatus from "../../components/publication_status/publication_status";
 import EmptyState from "../../components/empty_state/empty_state";
 import { get_my_publications } from "../../services/publication_service";
+import type { PublicationState } from "../../types/publication";
 import "./profile_page.css";
 
 interface BackendPublication {
   id: string;
   nombre?: string;
   tipo?: string; // "perdido", "encontrado", etc.
-  estado?: string; // "activa", "inactiva", "resuelto", "cerrado", etc.
+  estado?: PublicationState;
   foto_principal_url?: string;
   created_at?: string;
   fecha_evento?: string;
@@ -27,10 +28,10 @@ const ProfilePage = () => {
   const user = typedUser as any;
 
   const [publications, setPublications] = useState<BackendPublication[]>([]);
-  const [recuperadosCount, setRecuperadosCount] = useState<number>(0);
   const [loadingPubs, setLoadingPubs] = useState(true);
 
   const userFullName = user?.name || "Usuario";
+  const recuperadosCount = publications.filter((pub) => pub.estado === "recuperada").length;
 
   // Función para formatear fechas amigables (Ej: "Reportado hace 2 días")
   const calcularHaceCuanto = (fechaIso?: string): string => {
@@ -52,18 +53,9 @@ const ProfilePage = () => {
         const resBody = await get_my_publications();
         const listaRaw: BackendPublication[] = resBody?.data?.publicaciones || resBody?.publicaciones || (Array.isArray(resBody) ? resBody : []);
         setPublications(listaRaw);
-
-        // Recuperados: publicaciones que ya no están activas
-        const recuperadas = listaRaw.filter((pub) => {
-          const est = (pub.estado || "").toLowerCase();
-          return est === "inactiva" || est === "resuelto" || est === "recuperado" || est === "cerrado";
-        }).length;
-
-        setRecuperadosCount(recuperadas);
       } catch (error) {
         console.error("Error al traer publicaciones del perfil:", error);
         setPublications([]);
-        setRecuperadosCount(0);
       } finally {
         setLoadingPubs(false);
       }
@@ -164,7 +156,7 @@ const ProfilePage = () => {
                       <h3>{pub.nombre || "Sin título"}</h3>
                       <p>{textoFecha}</p>
                     </div>
-                    <PublicationStatus status={pub.tipo || "buscando"} small />
+                    <PublicationStatus status={pub.tipo || "buscando"} estado={pub.estado} small />
                   </div>
                 );
               })

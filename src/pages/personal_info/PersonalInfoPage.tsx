@@ -17,6 +17,7 @@ import { api } from "../../services/api";
 import Modal from "../../components/modal/modal";
 import "./personal_info_page.css";
 import "../../styles/institution_picker.css";
+import { get_api_error_message } from "../../services/api_error";
 
 interface Institucion {
   id: string | number;
@@ -27,13 +28,12 @@ interface Institucion {
 
 const PersonalInfoPage = () => {
   const navigate = useNavigate();
-  const { user: typedUser, login: updateAuthUser } = useAuth();
+  const { user, login: updateAuthUser } = useAuth();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const tempUrlRef = useRef<string | null>(null);
 
-  const user = typedUser as any;
   const defaultPlaceholder = "/user_predeterminada.png";
 
   // Obtiene el usuario guardado localmente si todavía no está disponible
@@ -420,17 +420,11 @@ const PersonalInfoPage = () => {
           navigate("/perfil");
         },
       });
-    } catch (err: any) {
-      console.error(
-        "Error al guardar los cambios:",
-        err
+    } catch (err) {
+      const mensajeError = get_api_error_message(
+        err,
+        "Ocurrió un error al guardar tus cambios. Por favor, probá nuevamente."
       );
-
-      const mensajeError =
-        err.response?.data?.message ||
-        err.response?.data?.error ||
-        err.message ||
-        "Ocurrió un error al guardar tus cambios. Por favor, probá nuevamente.";
 
       setModalConfig({
         isOpen: true,

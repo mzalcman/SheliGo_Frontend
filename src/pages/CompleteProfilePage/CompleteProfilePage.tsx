@@ -9,15 +9,17 @@ import { useAuth } from "../../hooks/use_auth";
 import BrandLogo from "../../components/brand_logo/brand_logo";
 import "../../styles/auth.css";
 import "../../styles/institution_picker.css";
+import { get_api_error_message, get_api_error_status } from "../../services/api_error";
+import type { FilterOption } from "../../types/filter_option";
 
 const CompleteProfilePage = () => {
   const navigate = useNavigate();
   const { login, user } = useAuth();
 
-  const [availableInstitutions, setAvailableInstitutions] = useState<any[]>([]);
-  const [selectedInstitutions, setSelectedInstitutions] = useState<any[]>([]);
+  const [availableInstitutions, setAvailableInstitutions] = useState<FilterOption[]>([]);
+  const [selectedInstitutions, setSelectedInstitutions] = useState<FilterOption[]>([]);
   const [institutionQuery, setInstitutionQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<FilterOption[]>([]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -60,24 +62,13 @@ const CompleteProfilePage = () => {
         .replace(/[\u0300-\u036f]/g, "");
 
       const filtered = availableInstitutions.filter((inst) => {
-        const rawName =
-          typeof inst === "string" ? inst : inst.nombre || inst.name || "";
-
-        const cleanName = rawName
+        const cleanName = inst.nombre
           .toLowerCase()
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "");
 
-        const instId =
-          typeof inst === "string"
-            ? inst
-            : inst.id || inst.institucion_id;
-
         const alreadySelected = selectedInstitutions.some(
-          (selected) =>
-            (typeof selected === "string"
-              ? selected
-              : selected.id || selected.institucion_id) === instId
+          (selected) => selected.id === inst.id
         );
 
         return cleanName.includes(cleanQuery) && !alreadySelected;
@@ -89,23 +80,15 @@ const CompleteProfilePage = () => {
     }
   };
 
-  const handleSelectInstitution = (inst: any) => {
+  const handleSelectInstitution = (inst: FilterOption) => {
     setSelectedInstitutions([...selectedInstitutions, inst]);
     setInstitutionQuery("");
     setSuggestions([]);
   };
 
-  const handleRemoveInstitution = (instToRemove: any) => {
-    const targetId =
-      instToRemove.id ||
-      instToRemove.institucion_id ||
-      instToRemove;
-
+  const handleRemoveInstitution = (instToRemove: FilterOption) => {
     setSelectedInstitutions(
-      selectedInstitutions.filter(
-        (inst) =>
-          (inst.id || inst.institucion_id || inst) !== targetId
-      )
+      selectedInstitutions.filter((inst) => inst.id !== instToRemove.id)
     );
   };
 
@@ -132,9 +115,7 @@ const CompleteProfilePage = () => {
         return;
       }
 
-      const instituciones_ids = selectedInstitutions.map(
-        (inst) => inst.id || inst.institucion_id || inst
-      );
+      const instituciones_ids = selectedInstitutions.map((inst) => inst.id);
 
       const { token, usuario } = await completarInstituciones(
         instituciones_ids,
@@ -151,19 +132,13 @@ const CompleteProfilePage = () => {
       const redirectUrl = localStorage.getItem("redirect_after_login");
       localStorage.removeItem("redirect_after_login");
       navigate(redirectUrl || "/home", { replace: true });
-    } catch (err: any) {
-      console.error("Error al completar instituciones:", err.response?.data || err);
-
-      if (err.response?.status === 401) {
+    } catch (err) {
+      if (get_api_error_status(err) === 401) {
         setError(
           "Tu sesión expiró o no es válida. Por favor, vuelve a iniciar sesión."
         );
       } else {
-        setError(
-          err.response?.data?.message ||
-            err.message ||
-            "Ocurrió un error al guardar tus instituciones."
-        );
+        setError(get_api_error_message(err, "Ocurrió un error al guardar tus instituciones."));
       }
     } finally {
       setLoading(false);
@@ -207,22 +182,12 @@ const CompleteProfilePage = () => {
                 {selectedInstitutions.length > 0 && (
                   <div className="institutions_chips_container">
                     {selectedInstitutions.map((inst) => {
-                      const labelName =
-                        typeof inst === "string"
-                          ? inst
-                          : inst.nombre || inst.name;
-
-                      const instId =
-                        typeof inst === "string"
-                          ? inst
-                          : inst.id || inst.institucion_id;
-
                       return (
-                        <div className="institution_chip" key={instId}>
-                          <span>{labelName}</span>
+                        <div className="institution_chip" key={inst.id}>
+                          <span>{inst.nombre}</span>
                           <button
                             type="button"
-                            aria-label={`Quitar ${labelName}`}
+                            aria-label={`Quitar ${inst.nombre}`}
                             onClick={() => handleRemoveInstitution(inst)}
                           >
                             <X size={14} />
@@ -246,22 +211,12 @@ const CompleteProfilePage = () => {
                   {suggestions.length > 0 && (
                     <ul className="institution_dropdown">
                       {suggestions.map((item) => {
-                        const labelName =
-                          typeof item === "string"
-                            ? item
-                            : item.nombre || item.name;
-
-                        const itemId =
-                          typeof item === "string"
-                            ? item
-                            : item.id || item.institucion_id;
-
                         return (
                           <li
-                            key={itemId}
+                            key={item.id}
                             onClick={() => handleSelectInstitution(item)}
                           >
-                            {labelName}
+                            {item.nombre}
                           </li>
                         );
                       })}

@@ -1,4 +1,5 @@
 import { api } from "./api";
+import type { NotificationItem } from "../types/notification";
 
 export const get_notifications = async () => {
   const response = await api.get("/notificaciones");
@@ -16,14 +17,19 @@ export const mark_all_as_read = async () => {
 };
 
 /* Normaliza las distintas formas de respuesta del backend a un array. */
-export const extract_notifications = (res: any): any[] => {
+export const extract_notifications = (res: unknown): NotificationItem[] => {
+  if (Array.isArray(res)) return res;
+  const body = res as {
+    notificaciones?: unknown;
+    data?: { notificaciones?: unknown } | unknown[];
+  } | null;
+  const data = body?.data;
   const list =
-    res?.data?.notificaciones ||
-    res?.notificaciones ||
-    res?.data ||
-    (Array.isArray(res) ? res : []);
+    (data && !Array.isArray(data) ? data.notificaciones : undefined) ??
+    body?.notificaciones ??
+    data;
 
-  return Array.isArray(list) ? list : [];
+  return Array.isArray(list) ? (list as NotificationItem[]) : [];
 };
 
 /* Evento para avisar al header que cambió el estado de lectura. */

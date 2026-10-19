@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MessageCircle } from "lucide-react";
 import { api } from "../../services/api";
+import { get_api_error_message } from "../../services/api_error";
 
 interface ClaimButtonProps {
   otroUsuarioId: string;     
@@ -44,8 +45,8 @@ const ClaimButton: React.FC<ClaimButtonProps> = ({
       } else {
         setError("No se pudo abrir el chat. Inténtalo de nuevo.");
       }
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "No se pudo abrir el chat. Inténtalo de nuevo.");
+    } catch (err) {
+      setError(get_api_error_message(err, "No se pudo abrir el chat. Inténtalo de nuevo."));
     } finally {
       setAbriendo(false);
     }

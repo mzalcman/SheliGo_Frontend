@@ -16,6 +16,7 @@ import Modal from "../../components/modal/modal";
 import Loader from "../../components/loader/loader";
 import StatusSelector from "../../components/status_selector/status_selector";
 import "../../styles/form_layout.css";
+import { get_api_error_message, get_api_field_errors } from "../../services/api_error";
 
 interface BackendItem {
   id: string;
@@ -204,28 +205,11 @@ const PublishPage = ({ onFormSubmitSuccess }: PublishPageProps) => {
       }
 
       setShowModal(true);
-    } catch (error: any) {
-      console.error("Error al procesar la publicación:", error);
-
-      let mensajesError: string[] = [];
-      if (error.response && error.response.data) {
-        const resData = error.response.data;
-        if (Array.isArray(resData.errors)) {
-          resData.errors.forEach((err: any) => {
-            if (typeof err === "object" && err.message) {
-              mensajesError.push(err.message);
-            } else if (typeof err === "string") {
-              mensajesError.push(err);
-            }
-          });
-        } else if (resData.message) {
-          mensajesError = [resData.message];
-        }
-      }
-
-      if (mensajesError.length === 0) {
-        mensajesError = ["Ocurrió un error inesperado al procesar la publicación."];
-      }
+    } catch (error) {
+      const erroresCampos = get_api_field_errors(error);
+      const mensajesError = erroresCampos.length > 0
+        ? erroresCampos.map((campo) => campo.message)
+        : [get_api_error_message(error, "Ocurrió un error inesperado al procesar la publicación.")];
 
       setBackendErrors(mensajesError);
       setShowErrorModal(true);

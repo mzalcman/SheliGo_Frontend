@@ -7,6 +7,7 @@ import { getImageUrl } from "../../utils/get_image_url";
 import BrandLogo from "../brand_logo/brand_logo";
 import { api } from "../../services/api";
 import { useUnreadNotifications } from "../../hooks/use_unread_notifications";
+import type { ChatRoomResponse } from "../../types/chat";
 
 const Header = () => {
   const { user } = useAuth();
@@ -24,16 +25,8 @@ const Header = () => {
         const resJson = response.data;
         const rawSalas = resJson && Array.isArray(resJson.data) ? resJson.data : [];
 
-        // Buscamos dinámicamente cualquier campo que suene a "sin leer"
-        const totalSinLeer = rawSalas.reduce((acumulado: number, sala: any) => {
-          const sinLeerCount = parseInt(
-            sala.mensajes_sin_leer ??
-            sala.mensajes_no_leidos ??
-            sala.sin_leer ??
-            sala.unread_count ??
-            "0",
-            10
-          );
+        const totalSinLeer = rawSalas.reduce((acumulado: number, sala: ChatRoomResponse) => {
+          const sinLeerCount = parseInt(sala.mensajes_sin_leer ?? "0", 10);
           return acumulado + (isNaN(sinLeerCount) ? 0 : sinLeerCount);
         }, 0);
 

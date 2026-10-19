@@ -21,3 +21,18 @@ export interface User {
   name?: string;
   profile_image?: string;
 }
+
+/* Usuario tal como lo devuelve el backend (login, /usuarios/me) o como quedó
+   guardado en localStorage por una sesión anterior (name / profile_image). */
+export interface BackendUser {
+  id: string;
+  rol?: UserRole;
+  nombre?: string;
+  apellido?: string;
+  email?: string;
+  telefono?: string | null;
+  foto?: string | null;
+  instituciones?: UserInstitution[];
+  name?: string;
+  profile_image?: string;
+}

@@ -3,6 +3,7 @@ import { Shapes, Building2, CalendarDays, Lock, ScanSearch, ChevronDown, Trash2,
 import { useEffect, useState } from "react";
 import BottomFilterModal from "../bottom_filter_modal/bottom_filter_modal";
 import { getCategories, getInstitutions, } from "../../services/filters_service";
+import type { FilterOption } from "../../types/filter_option";
 
 interface SearchFiltersProps {
   openFilter: string;
@@ -36,10 +37,10 @@ const SearchFilters = ({
 }: SearchFiltersProps) => {
 
   const [categoriasData, setCategoriasData] =
-    useState<any[]>([]);
+    useState<FilterOption[]>([]);
 
   const [institucionesData, setInstitucionesData] =
-    useState<any[]>([]);
+    useState<FilterOption[]>([]);
 
   // Limita el calendario nativo hasta el día de hoy
   const hoyLimiter = new Date().toISOString().split("T")[0];
@@ -64,7 +65,7 @@ const SearchFilters = ({
 
         setInstitucionesData(
           institucionesResponse.sort(
-            (a: any, b: any) =>
+            (a, b) =>
               a.nombre.localeCompare(b.nombre)
           )
         );
@@ -99,10 +100,10 @@ const SearchFilters = ({
   const categoriasSeleccionadasTexto = () => {
 
     const nombres = categoriasData
-      .filter((c: any) =>
+      .filter((c) =>
         categorias.includes(c.id)
       )
-      .map((c: any) => c.nombre);
+      .map((c) => c.nombre);
 
     if (nombres.length === 0)
       return "Categorías";
@@ -117,10 +118,10 @@ const SearchFilters = ({
   const institucionesSeleccionadasTexto = () => {
 
     const nombres = institucionesData
-      .filter((i: any) =>
+      .filter((i) =>
         instituciones.includes(i.id)
       )
-      .map((i: any) => i.nombre);
+      .map((i) => i.nombre);
 
     if (nombres.length === 0)
       return "Instituciones";

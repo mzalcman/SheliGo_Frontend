@@ -1,12 +1,13 @@
 import "./bottom_filter_modal.css";
 import { Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import type { FilterOption } from "../../types/filter_option";
 
 interface BottomFilterModalProps {
   open: boolean;
   title: string;
 
-  items?: any[];
+  items?: FilterOption[];
   selected?: string[];
   onChange?: (values: string[]) => void;
 
@@ -43,7 +44,7 @@ const BottomFilterModal = ({
 
   const filteredItems = useMemo(() => {
     if (!items) return [];
-    return items.filter((item: any) =>
+    return items.filter((item) =>
       item.nombre.toLowerCase().includes(search.toLowerCase())
     );
   }, [items, search]);
@@ -90,7 +91,7 @@ const BottomFilterModal = ({
 
         <div className={`bottom_filter_list ${isListMode ? "" : "bottom_filter_custom"}`}>
           {isListMode &&
-            filteredItems.map((item: any) => (
+            filteredItems.map((item) => (
               <label key={item.id} className="bottom_filter_option">
                 <input
                   type="checkbox"

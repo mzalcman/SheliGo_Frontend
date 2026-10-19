@@ -1,13 +1,14 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
-import type { User } from "../types/user";
+import type { BackendUser, User } from "../types/user";
 import { supabase } from "../services/supabase";
 import { api, getMe } from "../services/api";
+import { get_api_error_message } from "../services/api_error";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (usuario: any, token?: string) => void;
+  login: (usuario: BackendUser, token?: string) => void;
   loginWithGoogle: () => Promise<void>;
   logout: () => void;
   refetchUser: () => Promise<void>; // 🚀 Agregamos refetch por si actualizan perfil
@@ -22,20 +23,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Mapeo seguro del objeto usuario
-  // En AuthContext.tsx
-
-  // En AuthContext.tsx
-
-  const mapUserResponse = (usuarioRaw: any): User => {
-    // Buscamos las instituciones probando todos los nombres posibles que suele enviar el backend
-    const insts =
-      usuarioRaw.instituciones ||
-      usuarioRaw.instituciones_ids ||
-      usuarioRaw.user_institutions ||
-      usuarioRaw.institucion ||
-      [];
-
+  // Usuario del backend (o de localStorage) -> forma que usa la app
+  const mapUserResponse = (usuarioRaw: BackendUser): User => {
     return {
       id: usuarioRaw.id,
       rol: usuarioRaw.rol,
@@ -44,7 +33,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       email: usuarioRaw.email || "",
       telefono: usuarioRaw.telefono || "",
       foto: usuarioRaw.foto || usuarioRaw.profile_image || "",
-      instituciones: Array.isArray(insts) ? insts : [insts], // Nos aseguramos de que siempre sea un Array
+      instituciones: Array.isArray(usuarioRaw.instituciones) ? usuarioRaw.instituciones : [],
       name: usuarioRaw.nombre || usuarioRaw.name || "",
       profile_image: usuarioRaw.foto || usuarioRaw.profile_image || ""
     };
@@ -61,7 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const saveAndSetUser = (uData: any, token?: string) => {
+  const saveAndSetUser = (uData: BackendUser, token?: string) => {
     if (token) {
       localStorage.setItem("token", token);
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -118,8 +107,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               setLoading(false);
               redirectAfterLogin();
             }
-          } catch (error: any) {
-            setGoogleError(error?.response?.data?.message || "No se pudo ingresar con Google. Inténtalo de nuevo.");
+          } catch (error) {
+            setGoogleError(get_api_error_message(error, "No se pudo ingresar con Google. Inténtalo de nuevo."));
             // Se cierra la sesión de Google para no reintentar en cada carga
             await supabase.auth.signOut().catch(() => undefined);
             setLoading(false);
@@ -134,7 +123,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // token es opcional: el login con email ya lo guarda por su cuenta
-  const login = (uData: any, token?: string) => {
+  const login = (uData: BackendUser, token?: string) => {
     saveAndSetUser(uData, token);
   };
 

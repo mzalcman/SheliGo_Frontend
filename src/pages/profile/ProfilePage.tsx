@@ -24,8 +24,7 @@ interface BackendPublication {
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const { user: typedUser } = useAuth();
-  const user = typedUser as any;
+  const { user } = useAuth();
 
   const [publications, setPublications] = useState<BackendPublication[]>([]);
   const [loadingPubs, setLoadingPubs] = useState(true);

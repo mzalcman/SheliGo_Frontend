@@ -8,6 +8,7 @@ import Modal from "../../components/modal/modal";
 import { api } from "../../services/api";
 import BrandLogo from "../../components/brand_logo/brand_logo";
 import "../../styles/auth.css";
+import { get_api_error_message, get_api_error_status } from "../../services/api_error";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -82,14 +83,14 @@ const LoginPage = () => {
         navigate("/home", { replace: true });
       }
 
-    } catch (error: any) {
+    } catch (error) {
       setLoading(false);
-      const status = error?.response?.status;
+      const status = get_api_error_status(error);
       // 400/401: credenciales; el resto (429 por intentos, 500, sin conexión) tiene su propio mensaje
       setError(
         status === 400 || status === 401
           ? "Correo o contraseña incorrectos."
-          : error?.response?.data?.message || "No se pudo conectar con el servidor. Inténtalo de nuevo."
+          : get_api_error_message(error, "No se pudo conectar con el servidor. Inténtalo de nuevo.")
       );
     }
   };

@@ -7,6 +7,7 @@ import Modal from "../../components/modal/modal";
 import { api } from "../../services/api";
 import { get_password_error } from "../../utils/password_rules";
 import "./change_password_page.css";
+import { get_api_error_message } from "../../services/api_error";
 
 const ChangePasswordPage = () => {
   const navigate = useNavigate();
@@ -93,11 +94,10 @@ const ChangePasswordPage = () => {
           navigate("/perfil");
         },
       });
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error cambiando contraseña:", err);
       const errorMessage =
-        err.response?.data?.message ||
-        "No fue posible conectar con el servidor. Inténtalo más tarde.";
+        get_api_error_message(err, "No fue posible conectar con el servidor. Inténtalo más tarde.");
       
       showModalError("No se pudo cambiar", errorMessage);
     } finally {

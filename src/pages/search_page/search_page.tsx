@@ -10,9 +10,10 @@ import SearchFilters from "../../components/search_filters/search_filters";
 import { searchPublications } from "../../services/search_service";
 import { useAuth } from "../../hooks/use_auth";
 import type { User } from "../../types/user";
+import type { PublicationSummary } from "../../types/publication";
 
 const SearchPage = () => {
-  const [objects, setObjects] = useState<any[]>([]);
+  const [objects, setObjects] = useState<PublicationSummary[]>([]);
   const [searchText, setSearchText] = useState("");
   const [openFilter, setOpenFilter] = useState("");
   const [categorias, setCategorias] = useState<string[]>([]);
@@ -116,11 +117,11 @@ const SearchPage = () => {
               description="No se encontraron publicaciones que coincidan con las instituciones y filtros aplicados."
             />
           ) : (
-            objects.map((object: any) => (
+            objects.map((object) => (
               <ObjectCard
                 key={object.id}
                 id={object.id}
-                image={object.foto_principal_url || object.foto || ""}
+                image={object.foto_principal_url || ""}
                 title={object.nombre}
                 location={object.lugar_institucion || object.institucion_nombre || "Ubicación no especificada"}
                 status={object.tipo}

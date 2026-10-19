@@ -17,6 +17,7 @@ import {
 import StatusSelector from "../../components/status_selector/status_selector";
 import "../../styles/form_layout.css";
 import { getImageUrl } from "../../utils/get_image_url";
+import { get_api_error_message, get_api_error_status, get_api_field_errors } from "../../services/api_error";
 
 interface BackendItem {
   id: string;
@@ -90,35 +91,16 @@ const EditPublicationPage = () => {
           const instMatch = listaInstituciones.find((inst) => String(inst.id) === String(pubData.institucion_id));
           if (instMatch) setInstitucion(instMatch.nombre);
 
-          const fotosRaw = fotosRes || [];
-          let imagenesProcesadas: PublicationImage[] = [];
-
-          if (Array.isArray(fotosRaw)) {
-            imagenesProcesadas = fotosRaw.map((img: any) => {
-              if (typeof img === "string") {
-                return { id: img, url: getImageUrl(img) };
-              }
-
-              const urlFoto = img.url || img.ruta || img.nombre_servidor || "";
-              const urlCompleta = getImageUrl(urlFoto);
-
-              const realId = String(
-                img.id ?? img._id ?? img.foto_id ?? img.archivo_id ?? img.id_archivo ?? img.ruta ?? img.nombre_servidor ?? ""
-              );
-
-              return {
-                id: realId,
-                url: urlCompleta
-              };
-            }).filter((img) => img.url !== "");
-          }
+          const imagenesProcesadas: PublicationImage[] = fotosRes
+            .filter((foto) => foto.url)
+            .map((foto) => ({ id: foto.id, url: getImageUrl(foto.url) }));
 
           setOriginalBackendImages(imagenesProcesadas);
           setExistingImages(imagenesProcesadas);
         }
         setLoading(false);
-      } catch (error: any) {
-        const status = error?.response?.status;
+      } catch (error) {
+        const status = get_api_error_status(error);
         setLoadError(
           status === 404
             ? "Esta publicación no existe o fue eliminada."
@@ -246,43 +228,30 @@ const EditPublicationPage = () => {
     try {
       await update_publication(id!, formData);
       setShowModal(true);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error al guardar cambios:", error);
 
       const nuevosErroresCampos: Record<string, boolean> = {};
       let mensajesError: string[] = [];
 
-      if (error?.response?.status === 403) {
+      const erroresCampos = get_api_field_errors(error);
+      if (get_api_error_status(error) === 403) {
         mensajesError = ["No tienes permisos para editar esta publicación."];
-      } else if (error?.response?.data) {
-        const data = error.response.data;
-
-        if (Array.isArray(data.errors)) {
-          data.errors.forEach((err: any) => {
-            if (err && typeof err === "object") {
-              if (err.path && err.path.length > 0) {
-                const campo = err.path[0];
-                mensajesError.push(err.message);
-
-                if (campo === "categoria_id") nuevosErroresCampos.categoriaId = true;
-                else if (campo === "fecha_evento") nuevosErroresCampos.fechaEvento = true;
-                else if (campo === "lugar_institucion") nuevosErroresCampos.lugarInstitucion = true;
-                else if (campo === "institucion_id") nuevosErroresCampos.institucion = true;
-                else nuevosErroresCampos[campo] = true;
-              } else if (typeof err === "string") {
-                mensajesError.push(err);
-              }
-            } else if (typeof err === "string") {
-              mensajesError.push(err);
-            }
-          });
-        } else if (data.message) {
-          mensajesError = [data.message];
-        }
-      }
-
-      if (mensajesError.length === 0) {
-        mensajesError = ["Hubo un error inesperado al actualizar los datos."];
+      } else if (erroresCampos.length > 0) {
+        // Campo del backend -> nombre del campo en este formulario
+        const camposFormulario: Record<string, string> = {
+          categoria_id: "categoriaId",
+          fecha_evento: "fechaEvento",
+          lugar_institucion: "lugarInstitucion",
+          institucion_id: "institucion",
+        };
+        erroresCampos.forEach(({ path, message }) => {
+          mensajesError.push(message);
+          const campo = String(path[0] ?? "");
+          if (campo) nuevosErroresCampos[camposFormulario[campo] ?? campo] = true;
+        });
+      } else {
+        mensajesError = [get_api_error_message(error, "Hubo un error inesperado al actualizar los datos.")];
       }
 
       setFormErrors(nuevosErroresCampos);

@@ -1,19 +1,9 @@
 import axios from "axios";
 
-/* Mensaje legible a partir de un error de la API /admin.
-   El backend responde { status: 'error', message } en todos los errores controlados. */
-export const get_admin_error_message = (error: unknown, fallback = "Ocurrió un error inesperado.") => {
-  if (axios.isAxiosError(error)) {
-    if (!error.response) {
-      return "No pudimos conectarnos con el servidor. Revisá tu conexión e intentá de nuevo.";
-    }
-    const message = (error.response.data as { message?: unknown } | undefined)?.message;
-    if (typeof message === "string" && message.trim() !== "") return message;
-  }
-  return fallback;
-};
-
-export const get_admin_error_status = (error: unknown): number | null =>
-  axios.isAxiosError(error) ? error.response?.status ?? null : null;
+/* Errores de la API /admin: misma lectura que el resto de la app. */
+export {
+  get_api_error_message as get_admin_error_message,
+  get_api_error_status as get_admin_error_status,
+} from "../api_error";
 
 export const is_request_canceled = (error: unknown) => axios.isCancel(error);

@@ -8,6 +8,7 @@ import { api } from "../../services/api";
 import "./chats_list_page.css";
 import { getImageUrl } from "../../utils/get_image_url";
 import EmptyState from "../../components/empty_state/empty_state";
+import type { ChatRoomResponse } from "../../types/chat";
 
 interface ChatRoom {
   sala_id: string;
@@ -31,7 +32,7 @@ const esRutaImagen = (texto?: string): boolean => {
   );
 };
 
-const formatMensajeTiempo = (fechaRaw?: string) => {
+const formatMensajeTiempo = (fechaRaw?: string | null) => {
   if (!fechaRaw) return "";
   const fechaMensaje = new Date(fechaRaw);
   
@@ -81,7 +82,7 @@ const ChatsListPage = () => {
         const resJson = response.data;
         const rawSalas = resJson && Array.isArray(resJson.data) ? resJson.data : [];
 
-        const salasMapeadas: ChatRoom[] = rawSalas.map((sala: any) => {
+        const salasMapeadas: ChatRoom[] = rawSalas.map((sala: ChatRoomResponse) => {
           const nombre = sala.otro_usuario_nombre || "";
           const apellido = sala.otro_usuario_apellido || "";
           const nombreCompleto = `${nombre} ${apellido}`.trim() || "Usuario";

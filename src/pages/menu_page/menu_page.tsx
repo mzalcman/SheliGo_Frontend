@@ -7,10 +7,9 @@ import { getImageUrl } from "../../utils/get_image_url";
 import LogoutButton from "../../components/logout_button/logout_button";
 
 const MenuPage = () => {
-  const { user: typedUser, refetchUser } = useAuth();
+  const { user, refetchUser } = useAuth();
   const navigate = useNavigate();
 
-  const user = typedUser as any;
   const userFullName = user?.name || "Usuario";
 
   // Trae el rol actualizado (las sesiones iniciadas antes del backoffice no lo tienen)
@@ -20,7 +19,7 @@ const MenuPage = () => {
   }, []);
 
   // Solo decide si mostrar el acceso: el backend valida el permiso al entrar a /admin
-  const canSeeBackoffice = typedUser?.rol === "admin" || typedUser?.rol === "institution_admin";
+  const canSeeBackoffice = user?.rol === "admin" || user?.rol === "institution_admin";
 
   return (
     <main className="menu_page">

@@ -21,6 +21,7 @@ import { getImageUrl } from "../../utils/get_image_url";
 import EmptyState from "../../components/empty_state/empty_state";
 import "../../components/modal/modal.css";
 import { Pencil, Trash2, AlertCircle, MessageCircleQuestion, LogIn, PackageCheck, RotateCcw } from "lucide-react";
+import { get_api_error_message, get_api_error_status } from "../../services/api_error";
 
 const PublicationDetailPage = () => {
   const { id } = useParams();
@@ -68,13 +69,13 @@ const PublicationDetailPage = () => {
         set_publication(publication_data);
         set_archives(archives_data);
         set_questions(questions_data);
-      } catch (error: any) {
+      } catch (error) {
         // Un 404 es esperado (publicación eliminada): no ensuciamos la consola
-        if (error?.response?.status !== 404) {
+        if (get_api_error_status(error) !== 404) {
           console.error("Error al cargar publicación:", error);
         }
         set_error(
-          error?.response?.status === 404
+          get_api_error_status(error) === 404
             ? "Esta publicación ya no está disponible."
             : "Error al cargar publicación"
         );
@@ -129,8 +130,8 @@ const PublicationDetailPage = () => {
       await create_question(publication_id, user.id, new_question);
       set_new_question("");
       await refresh_questions();
-    } catch (error: any) {
-      set_question_error(error?.response?.data?.message || "No se pudo publicar la pregunta. Inténtalo de nuevo.");
+    } catch (error) {
+      set_question_error(get_api_error_message(error, "No se pudo publicar la pregunta. Inténtalo de nuevo."));
     } finally {
       set_is_sending_question(false);
     }

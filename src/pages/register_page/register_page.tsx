@@ -11,6 +11,8 @@ import "../../styles/auth.css";
 import "../../styles/institution_picker.css";
 import { get_password_error } from "../../utils/password_rules";
 import "../../components/modal/modal.css";
+import { get_api_error_message } from "../../services/api_error";
+import type { FilterOption } from "../../types/filter_option";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -21,10 +23,10 @@ const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
-  const [availableInstitutions, setAvailableInstitutions] = useState<any[]>([]);
-  const [selectedInstitutions, setSelectedInstitutions] = useState<any[]>([]);
+  const [availableInstitutions, setAvailableInstitutions] = useState<FilterOption[]>([]);
+  const [selectedInstitutions, setSelectedInstitutions] = useState<FilterOption[]>([]);
   const [institutionQuery, setInstitutionQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<FilterOption[]>([]);
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -83,13 +85,8 @@ const RegisterPage = () => {
       const cleanQuery = value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
       const filtered = availableInstitutions.filter((inst) => {
-        const rawName = typeof inst === "string" ? inst : inst.nombre || inst.name || "";
-        const cleanName = rawName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-        const instId = typeof inst === "string" ? inst : inst.id || inst.institucion_id;
-        const alreadySelected = selectedInstitutions.some(
-          (selected) => (typeof selected === "string" ? selected : selected.id || selected.institucion_id) === instId
-        );
+        const cleanName = inst.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const alreadySelected = selectedInstitutions.some((selected) => selected.id === inst.id);
 
         return cleanName.includes(cleanQuery) && !alreadySelected;
       });
@@ -100,17 +97,16 @@ const RegisterPage = () => {
     }
   };
 
-  const handleSelectInstitution = (inst: any) => {
+  const handleSelectInstitution = (inst: FilterOption) => {
     setSelectedInstitutions([...selectedInstitutions, inst]);
     setInstitutionQuery("");
     setSuggestions([]);
   };
 
-  const handleRemoveInstitution = (instToRemove: any) => {
-    const targetId = instToRemove.id || instToRemove.institucion_id || instToRemove;
+  const handleRemoveInstitution = (instToRemove: FilterOption) => {
     setSelectedInstitutions(
       selectedInstitutions.filter(
-        (inst) => (inst.id || inst.institucion_id || inst) !== targetId
+        (inst) => inst.id !== instToRemove.id
       )
     );
   };
@@ -160,9 +156,7 @@ const RegisterPage = () => {
       formData.append("confirmPassword", confirmPassword);
 
       // 1. Extraer los IDs reales de cada institución
-      const instIds = selectedInstitutions
-        .map((inst) => (typeof inst === "object" ? inst.id || inst.institucion_id : inst))
-        .filter(Boolean);
+      const instIds = selectedInstitutions.map((inst) => inst.id);
 
       // 2. Enviar con el nombre 'instituciones_ids' que espera el servicio del backend
       if (instIds.length > 0) {
@@ -183,10 +177,10 @@ const RegisterPage = () => {
       setTimeout(() => {
         navigate("/login");
       }, 3000);
-    } catch (error: any) {
+    } catch (error) {
       setLoading(false);
       setError(
-        error.response?.data?.message || "Ocurrió un error al registrarte."
+        get_api_error_message(error, "Ocurrió un error al registrarte.")
       );
     }
   };
@@ -201,9 +195,9 @@ const RegisterPage = () => {
     setError("");
     try {
       await loginWithGoogle();
-    } catch (err: any) {
+    } catch (err) {
       setError(
-        err?.response?.data?.message || "Ocurrió un error al iniciar sesión con Google."
+        get_api_error_message(err, "Ocurrió un error al iniciar sesión con Google.")
       );
     }
   };
@@ -287,14 +281,12 @@ const RegisterPage = () => {
               {selectedInstitutions.length > 0 && (
                 <div className="institutions_chips_container">
                   {selectedInstitutions.map((inst) => {
-                    const labelName = typeof inst === "string" ? inst : inst.nombre || inst.name;
-                    const instId = inst.id || inst.institucion_id || inst;
                     return (
-                      <div className="institution_chip" key={instId}>
-                        <span>{labelName}</span>
+                      <div className="institution_chip" key={inst.id}>
+                        <span>{inst.nombre}</span>
                         <button
                           type="button"
-                          aria-label={`Quitar ${labelName}`}
+                          aria-label={`Quitar ${inst.nombre}`}
                           onClick={() => handleRemoveInstitution(inst)}
                         >
                           <X size={14} />
@@ -317,11 +309,9 @@ const RegisterPage = () => {
                 {suggestions.length > 0 && (
                   <ul className="institution_dropdown">
                     {suggestions.map((item) => {
-                      const labelName = typeof item === "string" ? item : item.nombre || item.name;
-                      const itemId = item.id || item.institucion_id || item;
                       return (
-                        <li key={itemId} onClick={() => handleSelectInstitution(item)}>
-                          {labelName}
+                        <li key={item.id} onClick={() => handleSelectInstitution(item)}>
+                          {item.nombre}
                         </li>
                       );
                     })}

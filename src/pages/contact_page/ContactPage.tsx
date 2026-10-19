@@ -99,14 +99,13 @@ const ContactPage = () => {
           navigate("/ayuda");
         },
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error en el envío:", error);
 
       setModalConfig({
         isOpen: true,
         title: "Error al enviar la consulta",
         description:
-          error?.message ||
           "Ocurrió un problema de conexión al procesar tu solicitud. Intenta nuevamente.",
         variant: "error",
         icon: <AlertTriangle size={28} strokeWidth={2.2} />,

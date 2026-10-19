@@ -7,6 +7,7 @@ import Modal from "../../components/modal/modal";
 import "./chat_room_page.css";
 import { getImageUrl } from "../../utils/get_image_url";
 import { ACCEPTED_IMAGE_INPUT, get_image_error } from "../../utils/image_rules";
+import { get_api_error_message } from "../../services/api_error";
 
 interface Message {
   id: string;
@@ -145,10 +146,10 @@ const ChatRoomPage = () => {
         contenido: contenidoMensaje
       });
       agregarMensajePropio(response.data?.data);
-    } catch (error: any) {
+    } catch (error) {
       // Se devuelve el texto al input para no perder lo que se escribió
       setInputValue((actual) => actual || contenidoMensaje);
-      const errorMsg = error.response?.data?.message || "No se pudo enviar el mensaje.";
+      const errorMsg = get_api_error_message(error, "No se pudo enviar el mensaje.");
       showErrorModal(errorMsg);
     } finally {
       setEnviando(false);
@@ -179,8 +180,8 @@ const ChatRoomPage = () => {
         },
       });
       agregarMensajePropio(response.data?.data);
-    } catch (error: any) {
-      const errorMsg = error.response?.data?.message || "Error al subir la imagen.";
+    } catch (error) {
+      const errorMsg = get_api_error_message(error, "Error al subir la imagen.");
       showErrorModal(errorMsg);
     } finally {
       setEnviando(false);
@@ -201,8 +202,8 @@ const ChatRoomPage = () => {
       await api.delete(`/chat/mensaje/${mensajeAEliminar}`);
       versionMensajesRef.current += 1;
       setMessages((prev) => prev.filter((msg) => msg.id !== mensajeAEliminar));
-    } catch (error: any) {
-      const errorMsg = error.response?.data?.message || "No se pudo eliminar el mensaje.";
+    } catch (error) {
+      const errorMsg = get_api_error_message(error, "No se pudo eliminar el mensaje.");
       showErrorModal(errorMsg);
     } finally {
       setEliminando(false);

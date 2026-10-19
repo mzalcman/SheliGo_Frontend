@@ -6,6 +6,7 @@ import { create_answer } from "../../services/question_service";
 import type { Publication } from "../../types/publication";
 import { getImageUrl } from "../../utils/get_image_url";
 import { CornerDownRight } from "lucide-react";
+import { get_api_error_message } from "../../services/api_error";
 
 interface QuestionCardProps {
   question: Question;
@@ -36,8 +37,8 @@ const QuestionCard = ({
       set_reply_text("");
 
       if (on_answer_submitted) on_answer_submitted();
-    } catch (error: any) {
-      alert(error?.response?.data?.message || "No se pudo enviar la respuesta. Inténtalo de nuevo.");
+    } catch (error) {
+      alert(get_api_error_message(error, "No se pudo enviar la respuesta. Inténtalo de nuevo."));
     } finally {
       set_is_submitting(false);
     }

@@ -1,5 +1,6 @@
 import { api } from "./api";
 import type { PublicationState } from "../types/publication";
+import type { PublicationArchive } from "../types/publication_archive";
 
 export const get_publication_by_id = async (id: string) => {
   const response = await api.get(`/publicaciones/${id}`);
@@ -62,7 +63,7 @@ export const delete_publication = async (id: string) => {
   return response.data;
 };
 
-export const get_publication_photos = async (id: string) => {
+export const get_publication_photos = async (id: string): Promise<PublicationArchive[]> => {
   const response = await api.get(`/publicaciones/${id}/archivos`);
   return response.data?.data?.archivos || response.data?.archivos || [];
 };

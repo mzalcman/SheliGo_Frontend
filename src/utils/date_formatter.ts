@@ -28,7 +28,9 @@ export const format_publication_time = (
       {
         hour: "2-digit",
         minute: "2-digit",
+        // 24 h: con "a. m." quedaba "11:18 a. m.hs"
+        hourCycle: "h23",
       }
     );
-  return `Aproximadamente a las ${formatted_time}hs`;
+  return `Aproximadamente a las ${formatted_time} hs`;
 };

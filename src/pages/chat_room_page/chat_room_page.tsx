@@ -215,7 +215,7 @@ const ChatRoomPage = () => {
   const formatearHora = (isoString: string) => {
     if (!isoString) return "";
     const fecha = new Date(isoString);
-    return fecha.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return fecha.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
   };
 
   return (

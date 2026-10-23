@@ -32,6 +32,8 @@ const esRutaImagen = (texto?: string): boolean => {
 };
 
 const INTERVALO_ACTUALIZACION_MS = 3000;
+// Mismo máximo que el backend (mensajes.contenido es varchar(256))
+const MAX_CARACTERES_MENSAJE = 256;
 
 const ChatRoomPage = () => {
   const { salaId } = useParams<{ salaId: string }>();
@@ -325,6 +327,7 @@ const ChatRoomPage = () => {
             <input
               type="text"
               placeholder="Escribe aquí..."
+              maxLength={MAX_CARACTERES_MENSAJE}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               className="room_text_input"

@@ -6,7 +6,7 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   console.warn(
     "¡Atención! No se encontraron las variables de entorno de Supabase. " +
-    "Asegúrate de tener configurado tu archivo .env.local en la raíz del proyecto."
+    "Asegúrate de tener configurado tu archivo .env en la raíz del proyecto (ver .env.example)."
   );
 }
 

@@ -5,6 +5,7 @@ import AdminModal from "../admin_modal/admin_modal";
 import { get_admin_error_message } from "../../../services/admin/admin_error";
 import "./admin_confirm_modal.css";
 
+
 interface AdminConfirmModalProps {
   is_open: boolean;
   title: string;

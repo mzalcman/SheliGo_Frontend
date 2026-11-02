@@ -8,6 +8,18 @@ const date_time_format = new Intl.DateTimeFormat("es-AR", {
 });
 const relative_format = new Intl.RelativeTimeFormat("es-AR", { numeric: "auto" });
 
+/* Fechas del calendario (fecha_evento, fecha_union): son el día que se eligió, no un
+   instante. Se muestran en UTC para que la zona horaria del navegador no las cambie. */
+const calendar_date_format = new Intl.DateTimeFormat("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" });
+const calendar_date_time_format = new Intl.DateTimeFormat("es-AR", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  timeZone: "UTC",
+});
+
 const to_date = (value: string | null | undefined) => {
   if (!value) return null;
   const date = new Date(value);
@@ -22,6 +34,16 @@ export const format_admin_date = (value: string | null | undefined) => {
 export const format_admin_date_time = (value: string | null | undefined) => {
   const date = to_date(value);
   return date ? date_time_format.format(date) : "—";
+};
+
+export const format_admin_calendar_date = (value: string | null | undefined) => {
+  const date = to_date(value);
+  return date ? calendar_date_format.format(date) : "—";
+};
+
+export const format_admin_calendar_date_time = (value: string | null | undefined) => {
+  const date = to_date(value);
+  return date ? calendar_date_time_format.format(date) : "—";
 };
 
 // "hace 5 minutos", "ayer", "hace 3 días"

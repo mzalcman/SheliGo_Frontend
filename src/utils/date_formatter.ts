@@ -13,6 +13,7 @@ export const format_publication_date = (
       day: "numeric",
       month: "long",
       year: "numeric",
+      timeZone: "UTC",
     }
   );
 };

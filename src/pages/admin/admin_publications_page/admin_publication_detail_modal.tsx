@@ -8,7 +8,7 @@ import { AdminErrorState, AdminLoadingState } from "../../../components/admin/ad
 import { useAdminSession } from "../../../hooks/use_admin_session";
 import { change_admin_publication_state, get_admin_publication } from "../../../services/admin/admin_publications_service";
 import { useAdminDetail } from "../../../hooks/use_admin_detail";
-import { format_admin_date_time, full_name } from "../../../utils/admin_format";
+import { format_admin_calendar_date_time, format_admin_date_time, full_name } from "../../../utils/admin_format";
 import type { AdminPublicationState } from "../../../types/admin/admin_publication";
 
 interface AdminPublicationDetailModalProps {
@@ -105,7 +105,7 @@ const AdminPublicationDetailModal = ({ publication_id, on_close, on_changed }: A
                 <div><dt>Categoría</dt><dd>{publication.categoria_nombre ?? "—"}</dd></div>
                 <div><dt>Institución</dt><dd>{publication.institucion_nombre ?? "Sin institución"}</dd></div>
                 <div><dt>Lugar</dt><dd>{publication.lugar_institucion || "—"}</dd></div>
-                <div><dt>Fecha del evento</dt><dd>{format_admin_date_time(publication.fecha_evento)}</dd></div>
+                               <div><dt>Fecha del evento</dt><dd>{format_admin_calendar_date_time(publication.fecha_evento)}</dd></div>
                 <div>
                   <dt>Publicado por</dt>
                   <dd>{full_name(publication.usuario_nombre, publication.usuario_apellido)} · {publication.usuario_email}</dd>

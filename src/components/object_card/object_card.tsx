@@ -40,6 +40,7 @@ const ObjectCard = ({
     return new Intl.DateTimeFormat("es-ES", {
       day: "numeric",
       month: "long",
+      timeZone: "UTC",
     }).format(date);
   };
 

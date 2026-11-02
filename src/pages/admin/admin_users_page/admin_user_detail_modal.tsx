@@ -7,7 +7,7 @@ import { AdminErrorState, AdminLoadingState } from "../../../components/admin/ad
 import { useAdminSession } from "../../../hooks/use_admin_session";
 import { get_admin_user } from "../../../services/admin/admin_users_service";
 import { useAdminDetail } from "../../../hooks/use_admin_detail";
-import { format_admin_date, format_admin_relative, full_name } from "../../../utils/admin_format";
+import { format_admin_calendar_date, format_admin_date, format_admin_relative, full_name } from "../../../utils/admin_format";
 import AdminUserRoleModal from "./admin_user_role_modal";
 import AdminUserInstitutionsModal from "./admin_user_institutions_modal";
 import type { AdminUserDetail } from "../../../types/admin/admin_user";
@@ -101,7 +101,7 @@ const AdminUserDetailModal = ({ user_id, on_close, on_changed }: AdminUserDetail
                       {inst.es_admin ? (
                         <span className="admin_chip"><ShieldCheck size={12} />Administra</span>
                       ) : (
-                        <span className="admin_muted">Miembro desde {format_admin_date(inst.fecha_union)}</span>
+                                          <span className="admin_muted">Miembro desde {format_admin_calendar_date(inst.fecha_union)}</span>
                       )}
                     </div>
                   ))}

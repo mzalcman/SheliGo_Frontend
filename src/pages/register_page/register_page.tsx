@@ -234,6 +234,7 @@ const RegisterPage = () => {
                   type="text"
                   className="form_input"
                   placeholder="Nombre"
+                  autoComplete="given-name"
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                 />
@@ -245,6 +246,7 @@ const RegisterPage = () => {
                   type="text"
                   className="form_input"
                   placeholder="Apellido"
+                  autoComplete="family-name"
                   value={lastname}
                   onChange={(event) => setLastname(event.target.value)}
                 />
@@ -257,6 +259,7 @@ const RegisterPage = () => {
                 type="email"
                 className="form_input"
                 placeholder="nombre@ejemplo.com"
+                autoComplete="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
               />
@@ -268,6 +271,7 @@ const RegisterPage = () => {
                 type="text"
                 className="form_input"
                 placeholder="11 1234-5678"
+                autoComplete="tel-national"
                 value={phone}
                 onChange={handlePhoneChange}
                 maxLength={19}
@@ -303,6 +307,7 @@ const RegisterPage = () => {
                   type="text"
                   className="form_input"
                   placeholder="Escribe y selecciona tu institución..."
+                  autoComplete="off"
                   value={institutionQuery}
                   onChange={handleInstitutionQueryChange}
                 />
@@ -327,6 +332,7 @@ const RegisterPage = () => {
                   type={showPassword ? "text" : "password"}
                   className="form_input"
                   placeholder="••••••••"
+                  autoComplete="new-password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                 />
@@ -348,6 +354,7 @@ const RegisterPage = () => {
                   type={showConfirmPassword ? "text" : "password"}
                   className="form_input"
                   placeholder="••••••••"
+                  autoComplete="new-password"
                   value={confirmPassword}
                   onChange={(event) => setConfirmPassword(event.target.value)}
                 />
